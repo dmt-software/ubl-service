@@ -3,7 +3,7 @@
 namespace DMT\Test\Ubl\Service\Entity\Invoice\Type;
 
 use DMT\Ubl\Service\Entity\Invoice\Type\PriceAmount;
-use DMT\Ubl\Service\Event\CurrencyEventSubscriber;
+use DMT\Ubl\Service\Event\AmountCurrencyEventSubscriber;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -47,7 +47,7 @@ class PriceAmountTest extends TestCase
     {
         $builder = SerializerBuilder::create();
         $builder->configureListeners(function (EventDispatcher $dispatcher) {
-            $dispatcher->addSubscriber(new CurrencyEventSubscriber('EUR'));
+            $dispatcher->addSubscriber(new AmountCurrencyEventSubscriber('EUR'));
         });
         return $builder->build();
     }

@@ -3,7 +3,7 @@
 namespace DMT\Test\Ubl\Service\Entity\Invoice\Type;
 
 use DMT\Ubl\Service\Entity\Invoice\Type\QuantityType;
-use DMT\Ubl\Service\Event\UnitEventSubscriber;
+use DMT\Ubl\Service\Event\QuantityUnitEventSubscriber;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -33,7 +33,7 @@ abstract class QuantityTestCase extends TestCase
     {
         $builder = SerializerBuilder::create();
         $builder->configureListeners(function (EventDispatcher $dispatcher) {
-            $dispatcher->addSubscriber(new UnitEventSubscriber('EUR'));
+            $dispatcher->addSubscriber(new QuantityUnitEventSubscriber('EUR'));
         });
 
         return $builder->build();

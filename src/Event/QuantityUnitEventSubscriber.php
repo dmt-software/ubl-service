@@ -6,7 +6,7 @@ use DMT\Ubl\Service\Entity\Invoice\Type\QuantityType;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
-readonly class UnitEventSubscriber implements EventSubscriberInterface
+readonly class QuantityUnitEventSubscriber implements EventSubscriberInterface
 {
     public function __construct(private string $defaultUnit = QuantityType::DEFAULT_UNIT_CODE)
     {

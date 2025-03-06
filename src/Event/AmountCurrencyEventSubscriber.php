@@ -6,7 +6,7 @@ use DMT\Ubl\Service\Entity\Invoice\Type\AmountType;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
-readonly class CurrencyEventSubscriber implements EventSubscriberInterface
+readonly class AmountCurrencyEventSubscriber implements EventSubscriberInterface
 {
     public function __construct(private string $defaultCurrency = 'EUR')
     {

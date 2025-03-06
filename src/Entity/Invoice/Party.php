@@ -6,7 +6,6 @@ use DMT\Ubl\Service\Entity\Invoice\Type\EndpointId;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Since;
 use JMS\Serializer\Annotation\Type;
-use JMS\Serializer\Annotation\Until;
 use JMS\Serializer\Annotation\XmlElement;
 use JMS\Serializer\Annotation\XmlRoot;
 
@@ -34,9 +33,9 @@ class Party
     public null|PartyName $partyName = null;
 
     #[SerializedName(name: "PostalAddress")]
-    #[Type(name: Address::class)]
+    #[Type(name: PostalAddress::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
-    public null|Address $postalAddress = null;
+    public null|PostalAddress $postalAddress = null;
 
     #[SerializedName(name: "PartyLegalEntity")]
     #[Type(name: PartyLegalEntity::class)]
