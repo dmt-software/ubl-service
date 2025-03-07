@@ -15,7 +15,7 @@ class PriceTest extends TestCase
     {
         $price = new Price();
         $price->priceAmount = new PriceAmount();
-        $price->priceAmount->amount = 44.97800001;
+        $price->priceAmount->amount = 44.97;
         $price->priceAmount->currencyId = 'EUR';
         $price->baseQuantity = new BaseQuantity();
         $price->baseQuantity->quantity = 3;
