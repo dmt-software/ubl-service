@@ -23,41 +23,41 @@ class LegalMonetaryTotal
 {
     #[SerializedName(name: "LineExtensionAmount")]
     #[Type(name: LineExtensionAmount::class)]
-    #[XmlElement(cdata: false, namespace: "LineExtensionAmount")]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|LineExtensionAmount $lineExtensionAmount = null;
 
     #[SerializedName(name: "TaxExclusiveAmount")]
     #[Type(name: TaxExclusiveAmount::class)]
-    #[XmlElement(cdata: false, namespace: "TaxExclusiveAmount")]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|TaxExclusiveAmount $taxExclusiveAmount = null;
 
     #[SerializedName(name: "TaxInclusiveAmount")]
     #[Type(name: TaxInclusiveAmount::class)]
-    #[XmlElement(cdata: false, namespace: "TaxInclusiveAmount")]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|TaxInclusiveAmount $taxInclusiveAmount = null;
 
     #[SerializedName(name: "AllowanceTotalAmount")]
     #[Type(name: AllowanceTotalAmount::class)]
-    #[XmlElement(cdata: false, namespace: "AllowanceTotalAmount")]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|AllowanceTotalAmount $allowanceTotalAmount = null;
 
     #[SerializedName(name: "ChargeTotalAmount")]
     #[Type(name: ChargeTotalAmount::class)]
-    #[XmlElement(cdata: false, namespace: "ChargeTotalAmount")]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|ChargeTotalAmount $chargeTotalAmount = null;
 
     #[SerializedName(name: "PrepaidAmount")]
     #[Type(name: PrepaidAmount::class)]
-    #[XmlElement(cdata: false, namespace: "PrepaidAmount")]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|PrepaidAmount $prepaidAmount = null;
 
     #[SerializedName(name: "PayableRoundingAmount")]
     #[Type(name: PayableRoundingAmount::class)]
-    #[XmlElement(cdata: false, namespace: "PayableRoundingAmount")]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|PayableRoundingAmount $payableRoundingAmount = null;
 
     #[SerializedName(name: "PayableAmount")]
     #[Type(name: PayableAmount::class)]
-    #[XmlElement(cdata: false, namespace: "PayableAmount")]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|PayableAmount $payableAmount = null;
 }

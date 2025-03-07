@@ -11,37 +11,87 @@ use PHPUnit\Framework\TestCase;
 
 class AllowanceChargeTest extends TestCase
 {
-    public function testAllowance(): void
+    public function testSerializeAllowance(): void
     {
         $allowance = new AllowanceCharge();
         $allowance->chargeIndicator = false;
+        $allowance->allowanceChargeReason = '10% discount';
         $allowance->taxCategory = new TaxCategory();
         $allowance->taxCategory->percent = 10;
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($allowance, 'xml'));
 
-        $this->assertEquals('false', $xml->xpath('*[local-name()="ChargeIndicator"]')[0]);
+        $this->assertEquals('AllowanceCharge', $xml->getName());
+        $this->assertEquals(
+            'false',
+            strval($xml->xpath('*[local-name()="ChargeIndicator"]')[0])
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="ChargeIndicator"]')[0]->getNamespaces()
+        );
+        $this->assertEquals(
+            $allowance->allowanceChargeReason,
+            strval($xml->xpath('*[local-name()="AllowanceChargeReason"]')[0])
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="AllowanceChargeReason"]')[0]->getNamespaces()
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="TaxCategory"]')[0]->getNamespaces()
+        );
         $this->assertEquals(
             $allowance->taxCategory->percent,
             intval($xml->xpath('*[local-name()="TaxCategory"]/*[local-name()="Percent"]')[0])
         );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->getDocNamespaces()
+        );
     }
 
-    public function testCharge(): void
+    public function testSerializeCharge(): void
     {
         $charge = new AllowanceCharge();
-        $charge->amount = new Amount();
         $charge->chargeIndicator = true;
         $charge->allowanceChargeReason = 'Drop shipment';
-        $charge->amount->amount = 100;
+        $charge->amount = new Amount();
+        $charge->amount->amount = 10.0;
         $charge->amount->currencyId = 'EUR';
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($charge, 'xml'));
 
-        $this->assertEquals('true', $xml->xpath('*[local-name()="ChargeIndicator"]')[0]);
-        $this->assertEquals($charge->allowanceChargeReason, $xml->xpath('*[local-name()="AllowanceChargeReason"]')[0]);
-        $this->assertEquals($charge->amount->amount, strval($xml->xpath('*[local-name()="Amount"]')[0]));
-        $this->assertEquals($charge->amount->currencyId, $xml->xpath('*[local-name()="Amount"]/@currencyId')[0]);
+        $this->assertEquals('AllowanceCharge', $xml->getName());
+        $this->assertEquals(
+            'true',
+            strval($xml->xpath('*[local-name()="ChargeIndicator"]')[0])
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="ChargeIndicator"]')[0]->getNamespaces()
+        );
+        $this->assertEquals(
+            $charge->allowanceChargeReason,
+            strval($xml->xpath('*[local-name()="AllowanceChargeReason"]')[0])
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="AllowanceChargeReason"]')[0]->getNamespaces()
+        );
+        $this->assertEquals(
+            $charge->amount->amount,
+            floatval($xml->xpath('*[local-name()="Amount"]')[0])
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="Amount"]')[0]->getNamespaces()
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->getDocNamespaces()
+        );
     }
 
     protected function getSerializer(): Serializer

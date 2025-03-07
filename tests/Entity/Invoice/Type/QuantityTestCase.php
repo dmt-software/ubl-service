@@ -16,7 +16,7 @@ abstract class QuantityTestCase extends TestCase
     abstract public static function provideQuantity(): iterable;
 
     #[DataProvider(methodName: "provideQuantity")]
-    public function testAmount(QuantityType $quantity): void
+    public function testSerialize(QuantityType $quantity): void
     {
         $xml = simplexml_load_string($this->getSerializer()->serialize($quantity, 'xml'));
 

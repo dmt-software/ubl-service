@@ -3,6 +3,8 @@
 namespace DMT\Test\Ubl\Service\Entity\Invoice;
 
 use DMT\Ubl\Service\Entity\Invoice\Address;
+use DMT\Ubl\Service\Entity\Invoice\Country;
+use DMT\Ubl\Service\Entity\Invoice\Type\IdentificationCode;
 use DMT\Ubl\Service\Event\NormalizeAddressEventSubscriber;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\SerializationContext;
@@ -12,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class AddressTest extends TestCase
 {
-    public function testVersion20000(): void
+    public function testSerializeVersion20000(): void
     {
         $context = SerializationContext::create()->setVersion('2.0');
 
@@ -21,28 +23,95 @@ class AddressTest extends TestCase
         $xml = simplexml_load_string($this->getSerializer()->serialize($address, 'xml', $context));
 
         $this->assertEquals('Address', $xml->getName());
-        $this->assertStringStartsWith($address->streetName, strval($xml->xpath('*[local-name()="StreetName"]')[0]));
-        $this->assertStringEndsWith($address->buildingNumber, strval($xml->xpath('*[local-name()="StreetName"]')[0]));
+        $this->assertStringStartsWith(
+            $address->streetName,
+            strval($xml->xpath('*[local-name()="StreetName"]')[0])
+        );
+        $this->assertStringEndsWith(
+            $address->buildingNumber,
+            strval($xml->xpath('*[local-name()="StreetName"]')[0])
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="StreetName"]')[0]->getNamespaces()
+        );
         $this->assertEquals(
             $address->additionalStreetName,
             strval($xml->xpath('*[local-name()="AdditionalStreetName"]')[0])
         );
-        $this->assertEquals($address->cityName, $xml->xpath('*[local-name()="CityName"]')[0]);
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="AdditionalStreetName"]')[0]->getNamespaces()
+        );
+        $this->assertEquals(
+            $address->cityName,
+            strval($xml->xpath('*[local-name()="CityName"]')[0])
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="CityName"]')[0]->getNamespaces()
+        );
+        $this->assertEquals(
+            $address->postalZone,
+            strval($xml->xpath('*[local-name()="PostalZone"]')[0])
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="PostalZone"]')[0]->getNamespaces()
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="Country"]')[0]->getNamespaces()
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->getDocNamespaces()
+        );
     }
 
-    public function getVersion10000(): void
+    public function testSerializeVersion10000(): void
     {
-        $context = SerializationContext::create()->setVersion('2.0');
+        $context = SerializationContext::create()->setVersion('1.0');
 
         $address = $this->getAddress();
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($address, 'xml', $context));
 
         $this->assertEquals('Address', $xml->getName());
-        $this->assertEquals($address->streetName, strval($xml->xpath('*[local-name()="StreetName"]')[0]));
-        $this->assertEquals($address->buildingNumber, strval($xml->xpath('*[local-name()="BuildingNumber"]')[0]));
+        $this->assertEquals(
+            $address->streetName,
+            strval($xml->xpath('*[local-name()="StreetName"]')[0])
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="StreetName"]')[0]->getNamespaces()
+        );
+        $this->assertEquals(
+            $address->buildingNumber,
+            strval($xml->xpath('*[local-name()="BuildingNumber"]')[0])
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="BuildingNumber"]')[0]->getNamespaces()
+        );
         $this->assertEmpty($xml->xpath('*[local-name()="AdditionalStreetName"]'));
-        $this->assertEquals($address->cityName, $xml->xpath('*[local-name()="CityName"]')[0]);
+
+        $this->assertEquals(
+            $address->cityName,
+            strval($xml->xpath('*[local-name()="CityName"]')[0])
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="CityName"]')[0]->getNamespaces()
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="Country"]')[0]->getNamespaces()
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->getDocNamespaces()
+        );
     }
 
     protected function getAddress(): Address
@@ -52,6 +121,10 @@ class AddressTest extends TestCase
         $address->buildingNumber = '2';
         $address->cityName = 'City';
         $address->additionalStreetName = '2nd door on the right';
+        $address->postalZone = '1998AB';
+        $address->country = new Country();
+        $address->country->identificationCode = new IdentificationCode();
+        $address->country->identificationCode->code = 'NL';
 
         return $address;
     }

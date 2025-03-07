@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class CompanyIdTest extends TestCase
 {
-    public function testVersion20000(): void
+    public function testSerializeVersion20000(): void
     {
         $context = SerializationContext::create()->setVersion('2.0');
 
@@ -31,7 +31,7 @@ class CompanyIdTest extends TestCase
         );
     }
 
-    public function testVersion10200(): void
+    public function testSerializeVersion10200(): void
     {
         $context = SerializationContext::create()->setVersion('1.2');
 

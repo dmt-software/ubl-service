@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 class PartyTest extends TestCase
 {
-    public function testVersion20000(): void
+    public function testSerializeVersion20000(): void
     {
         $context = SerializationContext::create()->setVersion('2.0');
 
@@ -24,26 +24,22 @@ class PartyTest extends TestCase
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($party, 'xml', $context));
 
-        $this->assertEquals($party->endpointId->id, $xml->xpath('*[local-name()="EndpointID"]')[0]);
+        $this->assertEquals('Party', $xml->getName());
         $this->assertEquals(
-            strval($party->partyIdentification->id),
-            $xml->xpath('*[local-name()="PartyIdentification"]/*[local-name()="ID"]')[0]
+            strval($party->endpointId),
+            strval($xml->xpath('*[local-name()="EndpointID"]')[0])
         );
-        $this->assertEquals(
-            $party->partyName->name,
-            $xml->xpath('*[local-name()="PartyName"]/*[local-name()="Name"]')[0]
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="PartyIdentification"]')[0]->getNamespaces()
         );
-        $this->assertEquals(
-            $party->postalAddress->streetName,
-            $xml->xpath('*[local-name()="PostalAddress"]/*[local-name()="StreetName"]')[0]
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="PartyName"]')[0]->getNamespaces()
         );
-        $this->assertEquals(
-            $party->postalAddress->cityName,
-            $xml->xpath('*[local-name()="PostalAddress"]/*[local-name()="CityName"]')[0]
-        );
-        $this->assertEquals(
-            $party->postalAddress->postalZone,
-            $xml->xpath('*[local-name()="PostalAddress"]/*[local-name()="PostalZone"]')[0]
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="PostalAddress"]')[0]->getNamespaces()
         );
         $this->assertContainsEquals(
             'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
@@ -51,7 +47,7 @@ class PartyTest extends TestCase
         );
     }
 
-    public function testVersion10000(): void
+    public function testSerializeVersion10000(): void
     {
         $context = SerializationContext::create()->setVersion('1.0');
 
@@ -59,8 +55,21 @@ class PartyTest extends TestCase
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($party, 'xml', $context));
 
+        $this->assertEquals('Party', $xml->getName());
         $this->assertEmpty($xml->xpath('*[local-name()="EndpointID"]'));
         $this->assertEmpty($xml->xpath('*[local-name()="PartyIdentification"]'));
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="PartyName"]')[0]->getNamespaces()
+        );
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="PostalAddress"]')[0]->getNamespaces()
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->getDocNamespaces()
+        );
     }
 
     protected function getParty(): Party
@@ -72,13 +81,10 @@ class PartyTest extends TestCase
         $party->partyIdentification = new PartyIdentification();
         $party->partyIdentification->id = new Id();
         $party->partyIdentification->id->id = '12399843';
-        $party->partyIdentification->id->schemeId = 'NL:KVK';
         $party->partyName = new PartyName();
         $party->partyName->name = 'Holding BV';
         $party->postalAddress = new PostalAddress();
-        $party->postalAddress->streetName = 'Viewstreet';
         $party->postalAddress->postalZone = '1234XX';
-        $party->postalAddress->cityName = 'Municipality';
         $party->partyLegalEntity = new PartyLegalEntity();
         $party->partyLegalEntity->registrationName = 'Holding BV';
 

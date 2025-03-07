@@ -16,7 +16,7 @@ abstract class AmountTestCase extends TestCase
     abstract public static function provideAmount(): iterable;
 
     #[DataProvider(methodName: "provideAmount")]
-    public function testAmount(AmountType $amount): void
+    public function testSerialize(AmountType $amount): void
     {
         $xml = simplexml_load_string($this->getSerializer()->serialize($amount, 'xml'));
 

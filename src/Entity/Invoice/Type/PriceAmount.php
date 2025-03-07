@@ -29,7 +29,9 @@ class PriceAmount implements Stringable, AmountType
             return '';
         }
 
-        return sprintf("%f %s", $this->amount, $this->currencyId);
+        $digits = max(strlen(strstr(rtrim(strval($this->amount) ,'0'), '.')) - 1, 2);
+
+        return sprintf("%.$digits" . "f %s", $this->amount, $this->currencyId);
     }
 
     public function setCurrency(?string $currency): void
