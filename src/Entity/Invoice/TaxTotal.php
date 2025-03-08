@@ -9,7 +9,7 @@ use JMS\Serializer\Annotation\XmlElement;
 use JMS\Serializer\Annotation\XmlRoot;
 
 #[XmlRoot(
-    name: "taxTotal",
+    name: "TaxTotal",
     namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
 )]
 class TaxTotal

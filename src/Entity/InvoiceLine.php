@@ -6,7 +6,6 @@ use DMT\Ubl\Service\Entity\Invoice\AllowanceCharge;
 use DMT\Ubl\Service\Entity\Invoice\Item;
 use DMT\Ubl\Service\Entity\Invoice\Price;
 use DMT\Ubl\Service\Entity\Invoice\TaxTotal;
-use DMT\Ubl\Service\Entity\Invoice\Type\BaseQuantity;
 use DMT\Ubl\Service\Entity\Invoice\Type\InvoicedQuantity;
 use DMT\Ubl\Service\Entity\Invoice\Type\LineExtensionAmount;
 use JMS\Serializer\Annotation\SerializedName;
