@@ -31,15 +31,15 @@ class Invoice
     #[SerializedName(name: "UBLVersionID")]
     #[Until(version: "1.2")]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|string $ublVersionID = null;
+    public null|string $ublVersionId = null;
 
     #[SerializedName(name: "CustomizationID")]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|string $customizationID = null;
+    public null|string $customizationId = null;
 
     #[SerializedName(name: "ProfileID")]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|string $profileID = null;
+    public null|string $profileId = null;
 
     #[SerializedName(name: "ID")]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
