@@ -8,6 +8,8 @@ use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
 readonly class InvoiceCustomizationEventSubscriber implements EventSubscriberInterface
 {
+    public const string CUSTOMIZATION_DEFAULT =
+        'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0';
     public const string CUSTOMIZATION_1_0 = 'urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:'
         . '#urn:www.peppol.eu:bis:peppol4a:ver1.0#urn:www.simplerinvoicing.org:si-ubl:invoice:ver1.0.x';
     public const string CUSTOMIZATION_1_1 = 'urn:www.cenbii.eu:transaction:biitrns010:ver2.0:'
@@ -33,30 +35,25 @@ readonly class InvoiceCustomizationEventSubscriber implements EventSubscriberInt
 
     public function setCustomization(PreSerializeEvent $event): void
     {
-        $version = $event->getContext()->getAttribute('version');
-
-        if (!$version) {
-            return;
-        }
         /** @var Invoice $invoice */
         $invoice = $event->getObject();
+        $version = $event->getContext()->getAttribute('version');
 
         $invoice->customizationId = match ($version) {
             '1.0' => self::CUSTOMIZATION_1_0,
             '1.1' => self::CUSTOMIZATION_1_1,
             '1.2' => self::CUSTOMIZATION_1_2,
             '2.0' => self::CUSTOMIZATION_2_0,
+            default => self::CUSTOMIZATION_DEFAULT,
         };
 
+        $invoice->ublVersionId = '2.1';
         if ($version == '1.0') {
             $invoice->ublVersionId = '2.0';
-        } else {
-            $invoice->ublVersionId = '2.1';
         }
 
-        if ($version == '2.0') {
-            $invoice->profileId = 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0';
-        } else {
+        $invoice->profileId = 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0';
+        if (version_compare($version, '1.2', '<=')) {
             $invoice->profileId = 'urn:www.cenbii.eu:profile:bii04:ver1.0';
         }
     }

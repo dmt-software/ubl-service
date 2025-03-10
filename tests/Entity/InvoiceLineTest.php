@@ -45,7 +45,7 @@ class InvoiceLineTest extends TestCase
             $invoiceLine->lineExtensionAmount->currencyId
         );
         $this->assertContainsEquals(
-            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
             $xml->xpath('*[local-name()="AllowanceCharge"]')[0]->getNamespaces(),
         );
         $this->assertContainsEquals(
