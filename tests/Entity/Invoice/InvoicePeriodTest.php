@@ -2,6 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Invoice;
 
+use DateTime;
 use DMT\Ubl\Service\Entity\Invoice\InvoicePeriod;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -12,8 +13,8 @@ class InvoicePeriodTest extends TestCase
     public function testSerialize(): void
     {
         $invoicingPeriod = new InvoicePeriod();
-        $invoicingPeriod->startDate = new \DateTime('2025-03-12');
-        $invoicingPeriod->endDate = new \DateTime('2025-03-15');
+        $invoicingPeriod->startDate = new DateTime('2025-03-12');
+        $invoicingPeriod->endDate = new DateTime('2025-03-15');
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoicingPeriod, 'xml'));
 

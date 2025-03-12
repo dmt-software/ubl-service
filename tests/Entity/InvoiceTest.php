@@ -35,14 +35,138 @@ class InvoiceTest extends TestCase
     {
         $invoice = $this->getInvoice();
 
-        $context = SerializationContext::create()->setVersion('2.0');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_2_0);
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoice, 'xml', $context));
 
         $this->assertEquals('Invoice', $xml->getName());
         $this->assertEmpty($xml->xpath('*[local-name()="UBLVersionID"]'));
         $this->assertEquals(
-            InvoiceCustomizationEventSubscriber::CUSTOMIZATION_2_0,
+            InvoiceCustomizationEventSubscriber::CUSTOMIZATION_DEFAULT,
+            strval($xml->xpath('*[local-name()="CustomizationID"]')[0]),
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="CustomizationID"]')[0]->getNamespaces(),
+        );
+        $this->assertEquals(
+            'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0',
+            strval($xml->xpath('*[local-name()="ProfileID"]')[0]),
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="ProfileID"]')[0]->getNamespaces(),
+        );
+        $this->assertEquals(
+            $invoice->id,
+            strval($xml->xpath('*[local-name()="ID"]')[0]),
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="ID"]')[0]->getNamespaces(),
+        );
+        $this->assertEquals(
+            $invoice->issueDate->format('Y-m-d'),
+            strval($xml->xpath('*[local-name()="IssueDate"]')[0])
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="IssueDate"]')[0]->getNamespaces(),
+        );
+        $this->assertEquals(
+            $invoice->invoiceTypeCode,
+            strval($xml->xpath('*[local-name()="InvoiceTypeCode"]')[0])
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="InvoiceTypeCode"]')[0]->getNamespaces(),
+        );
+        $this->assertEquals(
+            $invoice->taxPointDate->format('Y-m-d'),
+            strval($xml->xpath('*[local-name()="TaxPointDate"]')[0])
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="TaxPointDate"]')[0]->getNamespaces(),
+        );
+        $this->assertEquals(
+            $invoice->documentCurrencyCode,
+            strval($xml->xpath('*[local-name()="DocumentCurrencyCode"]')[0])
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="DocumentCurrencyCode"]')[0]->getNamespaces(),
+        );
+        $this->assertEquals(
+            $invoice->accountingCost,
+            strval($xml->xpath('*[local-name()="AccountingCost"]')[0])
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->xpath('*[local-name()="AccountingCost"]')[0]->getNamespaces(),
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="InvoicePeriod"]')[0]->getNamespaces(),
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="OrderReference"]')[0]->getNamespaces(),
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="AccountingSupplierParty"]')[0]->getNamespaces(),
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="AccountingCustomerParty"]')[0]->getNamespaces(),
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="Delivery"]')[0]->getNamespaces(),
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="AllowanceCharge"]')[0]->getNamespaces(),
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="TaxTotal"]')[0]->getNamespaces(),
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="LegalMonetaryTotal"]')[0]->getNamespaces(),
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="InvoiceLine"]')[0]->getNamespaces(),
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->getDocNamespaces()
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+            $xml->getDocNamespaces()
+        );
+        $this->assertContainsEquals(
+            'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2',
+            $xml->getDocNamespaces()
+        );
+    }
+
+    public function testSerializeVersionNlcius(): void
+    {
+        $invoice = $this->getInvoice();
+
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_NLCIUS);
+
+        $xml = simplexml_load_string($this->getSerializer()->serialize($invoice, 'xml', $context));
+
+        $this->assertEquals('Invoice', $xml->getName());
+        $this->assertEmpty($xml->xpath('*[local-name()="UBLVersionID"]'));
+        $this->assertEquals(
+            InvoiceCustomizationEventSubscriber::CUSTOMIZATION_2_0_NLCIUS,
             strval($xml->xpath('*[local-name()="CustomizationID"]')[0]),
         );
         $this->assertContainsEquals(
@@ -159,7 +283,7 @@ class InvoiceTest extends TestCase
     {
         $invoice = $this->getInvoice();
 
-        $context = SerializationContext::create()->setVersion('1.2');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_2);
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoice, 'xml', $context));
 
@@ -283,7 +407,7 @@ class InvoiceTest extends TestCase
     {
         $invoice = $this->getInvoice();
 
-        $context = SerializationContext::create()->setVersion('1.1');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_1);
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoice, 'xml', $context));
 
@@ -403,7 +527,7 @@ class InvoiceTest extends TestCase
     {
         $invoice = $this->getInvoice();
 
-        $context = SerializationContext::create()->setVersion('1.0');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_0);
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoice, 'xml', $context));
 

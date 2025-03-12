@@ -2,6 +2,7 @@
 
 namespace DMT\Ubl\Service\Entity\Invoice\Type;
 
+use DMT\Ubl\Service\Entity\Invoice;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Since;
 use JMS\Serializer\Annotation\Until;
@@ -20,13 +21,13 @@ class EndpointId implements Stringable
     public null|string $id = null;
 
     #[SerializedName(name: "schemeID")]
-    #[Since(version: "1.1")]
+    #[Since(version: Invoice::VERSION_1_1)]
     #[XmlAttribute]
     public null|string $schemeId = null;
 
     #[SerializedName(name: "schemeAgencyID")]
-    #[Since(version: "1.1")]
-    #[Until(version: "1.2")]
+    #[Since(version: Invoice::VERSION_1_1)]
+    #[Until(version: Invoice::VERSION_1_2)]
     #[XmlAttribute]
     public null|string $schemeAgencyId = null;
 

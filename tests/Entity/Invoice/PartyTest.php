@@ -2,6 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Invoice;
 
+use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Invoice\Party;
 use DMT\Ubl\Service\Entity\Invoice\PartyIdentification;
 use DMT\Ubl\Service\Entity\Invoice\PartyLegalEntity;
@@ -16,9 +17,9 @@ use PHPUnit\Framework\TestCase;
 
 class PartyTest extends TestCase
 {
-    public function testSerializeVersion20000(): void
+    public function testSerializeVersionNlcius(): void
     {
-        $context = SerializationContext::create()->setVersion('2.0');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_NLCIUS);
 
         $party = $this->getParty();
 
@@ -49,7 +50,7 @@ class PartyTest extends TestCase
 
     public function testSerializeVersion10000(): void
     {
-        $context = SerializationContext::create()->setVersion('1.0');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_0);
 
         $party = $this->getParty();
 

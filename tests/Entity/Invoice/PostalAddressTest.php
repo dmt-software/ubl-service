@@ -2,6 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Invoice;
 
+use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Invoice\Country;
 use DMT\Ubl\Service\Entity\Invoice\PostalAddress;
 use DMT\Ubl\Service\Entity\Invoice\Type\IdentificationCode;
@@ -14,9 +15,9 @@ use PHPUnit\Framework\TestCase;
 
 class PostalAddressTest extends TestCase
 {
-    public function testSerializeVersion20000(): void
+    public function testSerializeVersionNlcius(): void
     {
-        $context = SerializationContext::create()->setVersion('2.0');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_NLCIUS);
 
         $address = $this->getAddress();
 
@@ -71,7 +72,7 @@ class PostalAddressTest extends TestCase
 
     public function testSerializeVersion10000(): void
     {
-        $context = SerializationContext::create()->setVersion('1.0');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_0);
 
         $address = $this->getAddress();
 

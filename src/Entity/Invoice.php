@@ -28,8 +28,14 @@ use JMS\Serializer\Annotation\XmlRoot;
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", prefix: "cbc")]
 class Invoice
 {
+    public const string VERSION_1_0 = '1.0';
+    public const string VERSION_1_1 = '1.1';
+    public const string VERSION_1_2 = '1.2';
+    public const string VERSION_2_0 = '2.0';
+    public const string VERSION_NLCIUS = '2.0.0-nlcius';
+
     #[SerializedName(name: "UBLVersionID")]
-    #[Until(version: "1.2")]
+    #[Until(version: self::VERSION_1_2)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|string $ublVersionId = null;
 
@@ -56,7 +62,7 @@ class Invoice
     public null|InvoiceTypeCode $invoiceTypeCode = null;
 
     #[SerializedName(name: "TaxPointDate")]
-    #[Since(version: "1.1")]
+    #[Since(version: self::VERSION_1_1)]
     #[Type(name: "DateTime<'Y-m-d'>")]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|DateTime $taxPointDate = null;
@@ -67,18 +73,18 @@ class Invoice
     public null|DocumentCurrencyCode $documentCurrencyCode = null;
 
     #[SerializedName(name: "AccountingCost")]
-    #[Since(version: "1.1")]
+    #[Since(version: self::VERSION_1_1)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|string $accountingCost = null;
 
     #[SerializedName(name: "InvoicePeriod")]
-    #[Since(version: "1.1")]
+    #[Since(version: self::VERSION_1_1)]
     #[Type(name: InvoicePeriod::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|InvoicePeriod $invoicePeriod = null;
 
     #[SerializedName(name: "OrderReference")]
-    #[Since(version: "1.1")]
+    #[Since(version: self::VERSION_1_1)]
     #[Type(name: OrderReference::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|OrderReference $orderReference = null;
@@ -94,7 +100,7 @@ class Invoice
     public null|AccountingCustomerParty $accountingCustomerParty = null;
 
     #[SerializedName(name: "Delivery")]
-    #[Since(version: "1.1")]
+    #[Since(version: self::VERSION_1_1)]
     #[Type(name: Delivery::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|Delivery $delivery = null;

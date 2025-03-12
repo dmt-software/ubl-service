@@ -1,8 +1,8 @@
 <?php
 
 namespace DMT\Ubl\Service\Entity\Invoice\Type;
+use DMT\Ubl\Service\Entity\Invoice;
 use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\Since;
 use JMS\Serializer\Annotation\Until;
 use JMS\Serializer\Annotation\XmlAttribute;
 use JMS\Serializer\Annotation\XmlRoot;
@@ -23,7 +23,7 @@ class CompanyId implements Stringable
     public null|string $schemeId = null;
 
     #[SerializedName(name: "schemeAgencyID")]
-    #[Until(version: "1.2")]
+    #[Until(version: Invoice::VERSION_1_2)]
     #[XmlAttribute]
     public null|string $schemeAgencyId = null;
 

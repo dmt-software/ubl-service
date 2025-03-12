@@ -2,6 +2,7 @@
 
 namespace DMT\Ubl\Service\Entity\Invoice;
 
+use DMT\Ubl\Service\Entity\Invoice;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Since;
 use JMS\Serializer\Annotation\Type;
@@ -20,12 +21,12 @@ class PostalAddress
     public null|string $streetName = null;
 
     #[SerializedName(name: "AdditionalStreetName")]
-    #[Since(version: "2.0")]
+    #[Since(version: Invoice::VERSION_2_0)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|string $additionalStreetName = null;
 
     #[SerializedName(name: "BuildingNumber")]
-    #[Until(version: "1.2")]
+    #[Until(version: Invoice::VERSION_1_2)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|string $buildingNumber = null;
 

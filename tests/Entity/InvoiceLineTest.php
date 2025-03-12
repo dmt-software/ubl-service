@@ -2,6 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity;
 
+use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Invoice\AllowanceCharge;
 use DMT\Ubl\Service\Entity\Invoice\Item;
 use DMT\Ubl\Service\Entity\Invoice\Price;
@@ -19,11 +20,11 @@ use PHPUnit\Framework\TestCase;
 
 class InvoiceLineTest extends TestCase
 {
-    public function testSerializeVersion20000(): void
+    public function testSerializeVersionNlcius(): void
     {
         $invoiceLine = $this->getInvoiceLine();
 
-        $context = SerializationContext::create()->setVersion('2.0');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_NLCIUS);
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoiceLine, 'xml', $context));
 
@@ -71,7 +72,7 @@ class InvoiceLineTest extends TestCase
     {
         $invoiceLine = $this->getInvoiceLine();
 
-        $context = SerializationContext::create()->setVersion('1.2');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_2);
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoiceLine, 'xml', $context));
 

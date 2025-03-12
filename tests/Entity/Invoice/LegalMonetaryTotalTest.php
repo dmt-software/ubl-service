@@ -4,13 +4,11 @@ namespace DMT\Test\Ubl\Service\Entity\Invoice;
 
 use DMT\Ubl\Service\Entity\Invoice\LegalMonetaryTotal;
 use DMT\Ubl\Service\Entity\Invoice\Type\AllowanceTotalAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\Amount;
 use DMT\Ubl\Service\Entity\Invoice\Type\ChargeTotalAmount;
 use DMT\Ubl\Service\Entity\Invoice\Type\LineExtensionAmount;
 use DMT\Ubl\Service\Entity\Invoice\Type\PayableAmount;
 use DMT\Ubl\Service\Entity\Invoice\Type\PayableRoundingAmount;
 use DMT\Ubl\Service\Entity\Invoice\Type\PrepaidAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\TaxAmount;
 use DMT\Ubl\Service\Entity\Invoice\Type\TaxExclusiveAmount;
 use DMT\Ubl\Service\Entity\Invoice\Type\TaxInclusiveAmount;
 use JMS\Serializer\Serializer;

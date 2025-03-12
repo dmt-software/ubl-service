@@ -2,6 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Invoice\Type;
 
+use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Invoice\Type\IdentificationCode;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -10,9 +11,9 @@ use PHPUnit\Framework\TestCase;
 
 class IdentificationCodeTest extends TestCase
 {
-    public function testSerializeVersion20000(): void
+    public function testSerializeVersionNlcius(): void
     {
-        $context = SerializationContext::create()->setVersion('2.0');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_NLCIUS);
 
         $identificationCode = new IdentificationCode();
         $identificationCode->code = 'NL';
@@ -31,7 +32,7 @@ class IdentificationCodeTest extends TestCase
 
     public function testSerializeVersion10200(): void
     {
-        $context = SerializationContext::create()->setVersion('1.2');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_2);
 
         $identificationCode = new IdentificationCode();
         $identificationCode->code = 'NL';

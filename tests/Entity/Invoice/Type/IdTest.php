@@ -2,6 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Invoice\Type;
 
+use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Invoice\Type\Id;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -10,9 +11,9 @@ use PHPUnit\Framework\TestCase;
 
 class IdTest extends TestCase
 {
-    public function testSerializeVersion20000(): void
+    public function testSerializeVersionNlcius(): void
     {
-        $context = SerializationContext::create()->setVersion('2.0');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_NLCIUS);
 
         $id = new Id();
         $id->id = '1442334659753';
@@ -33,7 +34,7 @@ class IdTest extends TestCase
 
     public function testSerializeVersion10200(): void
     {
-        $context = SerializationContext::create()->setVersion('1.2');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_2);
 
         $id = new Id();
         $id->id = '1442334659753';
@@ -54,7 +55,7 @@ class IdTest extends TestCase
 
     public function testSerializeVersion10000(): void
     {
-        $context = SerializationContext::create()->setVersion('1.0');
+        $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_0);
 
         $id = new Id();
         $id->id = '1442334659753';

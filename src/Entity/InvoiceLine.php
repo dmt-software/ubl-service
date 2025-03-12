@@ -37,7 +37,7 @@ class InvoiceLine
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|LineExtensionAmount $lineExtensionAmount = null;
 
-    #[Since(version: "2.0")]
+    #[Since(version: Invoice::VERSION_2_0)]
     #[Type(name: "array<DMT\Ubl\Service\Entity\Invoice\AllowanceCharge>")]
     #[XmlList(
         entry: "AllowanceCharge",
@@ -49,7 +49,7 @@ class InvoiceLine
 
     #[SerializedName(name: "TaxTotal")]
     #[Type(name: TaxTotal::class)]
-    #[Until(version: "1.2")]
+    #[Until(version: Invoice::VERSION_1_2)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|TaxTotal $taxTotal = null;
 

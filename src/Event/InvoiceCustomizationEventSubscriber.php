@@ -16,7 +16,7 @@ readonly class InvoiceCustomizationEventSubscriber implements EventSubscriberInt
         . 'extended:urn:www.peppol.eu:bis:peppol4a:ver2.0:extended:urn:www.simplerinvoicing.org:si:si-ubl:ver1.1.x';
     public const string CUSTOMIZATION_1_2 = 'urn:www.cenbii.eu:transaction:biitrns010:ver2.0:'
         . 'extended:urn:www.peppol.eu:bis:peppol4a:ver2.0:extended:urn:www.simplerinvoicing.org:si:si-ubl:ver1.2';
-    public const string CUSTOMIZATION_2_0 = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:nen.nl:nlcius:v1.0';
+    public const string CUSTOMIZATION_2_0_NLCIUS = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:nen.nl:nlcius:v1.0';
 
     /**
      * @inheritDoc
@@ -40,10 +40,10 @@ readonly class InvoiceCustomizationEventSubscriber implements EventSubscriberInt
         $version = $event->getContext()->getAttribute('version');
 
         $invoice->customizationId = match ($version) {
-            '1.0' => self::CUSTOMIZATION_1_0,
-            '1.1' => self::CUSTOMIZATION_1_1,
-            '1.2' => self::CUSTOMIZATION_1_2,
-            '2.0' => self::CUSTOMIZATION_2_0,
+            Invoice::VERSION_1_0 => self::CUSTOMIZATION_1_0,
+            Invoice::VERSION_1_1 => self::CUSTOMIZATION_1_1,
+            Invoice::VERSION_1_2 => self::CUSTOMIZATION_1_2,
+            Invoice::VERSION_NLCIUS => self::CUSTOMIZATION_2_0_NLCIUS,
             default => self::CUSTOMIZATION_DEFAULT,
         };
 

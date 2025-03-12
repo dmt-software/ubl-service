@@ -2,6 +2,7 @@
 
 namespace DMT\Ubl\Service\Entity\Invoice\Type;
 
+use DMT\Ubl\Service\Entity\Invoice;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Until;
 use JMS\Serializer\Annotation\XmlAttribute;
@@ -19,12 +20,12 @@ class IdentificationCode implements Stringable
     public null|string $code = null;
 
     #[SerializedName(name: "listID")]
-    #[Until(version: "1.2")]
+    #[Until(version: Invoice::VERSION_1_2)]
     #[XmlAttribute]
     public null|string $listId = 'ISO3166-1:Alpha2';
 
     #[SerializedName(name: "listAgencyID")]
-    #[Until(version: "1.2")]
+    #[Until(version: Invoice::VERSION_1_2)]
     #[XmlAttribute]
     public null|string $listAgencyId = '6';
 
