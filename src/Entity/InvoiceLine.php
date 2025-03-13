@@ -30,12 +30,12 @@ class InvoiceLine
     #[SerializedName(name: "InvoicedQuantity")]
     #[Type(name: InvoicedQuantity::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|InvoicedQuantity $invoicedQuantity = null;
+    public null|int|InvoicedQuantity $invoicedQuantity = null;
 
     #[SerializedName(name: "LineExtensionAmount")]
     #[Type(name: LineExtensionAmount::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|LineExtensionAmount $lineExtensionAmount = null;
+    public null|float|LineExtensionAmount $lineExtensionAmount = null;
 
     #[Since(version: Invoice::VERSION_2_0)]
     #[Type(name: "array<DMT\Ubl\Service\Entity\Invoice\AllowanceCharge>")]

@@ -17,5 +17,5 @@ class TaxTotal
     #[SerializedName(name: "TaxAmount")]
     #[Type(name: TaxAmount::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|TaxAmount $taxAmount = null;
+    public null|float|TaxAmount $taxAmount = null;
 }

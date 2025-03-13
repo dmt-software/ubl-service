@@ -18,10 +18,10 @@ class Price
     #[SerializedName(name: "PriceAmount")]
     #[Type(name: PriceAmount::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|PriceAmount $priceAmount = null;
+    public null|float|PriceAmount $priceAmount = null;
 
     #[SerializedName(name: "BaseQuantity")]
     #[Type(name: BaseQuantity::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|BaseQuantity $baseQuantity = null;
+    public null|int|BaseQuantity $baseQuantity = null;
 }

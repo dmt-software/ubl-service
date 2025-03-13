@@ -11,6 +11,8 @@ use DMT\Ubl\Service\Entity\Invoice\Type\PayableRoundingAmount;
 use DMT\Ubl\Service\Entity\Invoice\Type\PrepaidAmount;
 use DMT\Ubl\Service\Entity\Invoice\Type\TaxExclusiveAmount;
 use DMT\Ubl\Service\Entity\Invoice\Type\TaxInclusiveAmount;
+use DMT\Ubl\Service\Event\AmountCurrencyEventSubscriber;
+use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;
@@ -36,8 +38,6 @@ class LegalMonetaryTotalTest extends TestCase
         $legalMonetaryTotal->taxExclusiveAmount->amount = 123.45;
         $legalMonetaryTotal->taxInclusiveAmount = new TaxInclusiveAmount();
         $legalMonetaryTotal->taxInclusiveAmount->amount = 177.23;
-
-
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($legalMonetaryTotal, 'xml'));
 
@@ -80,10 +80,12 @@ class LegalMonetaryTotalTest extends TestCase
         );
     }
 
-
     public function getSerializer(): Serializer
     {
         $builder = SerializerBuilder::create();
+        $builder->configureListeners(function (EventDispatcher $dispatcher) {
+            $dispatcher->addSubscriber(new AmountCurrencyEventSubscriber());
+        });
 
         return $builder->build();
     }

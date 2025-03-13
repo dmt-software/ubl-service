@@ -26,7 +26,7 @@ class AllowanceCharge
     #[SerializedName(name: "Amount")]
     #[Type(name: Amount::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|Amount $amount = null;
+    public null|float|Amount $amount = null;
 
     #[SerializedName(name: "TaxCategory")]
     #[Type(name: TaxCategory::class)]
