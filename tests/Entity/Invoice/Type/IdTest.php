@@ -4,6 +4,8 @@ namespace DMT\Test\Ubl\Service\Entity\Invoice\Type;
 
 use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Invoice\Type\Id;
+use DMT\Ubl\Service\Event\ElectronicAddressSchemeEventSubscriber;
+use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -77,6 +79,10 @@ class IdTest extends TestCase
     protected function getSerializer(): Serializer
     {
         $builder = SerializerBuilder::create();
+        $builder->enableEnumSupport();
+        $builder->configureListeners(function (EventDispatcher $dispatcher) {
+            $dispatcher->addSubscriber(new ElectronicAddressSchemeEventSubscriber());
+        });
 
         return $builder->build();
     }

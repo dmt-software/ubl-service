@@ -28,6 +28,7 @@ use JMS\Serializer\Annotation\XmlRoot;
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", prefix: "cbc")]
 class Invoice
 {
+    public const string DEFAULT_VERSION = self::VERSION_2_0;
     public const string VERSION_1_0 = '1.0';
     public const string VERSION_1_1 = '1.1';
     public const string VERSION_1_2 = '1.2';
