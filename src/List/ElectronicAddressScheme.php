@@ -2,12 +2,28 @@
 
 namespace DMT\Ubl\Service\List;
 
+use DMT\Ubl\Service\Entity\Invoice;
+
 enum ElectronicAddressScheme: string
 {
     case GLNNumber = '0088';
     case NLCommerceNumber = '0106';
     case BEVatNumber = '9925';
     case NLVatNumber = '9944';
+
+    public function lookup(string $schemeId, string $version = null): ?self
+    {
+        $testVersions = $version ? [$version] : [Invoice::VERSION_1_0, Invoice::VERSION_2_0];
+        foreach (self::cases() as $case) {
+            foreach ($testVersions as $testVersion) {
+                if ($case->getSchemeId($testVersion) === $schemeId) {
+                    return $case;
+                }
+            }
+        }
+
+        return null;
+    }
 
     public function getSchemeId(string $version): string
     {
