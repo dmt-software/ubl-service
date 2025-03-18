@@ -3,6 +3,7 @@
 namespace DMT\Ubl\Service\Entity\Invoice\Type;
 
 use DMT\Ubl\Service\Entity\Invoice;
+use DMT\Ubl\Service\List\InvoiceType;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Until;
 use JMS\Serializer\Annotation\XmlAttribute;
@@ -17,7 +18,7 @@ use Stringable;
 class InvoiceTypeCode implements Stringable
 {
     #[XmlValue(cdata: false)]
-    public null|string $code = null;
+    public null|string|InvoiceType $code = InvoiceType::Normal;
 
     #[SerializedName(name: "listID")]
     #[Until(version: Invoice::VERSION_1_2)]

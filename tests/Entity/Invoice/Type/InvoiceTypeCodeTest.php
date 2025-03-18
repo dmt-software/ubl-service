@@ -4,6 +4,8 @@ namespace DMT\Test\Ubl\Service\Entity\Invoice\Type;
 
 use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Invoice\Type\InvoiceTypeCode;
+use DMT\Ubl\Service\Event\InvoiceTypeEventSubscriber;
+use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -52,6 +54,10 @@ class InvoiceTypeCodeTest extends TestCase
     protected function getSerializer(): Serializer
     {
         $builder = SerializerBuilder::create();
+        $builder->enableEnumSupport();
+        $builder->configureListeners(function (EventDispatcher $dispatcher) {
+            $dispatcher->addSubscriber(new InvoiceTypeEventSubscriber());
+        });
 
         return $builder->build();
     }
