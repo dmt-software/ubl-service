@@ -19,7 +19,7 @@ class TaxInclusiveAmount implements Stringable, AmountType
     #[Type(name: "float<2>")]
     public null|float $amount = null;
 
-    #[SerializedName(name: "currencyId")]
+    #[SerializedName(name: "currencyID")]
     #[XmlAttribute]
     public null|string $currencyId = null;
 
