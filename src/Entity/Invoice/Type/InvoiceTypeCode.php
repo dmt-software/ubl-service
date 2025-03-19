@@ -5,6 +5,7 @@ namespace DMT\Ubl\Service\Entity\Invoice\Type;
 use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\List\InvoiceType;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\Until;
 use JMS\Serializer\Annotation\XmlAttribute;
 use JMS\Serializer\Annotation\XmlRoot;
@@ -18,7 +19,8 @@ use Stringable;
 class InvoiceTypeCode implements Stringable
 {
     #[XmlValue(cdata: false)]
-    public null|string|InvoiceType $code = InvoiceType::Normal;
+    #[Type(name: "enum<DMT\Ubl\Service\List\InvoiceType>")]
+    public null|InvoiceType $code = InvoiceType::Normal;
 
     #[SerializedName(name: "listID")]
     #[Until(version: Invoice::VERSION_1_2)]
@@ -32,6 +34,6 @@ class InvoiceTypeCode implements Stringable
 
     public function __toString(): string
     {
-        return $this->code ?? '';
+        return $this->code->value ?? '';
     }
 }

@@ -11,7 +11,7 @@ enum ElectronicAddressScheme: string
     case BEVatNumber = '9925';
     case NLVatNumber = '9944';
 
-    public function lookup(string $schemeId, string $version = null): ?self
+    public static function lookup(?string $schemeId, string $version = null): ?self
     {
         $testVersions = $version ? [$version] : [Invoice::VERSION_1_0, Invoice::VERSION_2_0];
         foreach (self::cases() as $case) {

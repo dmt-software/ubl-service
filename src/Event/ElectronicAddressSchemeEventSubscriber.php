@@ -7,6 +7,8 @@ use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Invoice\Type\ElectronicAddressType;
 use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
+use JMS\Serializer\EventDispatcher\ObjectEvent;
+use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
 readonly class ElectronicAddressSchemeEventSubscriber implements EventSubscriberInterface
@@ -22,17 +24,23 @@ readonly class ElectronicAddressSchemeEventSubscriber implements EventSubscriber
                 'interface' => ElectronicAddressType::class,
                 'method' => 'addSchemeAttributes',
                 'format' => 'xml'
+            ],
+            [
+                'event' => 'serializer.post_deserialize',
+                'interface' => ElectronicAddressType::class,
+                'method' => 'addSchemeAttributes',
+                'format' => 'xml'
             ]
         ];
     }
 
-    public function addSchemeAttributes(PreSerializeEvent $event): void
+    public function addSchemeAttributes(ObjectEvent $event): void
     {
         /** @var ElectronicAddressType $object */
         $object = $event->getObject();
 
         if (!$object->schemeId instanceof BackedEnum) {
-            $object->schemeId = ElectronicAddressScheme::tryFrom($object->schemeId);
+            $object->schemeId = ElectronicAddressScheme::lookup($object->schemeId);
         }
 
         if (!$object->schemeId) {
