@@ -3,6 +3,7 @@
 namespace DMT\Ubl\Service\Entity\Invoice;
 
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\SkipWhenEmpty;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\XmlElement;
 use JMS\Serializer\Annotation\XmlRoot;
@@ -18,11 +19,13 @@ class Item
     public null|string $name = null;
 
     #[SerializedName(name: "SellersItemIdentification")]
+    #[SkipWhenEmpty]
     #[Type(name: SellersItemIdentification::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|SellersItemIdentification $sellersItemIdentification = null;
 
     #[SerializedName(name: "StandardItemIdentification")]
+    #[SkipWhenEmpty]
     #[Type(name: StandardItemIdentification::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|StandardItemIdentification $standardItemIdentification = null;

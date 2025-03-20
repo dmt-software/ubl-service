@@ -20,7 +20,7 @@ class PriceAmountTest extends TestCase
 
         $this->assertEquals((new ReflectionObject($amount))->getShortName(), $xml->getName());
         $this->assertEquals($amount->amount, strval($xml));
-        $this->assertEquals($amount->currencyId, $xml['currencyId']);
+        $this->assertEquals($amount->currencyId, $xml['currencyID']);
         $this->assertStringStartsWith($amount->amount, strval($amount));
         $this->assertStringEndsWith($amount->currencyId, strval($amount));
         $this->assertContainsEquals(

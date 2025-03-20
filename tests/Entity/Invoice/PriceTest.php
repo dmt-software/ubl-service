@@ -28,7 +28,7 @@ class PriceTest extends TestCase
             strval($price->priceAmount),
         );
         $this->assertStringEndsWith(
-            strval($xml->xpath('*[local-name()="PriceAmount"]/@currencyId')[0]),
+            strval($xml->xpath('*[local-name()="PriceAmount"]/@currencyID')[0]),
             strval($price->priceAmount)
         );
         $this->assertcontains(

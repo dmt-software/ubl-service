@@ -4,6 +4,7 @@ namespace DMT\Ubl\Service\Entity\Invoice;
 
 use DMT\Ubl\Service\Entity\Invoice\Type\Id;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\SkipWhenEmpty;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\XmlElement;
 use JMS\Serializer\Annotation\XmlRoot;
@@ -15,6 +16,7 @@ use JMS\Serializer\Annotation\XmlRoot;
 class StandardItemIdentification
 {
     #[SerializedName(name: "ID")]
+    #[SkipWhenEmpty]
     #[Type(name: Id::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|Id $id = null;

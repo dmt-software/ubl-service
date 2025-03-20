@@ -42,7 +42,7 @@ class InvoiceLineTest extends TestCase
             strval($invoiceLine->lineExtensionAmount)
         );
         $this->assertStringEndsWith(
-            strval($xml->xpath('*[local-name()="LineExtensionAmount"]/@currencyId')[0]),
+            strval($xml->xpath('*[local-name()="LineExtensionAmount"]/@currencyID')[0]),
             $invoiceLine->lineExtensionAmount->currencyId
         );
         $this->assertContainsEquals(
@@ -90,7 +90,7 @@ class InvoiceLineTest extends TestCase
             strval($invoiceLine->lineExtensionAmount)
         );
         $this->assertStringEndsWith(
-            strval($xml->xpath('*[local-name()="LineExtensionAmount"]/@currencyId')[0]),
+            strval($xml->xpath('*[local-name()="LineExtensionAmount"]/@currencyID')[0]),
             $invoiceLine->lineExtensionAmount->currencyId
         );
         $this->assertContainsEquals(

@@ -6,6 +6,7 @@ use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Since;
+use JMS\Serializer\Annotation\SkipWhenEmpty;
 use JMS\Serializer\Annotation\Until;
 use JMS\Serializer\Annotation\XmlAttribute;
 use JMS\Serializer\Annotation\XmlRoot;
@@ -18,6 +19,7 @@ use Stringable;
 )]
 class Id implements ElectronicAddressType, Stringable
 {
+    #[SkipWhenEmpty]
     #[XmlValue(cdata: false)]
     public null|string $id = null;
 

@@ -25,7 +25,7 @@ class TaxTotalTest extends TestCase
             strval($taxTotal->taxAmount)
         );
         $this->assertStringEndsWith(
-            strval($xml->xpath('*[local-name()="TaxAmount"]/@currencyId')[0]),
+            strval($xml->xpath('*[local-name()="TaxAmount"]/@currencyID')[0]),
             strval($taxTotal->taxAmount)
         );
         $this->assertcontains(

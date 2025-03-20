@@ -8,8 +8,6 @@ use DMT\Ubl\Service\Entity\Invoice\Type\ElectronicAddressType;
 use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
-use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
-use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
 readonly class ElectronicAddressSchemeEventSubscriber implements EventSubscriberInterface
 {

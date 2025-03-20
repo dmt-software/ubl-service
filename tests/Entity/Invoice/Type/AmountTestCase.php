@@ -22,7 +22,7 @@ abstract class AmountTestCase extends TestCase
 
         $this->assertEquals((new ReflectionObject($amount))->getShortName(), $xml->getName());
         $this->assertEquals(round($amount->amount, 2), strval($xml));
-        $this->assertEquals($amount->currencyId, $xml['currencyId']);
+        $this->assertEquals($amount->currencyId, $xml['currencyID']);
         $this->assertStringStartsWith(round($amount->amount, 2), strval($amount));
         $this->assertStringEndsWith($amount->currencyId, strval($amount));
         $this->assertContainsEquals(

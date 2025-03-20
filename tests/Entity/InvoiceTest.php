@@ -23,6 +23,7 @@ use DMT\Ubl\Service\Entity\Invoice\Type\PayableAmount;
 use DMT\Ubl\Service\Entity\Invoice\Type\TaxAmount;
 use DMT\Ubl\Service\Entity\InvoiceLine;
 use DMT\Ubl\Service\Event\InvoiceCustomizationEventSubscriber;
+use DMT\Ubl\Service\List\InvoiceType;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -630,7 +631,7 @@ class InvoiceTest extends TestCase
         $invoice->id = '1442356';
         $invoice->issueDate = new DateTime('2025-03-08');
         $invoice->invoiceTypeCode = new InvoiceTypeCode();
-        $invoice->invoiceTypeCode->code = '380';
+        $invoice->invoiceTypeCode->code = InvoiceType::Normal;
         $invoice->taxPointDate = new DateTime('2025-03-08');
         $invoice->documentCurrencyCode = new DocumentCurrencyCode();
         $invoice->documentCurrencyCode->code = 'EUR';
@@ -669,6 +670,7 @@ class InvoiceTest extends TestCase
     public function getSerializer(): Serializer
     {
         $builder = SerializerBuilder::create();
+        $builder->enableEnumSupport();
         $builder->configureListeners(function (EventDispatcher $dispatcher) {
             $dispatcher->addSubscriber(new InvoiceCustomizationEventSubscriber());
         });

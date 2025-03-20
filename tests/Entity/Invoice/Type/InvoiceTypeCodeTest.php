@@ -5,6 +5,7 @@ namespace DMT\Test\Ubl\Service\Entity\Invoice\Type;
 use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Invoice\Type\InvoiceTypeCode;
 use DMT\Ubl\Service\Event\InvoiceTypeEventSubscriber;
+use DMT\Ubl\Service\List\InvoiceType;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -18,7 +19,7 @@ class InvoiceTypeCodeTest extends TestCase
         $context = SerializationContext::create()->setVersion(Invoice::VERSION_NLCIUS);
 
         $invoiceTypeCode = new InvoiceTypeCode();
-        $invoiceTypeCode->code = 'NL';
+        $invoiceTypeCode->code = InvoiceType::Normal;
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoiceTypeCode, 'xml', $context));
 
@@ -37,7 +38,7 @@ class InvoiceTypeCodeTest extends TestCase
         $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_2);
 
         $invoiceTypeCode = new InvoiceTypeCode();
-        $invoiceTypeCode->code = 'NL';
+        $invoiceTypeCode->code = InvoiceType::Normal;
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoiceTypeCode, 'xml', $context));
 

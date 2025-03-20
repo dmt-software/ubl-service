@@ -10,6 +10,8 @@ use DMT\Ubl\Service\Event\InvoiceTypeEventSubscriber;
 use DMT\Ubl\Service\Event\NormalizeAddressEventSubscriber;
 use DMT\Ubl\Service\Event\QuantityUnitEventSubscriber;
 use DMT\Ubl\Service\Handler\UnionHandler;
+use DMT\Ubl\Service\Visitor\XmlSerializationVisitor;
+use DMT\Ubl\Service\Visitor\XmlSerializationVisitorFactory;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\Handler\HandlerRegistry;
 use JMS\Serializer\SerializationContext;
@@ -51,6 +53,7 @@ class InvoiceService
             ->configureHandlers(function (HandlerRegistry $registry) {
                 $registry->registerSubscribingHandler(new UnionHandler());
             })
+            ->setSerializationVisitor('xml', new XmlSerializationVisitorFactory())
             ->build();
     }
 }
