@@ -16,8 +16,8 @@ use Stringable;
 )]
 class BaseQuantity implements Stringable, QuantityType
 {
-    #[XmlValue]
     #[Type(name: "int")]
+    #[XmlValue]
     public null|int $quantity = null;
 
     #[SerializedName(name: "unitCode")]

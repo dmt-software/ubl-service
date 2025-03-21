@@ -3,6 +3,7 @@
 namespace DMT\Ubl\Service\Entity\Invoice\Type;
 
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\SkipWhenEmpty;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\XmlAttribute;
 use JMS\Serializer\Annotation\XmlRoot;
@@ -15,8 +16,9 @@ use Stringable;
 )]
 class ChargeTotalAmount implements Stringable, AmountType
 {
-    #[XmlValue]
+    #[SkipWhenEmpty]
     #[Type(name: "float<2>")]
+    #[XmlValue]
     public null|float $amount = null;
 
     #[SerializedName(name: "currencyID")]

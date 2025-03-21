@@ -22,13 +22,13 @@ readonly class AmountCurrencyEventSubscriber implements EventSubscriberInterface
             [
                 'event' => 'serializer.pre_serialize',
                 'method' => 'prepareXmlValue',
-                'format' => 'xml'
+                'format' => 'xml',
             ],
             [
                 'event' => 'serializer.pre_serialize',
                 'interface' => AmountType::class,
                 'method' => 'addDefaultCurrency',
-                'format' => 'xml'
+                'format' => 'xml',
             ]
         ];
     }
@@ -63,7 +63,7 @@ readonly class AmountCurrencyEventSubscriber implements EventSubscriberInterface
         /** @var AmountType $amount */
         $amount = $event->getObject();
 
-        if ($amount == '') {
+        if (empty($amount->amount)) {
             return;
         }
 

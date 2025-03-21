@@ -15,8 +15,8 @@ use Stringable;
 )]
 class PayableAmount implements Stringable, AmountType
 {
-    #[XmlValue]
     #[Type(name: "float<2>")]
+    #[XmlValue]
     public null|float $amount = null;
 
     #[SerializedName(name: "currencyID")]
