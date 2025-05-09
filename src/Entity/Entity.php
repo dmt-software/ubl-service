@@ -2,7 +2,7 @@
 
 namespace DMT\Ubl\Service\Entity;
 
-interface UblEntity
+interface Entity
 {
 
 }

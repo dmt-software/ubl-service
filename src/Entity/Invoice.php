@@ -26,7 +26,7 @@ use JMS\Serializer\Annotation\XmlRoot;
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2", prefix: "")]
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", prefix: "cac")]
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", prefix: "cbc")]
-class Invoice implements UblEntity
+class Invoice implements Entity
 {
     public const string DEFAULT_VERSION = self::VERSION_2_0;
     public const string VERSION_1_0 = '1.0';

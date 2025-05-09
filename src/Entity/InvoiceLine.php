@@ -20,7 +20,7 @@ use JMS\Serializer\Annotation\XmlRoot;
     name: "InvoiceLine",
     namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
 )]
-class InvoiceLine
+class InvoiceLine implements Entity
 {
     #[SerializedName(name: "ID")]
     #[Type(name: "string")]

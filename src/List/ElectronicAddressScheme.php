@@ -8,6 +8,7 @@ enum ElectronicAddressScheme: string
 {
     case GLNNumber = '0088';
     case NLCommerceNumber = '0106';
+    case GTINNumber = '0160';
     case BECommerceNumber = '0208';
     case LUCommerceNumber = '0240';
     case BEVatNumber = '9925';
@@ -39,6 +40,7 @@ enum ElectronicAddressScheme: string
 
         return match ($this) {
             self::GLNNumber => 'GLN',
+            self::GTINNumber => 'GTIN',
             self::NLCommerceNumber => 'NL:KVK',
             self::BECommerceNumber => 'BE:EN',
             self::LUCommerceNumber => 'LU:MAT',
@@ -55,7 +57,8 @@ enum ElectronicAddressScheme: string
         }
 
         return match ($this) {
-            self::GLNNumber => '9',
+            self::GLNNumber,
+            self::GTINNumber => '9',
             default => 'ZZZ'
         };
     }

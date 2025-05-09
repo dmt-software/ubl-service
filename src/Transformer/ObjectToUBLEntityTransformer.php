@@ -2,8 +2,8 @@
 
 namespace DMT\Ubl\Service\Transformer;
 
+use DMT\Ubl\Service\Entity\Entity;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\UblEntity;
 use RuntimeException;
 
 interface ObjectToUBLEntityTransformer
@@ -15,5 +15,5 @@ interface ObjectToUBLEntityTransformer
      * @return Invoice The UBL entity to transform the object into (currently only invoice is supported)
      * @throws RuntimeException When the object can not be transformed
      */
-    public function transform(object $object): UblEntity;
+    public function transform(object $object): Entity;
 }
