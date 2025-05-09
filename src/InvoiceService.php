@@ -10,6 +10,8 @@ use DMT\Ubl\Service\Event\NormalizeAddressEventSubscriber;
 use DMT\Ubl\Service\Event\QuantityUnitEventSubscriber;
 use DMT\Ubl\Service\Event\SkipWhenEmptyEventSubscriber;
 use DMT\Ubl\Service\Handler\UnionHandler;
+use DMT\Ubl\Service\Transformer\ObjectToUBLEntityTransformer;
+use DMT\Ubl\Service\Transformer\UBLEntityToObjectTransformer;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\Handler\HandlerRegistry;
 use JMS\Serializer\SerializationContext;
@@ -18,21 +20,54 @@ use JMS\Serializer\SerializerBuilder;
 
 class InvoiceService
 {
-    public function __construct(private ?Serializer $serializer = null)
+    /**
+     * Transform an UBL invoice entity into a custom invoice object.
+     *
+     * @param Invoice $invoice An UBL-Invoice object
+     * @param UBLEntityToObjectTransformer $transformer The transformer to use
+     * @return object
+     */
+    public function fromInvoice(Invoice $invoice, UBLEntityToObjectTransformer $transformer): object
     {
-        $this->serializer = $this->serializer ?? $this->getSerializer();
+        return $transformer->transform($invoice);
     }
 
+    /**
+     * Get an object representation of an UBL-Invoice xml message.
+     *
+     * @param string $xml An incoming UBL-Invoice message to deserialize
+     * @return Invoice
+     */
     public function fromXml(string $xml): Invoice
     {
-        return $this->serializer->deserialize($xml, Invoice::class, 'xml');
+        return $this->getSerializer()->deserialize($xml, Invoice::class, 'xml');
     }
 
+    /**
+     * Transform an invoice object into a UBL Invoice.
+     *
+     * @param object $object Custom representation of an invoice
+     * @param ObjectToUBLEntityTransformer $transformer The transformer to use
+     * @return Invoice
+     */
+    public function toInvoice(object $object, ObjectToUBLEntityTransformer $transformer): Invoice
+    {
+        return $transformer->transform($object);
+    }
+
+    /**
+     * Get an UBL-Invoice xml message for an Invoice.
+     *
+     * @param Invoice $invoice
+     * @param string $version
+     *
+     * @return string
+     */
     public function toXml(Invoice $invoice, string $version = Invoice::DEFAULT_VERSION): string
     {
         $context = SerializationContext::create()->setVersion($version);
 
-        return $this->serializer->serialize($invoice, 'xml', $context);
+        return $this->getSerializer()->serialize($invoice, 'xml', $context);
     }
 
     private function getSerializer(): Serializer
