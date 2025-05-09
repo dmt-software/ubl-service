@@ -6,7 +6,6 @@ use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Event\AmountCurrencyEventSubscriber;
 use DMT\Ubl\Service\Event\ElectronicAddressSchemeEventSubscriber;
 use DMT\Ubl\Service\Event\InvoiceCustomizationEventSubscriber;
-use DMT\Ubl\Service\Event\InvoiceTypeEventSubscriber;
 use DMT\Ubl\Service\Event\NormalizeAddressEventSubscriber;
 use DMT\Ubl\Service\Event\QuantityUnitEventSubscriber;
 use DMT\Ubl\Service\Event\SkipWhenEmptyEventSubscriber;
@@ -45,7 +44,6 @@ class InvoiceService
                 $dispatcher->addSubscriber(new AmountCurrencyEventSubscriber());
                 $dispatcher->addSubscriber(new ElectronicAddressSchemeEventSubscriber());
                 $dispatcher->addSubscriber(new InvoiceCustomizationEventSubscriber());
-                $dispatcher->addSubscriber(new InvoiceTypeEventSubscriber());
                 $dispatcher->addSubscriber(new NormalizeAddressEventSubscriber());
                 $dispatcher->addSubscriber(new QuantityUnitEventSubscriber());
             })

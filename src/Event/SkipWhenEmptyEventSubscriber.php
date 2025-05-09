@@ -2,12 +2,14 @@
 
 namespace DMT\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Invoice\Type\Amount;
 use DMT\Ubl\Service\Entity\Invoice\Type\AmountType;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use JMS\Serializer\Metadata\PropertyMetadata;
 
+/**
+ * This events clears xml value objects that have default attribute values, but without a text value present.
+ */
 class SkipWhenEmptyEventSubscriber implements EventSubscriberInterface
 {
     /**

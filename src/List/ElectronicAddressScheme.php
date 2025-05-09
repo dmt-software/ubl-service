@@ -8,7 +8,10 @@ enum ElectronicAddressScheme: string
 {
     case GLNNumber = '0088';
     case NLCommerceNumber = '0106';
+    case BECommerceNumber = '0208';
+    case LUCommerceNumber = '0240';
     case BEVatNumber = '9925';
+    case LUVatNUmber = '9938';
     case NLVatNumber = '9944';
 
     public static function lookup(?string $schemeId, string $version = null): ?self
@@ -25,6 +28,9 @@ enum ElectronicAddressScheme: string
         return null;
     }
 
+    /**
+     * @see https://docs.peppol.eu/edelivery/codelists/v9.1/Peppol%20Code%20Lists%20-%20Participant%20identifier%20schemes%20v9.1.html
+     */
     public function getSchemeId(string $version): string
     {
         if (version_compare($version, '2.0', '>=')) {
@@ -34,8 +40,11 @@ enum ElectronicAddressScheme: string
         return match ($this) {
             self::GLNNumber => 'GLN',
             self::NLCommerceNumber => 'NL:KVK',
-            self::NLVatNumber => 'NL:VAT',
+            self::BECommerceNumber => 'BE:EN',
+            self::LUCommerceNumber => 'LU:MAT',
             self::BEVatNumber => 'BE:VAT',
+            self::NLVatNumber => 'NL:VAT',
+            self::LUVatNUmber => 'LU:VAT',
         };
     }
 
@@ -47,7 +56,6 @@ enum ElectronicAddressScheme: string
 
         return match ($this) {
             self::GLNNumber => '9',
-            self::NLCommerceNumber => '82',
             default => 'ZZZ'
         };
     }

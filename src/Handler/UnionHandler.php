@@ -11,11 +11,10 @@ use JMS\Serializer\Handler\SubscribingHandlerInterface;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Visitor\DeserializationVisitorInterface;
 use JMS\Serializer\Visitor\SerializationVisitorInterface;
+use SimpleXMLElement;
 
 final class UnionHandler implements SubscribingHandlerInterface
 {
-    private static $aliases = ['boolean' => 'bool', 'integer' => 'int', 'double' => 'float'];
-
     /**
      * {@inheritdoc}
      */
@@ -62,7 +61,7 @@ final class UnionHandler implements SubscribingHandlerInterface
 
     public function deserializeUnion(DeserializationVisitorInterface $visitor, mixed $data, array $type, DeserializationContext $context): mixed
     {
-        if ($data instanceof \SimpleXMLElement) {
+        if ($data instanceof SimpleXMLElement) {
             $types = array_filter(
                 array_merge(...$type['params']),
                 fn(array $possibleType) => $this->isPrimitiveType($possibleType['name'])

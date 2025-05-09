@@ -4,7 +4,6 @@ namespace DMT\Ubl\Service\Event;
 
 use DMT\Ubl\Service\Entity\Invoice\Type\QuantityType;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
-use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use Metadata\PropertyMetadata;
 
