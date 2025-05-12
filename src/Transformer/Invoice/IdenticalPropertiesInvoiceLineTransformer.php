@@ -18,9 +18,9 @@ use DMT\Ubl\Service\Entity\InvoiceLine;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\ElectronicAddressHelper;
 use DMT\Ubl\Service\Helper\Invoice\QuantityHelper;
-use DMT\Ubl\Service\Transformer\ObjectToUBLEntityTransformer;
+use DMT\Ubl\Service\Transformer\ObjectToEntityTransformer;
 
-class IdenticalPropertiesInvoiceLineTransformer implements ObjectToUBLEntityTransformer
+class IdenticalPropertiesInvoiceLineTransformer implements ObjectToEntityTransformer
 {
     /**
      * @inheritDoc

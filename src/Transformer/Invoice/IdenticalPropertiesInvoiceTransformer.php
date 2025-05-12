@@ -37,9 +37,9 @@ use DMT\Ubl\Service\Helper\Invoice\DocumentCurrencyCodeHelper;
 use DMT\Ubl\Service\Helper\Invoice\ElectronicAddressHelper;
 use DMT\Ubl\Service\Helper\Invoice\IdentificationCodeHelper;
 use DMT\Ubl\Service\Helper\Invoice\InvoiceTypeHelper;
-use DMT\Ubl\Service\Transformer\ObjectToUBLEntityTransformer;
+use DMT\Ubl\Service\Transformer\ObjectToEntityTransformer;
 
-class IdenticalPropertiesInvoiceTransformer implements ObjectToUBLEntityTransformer
+class IdenticalPropertiesInvoiceTransformer implements ObjectToEntityTransformer
 {
     /**
      * @inheritDoc

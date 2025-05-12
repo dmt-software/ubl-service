@@ -6,7 +6,7 @@ use DMT\Ubl\Service\Entity\Entity;
 use DMT\Ubl\Service\Entity\Invoice;
 use RuntimeException;
 
-interface ObjectToUBLEntityTransformer
+interface ObjectToEntityTransformer
 {
     /**
      * Transform a custom object into a UBL entity for serialization.

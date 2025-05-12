@@ -10,8 +10,8 @@ use DMT\Ubl\Service\Event\NormalizeAddressEventSubscriber;
 use DMT\Ubl\Service\Event\QuantityUnitEventSubscriber;
 use DMT\Ubl\Service\Event\SkipWhenEmptyEventSubscriber;
 use DMT\Ubl\Service\Handler\UnionHandler;
-use DMT\Ubl\Service\Transformer\ObjectToUBLEntityTransformer;
-use DMT\Ubl\Service\Transformer\UBLEntityToObjectTransformer;
+use DMT\Ubl\Service\Transformer\ObjectToEntityTransformer;
+use DMT\Ubl\Service\Transformer\EntityToObjectTransformer;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\Handler\HandlerRegistry;
 use JMS\Serializer\SerializationContext;
@@ -24,10 +24,10 @@ class InvoiceService
      * Transform an UBL invoice entity into a custom invoice object.
      *
      * @param Invoice $invoice An UBL-Invoice object
-     * @param UBLEntityToObjectTransformer $transformer The transformer to use
+     * @param EntityToObjectTransformer $transformer The transformer to use
      * @return object
      */
-    public function fromInvoice(Invoice $invoice, UBLEntityToObjectTransformer $transformer): object
+    public function fromInvoice(Invoice $invoice, EntityToObjectTransformer $transformer): object
     {
         return $transformer->transform($invoice);
     }
@@ -47,10 +47,10 @@ class InvoiceService
      * Transform an invoice object into a UBL Invoice.
      *
      * @param object $object Custom representation of an invoice
-     * @param ObjectToUBLEntityTransformer $transformer The transformer to use
+     * @param ObjectToEntityTransformer $transformer The transformer to use
      * @return Invoice
      */
-    public function toInvoice(object $object, ObjectToUBLEntityTransformer $transformer): Invoice
+    public function toInvoice(object $object, ObjectToEntityTransformer $transformer): Invoice
     {
         return $transformer->transform($object);
     }
