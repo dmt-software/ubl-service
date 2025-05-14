@@ -2,7 +2,6 @@
 
 namespace DMT\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Invoice\Type\QuantityType;
 
 class QuantityHelper
@@ -10,7 +9,7 @@ class QuantityHelper
     /**
      * @template T of QuantityType
      *
-     * @param string|object|null $value
+     * @param int|object|null $value
      * @param class-string<T> $quantityType
      *
      * @return QuantityType|null

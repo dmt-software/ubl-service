@@ -3,6 +3,13 @@
 namespace DMT\Ubl\Service\List;
 
 use DMT\Ubl\Service\Entity\Invoice;
+use DMT\Ubl\Service\Format\BEVatNumber;
+use DMT\Ubl\Service\Format\Formatter;
+use DMT\Ubl\Service\Format\KBONumber;
+use DMT\Ubl\Service\Format\KvKNumber;
+use DMT\Ubl\Service\Format\LUVatNumber;
+use DMT\Ubl\Service\Format\NLVatNumber;
+use DMT\Ubl\Service\Format\TINNumber;
 
 enum ElectronicAddressScheme: string
 {
@@ -12,7 +19,7 @@ enum ElectronicAddressScheme: string
     case BECommerceNumber = '0208';
     case LUCommerceNumber = '0240';
     case BEVatNumber = '9925';
-    case LUVatNUmber = '9938';
+    case LUVatNumber = '9938';
     case NLVatNumber = '9944';
 
     public static function lookup(?string $schemeId, string $version = null): ?self
@@ -46,7 +53,7 @@ enum ElectronicAddressScheme: string
             self::LUCommerceNumber => 'LU:MAT',
             self::BEVatNumber => 'BE:VAT',
             self::NLVatNumber => 'NL:VAT',
-            self::LUVatNUmber => 'LU:VAT',
+            self::LUVatNumber => 'LU:VAT',
         };
     }
 
@@ -60,6 +67,20 @@ enum ElectronicAddressScheme: string
             self::GLNNumber,
             self::GTINNumber => '9',
             default => 'ZZZ'
+        };
+    }
+
+    public function getFormatter(): Formatter
+    {
+        return match ($this) {
+            self::GLNNumber,
+            self::GTINNumber => throw new \InvalidArgumentException('not supported yet'),
+            self::NLCommerceNumber => new KvKNumber(),
+            self::BECommerceNumber => new KBONumber(),
+            self::LUCommerceNumber => new TinNumber(),
+            self::BEVatNumber => new BEVatNumber(),
+            self::NLVatNumber => new NLVatNumber(),
+            self::LUVatNumber => new LUVatNumber(),
         };
     }
 }

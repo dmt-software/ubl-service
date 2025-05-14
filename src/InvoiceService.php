@@ -10,8 +10,10 @@ use DMT\Ubl\Service\Event\NormalizeAddressEventSubscriber;
 use DMT\Ubl\Service\Event\QuantityUnitEventSubscriber;
 use DMT\Ubl\Service\Event\SkipWhenEmptyEventSubscriber;
 use DMT\Ubl\Service\Handler\UnionHandler;
+use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use DMT\Ubl\Service\Transformer\ObjectToEntityTransformer;
 use DMT\Ubl\Service\Transformer\EntityToObjectTransformer;
+use InvalidArgumentException;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\Handler\HandlerRegistry;
 use JMS\Serializer\SerializationContext;
@@ -20,6 +22,23 @@ use JMS\Serializer\SerializerBuilder;
 
 class InvoiceService
 {
+    /**
+     * Check if the identifier is valid (based on its format only).
+     *
+     * @param string $identifier The identifier to check, e.g. vat number.
+     * @param string|ElectronicAddressScheme $type The type of the identifier.
+     * @return string The identifier (formatted) as it should be used within the UBL documents.
+     * @throws InvalidArgumentException When the given identifier is invalid and can not be sanitized.
+     */
+    public function checkIdentifier(string $identifier, string|ElectronicAddressScheme $type): string
+    {
+        if (is_string($type)) {
+            $type = ElectronicAddressScheme::lookup($type);
+        }
+
+        return $type->getFormatter()->format($identifier);
+    }
+
     /**
      * Transform an UBL invoice entity into a custom invoice object.
      *
