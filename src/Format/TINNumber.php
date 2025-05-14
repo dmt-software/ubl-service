@@ -30,7 +30,7 @@ class TINNumber implements Formatter
     private function validateCompanyNumber(string $identifier): string
     {
         $matches = [];
-        if (!preg_match('~^(?<year[1-9][0-9]{3})\d{7}$~', $identifier, $matches)) {
+        if (!preg_match('~^(?<year>[1-9][0-9]{3})\d{7}$~', $identifier, $matches)) {
             throw new InvalidArgumentException('Invalid Luxembourg TIN number');
         }
 

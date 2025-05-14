@@ -17,7 +17,7 @@ class KBONumber implements Formatter
         $validated = false;
 
         $identifier = preg_replace_callback(
-            '/^[0-1]?[0-9]{3}([\.|\s]?)[0-9]{3}(\1)[0-9]{3}$/',
+            '/^[0-1]?[0-9]{3}([.|\s]?)[0-9]{3}(\1)[0-9]{3}$/',
             function ($m) use (&$validated) {
                 $validated = true;
                 return sprintf('%010s', str_replace($m[1], '', $m[0]));
