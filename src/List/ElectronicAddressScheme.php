@@ -5,6 +5,8 @@ namespace DMT\Ubl\Service\List;
 use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Format\BEVatNumber;
 use DMT\Ubl\Service\Format\Formatter;
+use DMT\Ubl\Service\Format\GLNNumber;
+use DMT\Ubl\Service\Format\GTINNumber;
 use DMT\Ubl\Service\Format\KBONumber;
 use DMT\Ubl\Service\Format\KvKNumber;
 use DMT\Ubl\Service\Format\LUVatNumber;
@@ -73,11 +75,11 @@ enum ElectronicAddressScheme: string
     public function getFormatter(): Formatter
     {
         return match ($this) {
-            self::GLNNumber,
-            self::GTINNumber => throw new \InvalidArgumentException('not supported yet'),
+            self::GLNNumber => new GLNNumber(),
+            self::GTINNumber => new GTINNumber(),
             self::NLCommerceNumber => new KvKNumber(),
             self::BECommerceNumber => new KBONumber(),
-            self::LUCommerceNumber => new TinNumber(),
+            self::LUCommerceNumber => new TINNumber(),
             self::BEVatNumber => new BEVatNumber(),
             self::NLVatNumber => new NLVatNumber(),
             self::LUVatNumber => new LUVatNumber(),
