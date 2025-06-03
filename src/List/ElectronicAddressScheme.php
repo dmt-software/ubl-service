@@ -16,6 +16,7 @@ use DMT\Ubl\Service\Format\CommerceNumberLU;
 
 enum ElectronicAddressScheme: string
 {
+    case DUNSNumber = '0060';
     case GLNNumber = '0088';
     case NLCommerceNumber = '0106';
     case GTINNumber = '0160';
@@ -57,6 +58,7 @@ enum ElectronicAddressScheme: string
         }
 
         return match ($this) {
+            self::DUNSNumber => 'DUNS',
             self::GLNNumber => 'GLN',
             self::GTINNumber => 'GTIN',
             self::NLCommerceNumber => 'NL:KVK',
