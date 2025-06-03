@@ -5,16 +5,18 @@ namespace DMT\Ubl\Service\Format;
 use DateTime;
 use InvalidArgumentException;
 
-class TINNumber implements Formatter
+final class CommerceNumberLU implements Formatter
 {
     /**
      * {@inheritDoc}
      *
-     * The commerce nummers used to engage business in Luxembourg.
+     * The commerce nummers, called TIN, used to engage business in Luxembourg.
      * Allowed formats 19999999999 and 29999999999.
      */
     public function format(string $identifier): string
     {
+        $identifier = trim($identifier);
+
         $len = strlen($identifier);
 
         if ($len <> 11 && $len <> 13) {
@@ -31,10 +33,6 @@ class TINNumber implements Formatter
     {
         $matches = [];
         if (!preg_match('~^(?<year>[1-9][0-9]{3})\d{7}$~', $identifier, $matches)) {
-            throw new InvalidArgumentException('Invalid Luxembourg TIN number');
-        }
-
-        if ($matches['year'] < 1900 || $matches['year'] > date('Y')) {
             throw new InvalidArgumentException('Invalid Luxembourg TIN number');
         }
 
@@ -58,7 +56,7 @@ class TINNumber implements Formatter
 
         $datetime = DateTime::createFromFormat('Ymd', substr($identifier, 0, 8));
 
-        if ($datetime === false || $datetime > new DateTime()) {
+        if ($datetime === false || $datetime > new DateTime() || $datetime->format('Y') < 1900) {
             throw new InvalidArgumentException('Invalid Luxembourg TIN number');
         }
 

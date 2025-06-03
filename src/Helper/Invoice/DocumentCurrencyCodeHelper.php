@@ -4,7 +4,7 @@ namespace DMT\Ubl\Service\Helper\Invoice;
 
 use DMT\Ubl\Service\Entity\Invoice\Type\DocumentCurrencyCode;
 
-class DocumentCurrencyCodeHelper
+final class DocumentCurrencyCodeHelper
 {
     public static function fetchFromValue(null|string|object $value): ?DocumentCurrencyCode
     {

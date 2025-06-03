@@ -4,7 +4,7 @@ namespace DMT\Ubl\Service\Format;
 
 use InvalidArgumentException;
 
-class BEVatNumber implements Formatter
+final class VatNumberBE implements Formatter
 {
     /**
      * {@inheritDoc}
@@ -13,12 +13,14 @@ class BEVatNumber implements Formatter
      */
     public function format(string $identifier): string
     {
+        $identifier = trim($identifier);
+
         if (str_starts_with(strtoupper($identifier), 'BE')){
             $identifier = substr($identifier, 2);
         }
 
         try {
-            $identifier = (new KBONumber())->format($identifier);
+            $identifier = (new CommerceNumberBE())->format($identifier);
         } catch (InvalidArgumentException) {
             throw new InvalidArgumentException('Invalid Belgium VAT number');
         }

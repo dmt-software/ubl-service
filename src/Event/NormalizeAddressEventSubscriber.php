@@ -7,7 +7,7 @@ use DMT\Ubl\Service\Entity\Invoice\PostalAddress;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
-readonly class NormalizeAddressEventSubscriber implements EventSubscriberInterface
+final readonly class NormalizeAddressEventSubscriber implements EventSubscriberInterface
 {
     /**
      * @inheritDoc

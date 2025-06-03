@@ -5,7 +5,7 @@ namespace DMT\Ubl\Service\Helper\Invoice;
 use DMT\Ubl\Service\Entity\Invoice\Type\InvoiceTypeCode;
 use DMT\Ubl\Service\List\InvoiceType;
 
-class InvoiceTypeHelper
+final class InvoiceTypeHelper
 {
     public static function fetchFromValue(mixed $value): InvoiceTypeCode
     {

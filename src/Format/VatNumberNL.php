@@ -4,7 +4,7 @@ namespace DMT\Ubl\Service\Format;
 
 use InvalidArgumentException;
 
-class NLVatNumber implements Formatter
+final class VatNumberNL implements Formatter
 {
     /**
      * {@inheritDoc}
@@ -13,7 +13,7 @@ class NLVatNumber implements Formatter
      */
     public function format(string $identifier): string
     {
-        $identifier = strtoupper($identifier);
+        $identifier = strtoupper(trim($identifier));
 
         if (!str_starts_with($identifier, 'NL')){
             $identifier = 'NL' . $identifier;

@@ -2,6 +2,8 @@
 
 namespace DMT\Ubl\Service\Format;
 
+use InvalidArgumentException;
+
 interface Formatter
 {
     /**
@@ -9,7 +11,7 @@ interface Formatter
      *
      * @param string $identifier
      * @return string
-     * @throws \InvalidArgumentException in case the identifier is invalid
+     * @throws InvalidArgumentException in case the identifier is invalid
      */
     public function format(string $identifier): string;
 }

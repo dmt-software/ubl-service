@@ -6,7 +6,7 @@ use DMT\Ubl\Service\Entity\Invoice;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
-readonly class InvoiceCustomizationEventSubscriber implements EventSubscriberInterface
+final readonly class InvoiceCustomizationEventSubscriber implements EventSubscriberInterface
 {
     public const string CUSTOMIZATION_DEFAULT =
         'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0';

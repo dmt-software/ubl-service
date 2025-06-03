@@ -7,7 +7,7 @@ use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use Metadata\PropertyMetadata;
 
-readonly class QuantityUnitEventSubscriber implements EventSubscriberInterface
+final readonly class QuantityUnitEventSubscriber implements EventSubscriberInterface
 {
     public function __construct(private string $defaultUnit = QuantityType::DEFAULT_UNIT_CODE)
     {

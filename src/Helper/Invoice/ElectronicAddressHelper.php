@@ -5,7 +5,7 @@ namespace DMT\Ubl\Service\Helper\Invoice;
 use DMT\Ubl\Service\Entity\Invoice\Type\ElectronicAddressType;
 use DMT\Ubl\Service\Entity\Invoice\Type\EndpointId;
 
-class ElectronicAddressHelper
+final class ElectronicAddressHelper
 {
     /**
      * @template T

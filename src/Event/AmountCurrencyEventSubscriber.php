@@ -7,7 +7,7 @@ use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use JMS\Serializer\Metadata\PropertyMetadata;
 
-readonly class AmountCurrencyEventSubscriber implements EventSubscriberInterface
+final readonly class AmountCurrencyEventSubscriber implements EventSubscriberInterface
 {
     public function __construct(private string $defaultCurrency = 'EUR')
     {

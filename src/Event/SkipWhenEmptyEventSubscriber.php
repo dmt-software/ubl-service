@@ -8,9 +8,9 @@ use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use JMS\Serializer\Metadata\PropertyMetadata;
 
 /**
- * This events clears xml value objects that have default attribute values, but without a text value present.
+ * This event subscriber clears xml value objects that have default attribute values, but without a text value present.
  */
-class SkipWhenEmptyEventSubscriber implements EventSubscriberInterface
+readonly class SkipWhenEmptyEventSubscriber implements EventSubscriberInterface
 {
     /**
      * @inheritDoc

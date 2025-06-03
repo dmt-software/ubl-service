@@ -4,7 +4,7 @@ namespace DMT\Ubl\Service\Helper\Invoice;
 
 use DMT\Ubl\Service\Entity\Invoice\Type\AmountType;
 
-class AmountHelper
+final class AmountHelper
 {
     /**
      * @template T of AmountType

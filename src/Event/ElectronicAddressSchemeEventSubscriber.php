@@ -9,7 +9,7 @@ use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 
-readonly class ElectronicAddressSchemeEventSubscriber implements EventSubscriberInterface
+final readonly class ElectronicAddressSchemeEventSubscriber implements EventSubscriberInterface
 {
     /**
      * @inheritDoc

@@ -2,7 +2,9 @@
 
 namespace DMT\Ubl\Service\Format;
 
-class KvKNumber implements Formatter
+use InvalidArgumentException;
+
+final class CommerceNumberNL implements Formatter
 {
     /**
      * {@inheritDoc}
@@ -11,8 +13,10 @@ class KvKNumber implements Formatter
      */
     public function format(string $identifier): string
     {
+        $identifier = trim($identifier);
+
         if (!preg_match('~^\d{8}$~', $identifier)) {
-            throw new \InvalidArgumentException('Invalid KvK number format');
+            throw new InvalidArgumentException('Invalid KvK number format');
         }
 
         return $identifier;

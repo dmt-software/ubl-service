@@ -4,19 +4,21 @@ namespace DMT\Ubl\Service\Format;
 
 use InvalidArgumentException;
 
-class GLNNumber implements Formatter
+final class GlobalLocationNumber implements Formatter
 {
     /**
      * {@inheritDoc}
      *
      * Check for global location number (GTIN-13), format 1234567890123
      *
-     * @see GTINNumber
+     * @see GlobalTradeItemNumber
      */
     public function format(string $identifier): string
     {
+        $identifier = trim($identifier);
+
         try {
-            return (new GTINNumber(13))->format($identifier);
+            return (new GlobalTradeItemNumber(13))->format($identifier);
         } catch (InvalidArgumentException) {
             throw new InvalidArgumentException('Invalid GLN number');
         }

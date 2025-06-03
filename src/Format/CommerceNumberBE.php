@@ -4,7 +4,7 @@ namespace DMT\Ubl\Service\Format;
 
 use InvalidArgumentException;
 
-class KBONumber implements Formatter
+final class CommerceNumberBE implements Formatter
 {
     /**
      * {@inheritDoc}

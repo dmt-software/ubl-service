@@ -4,7 +4,7 @@ namespace DMT\Ubl\Service\Format;
 
 use InvalidArgumentException;
 
-readonly class GTINNumber implements Formatter
+final readonly class GlobalTradeItemNumber implements Formatter
 {
     public function __construct(private null|int $size = null)
     {
@@ -18,6 +18,8 @@ readonly class GTINNumber implements Formatter
      */
     public function format(string $identifier): string
     {
+        $identifier = trim($identifier);
+
         $size = strlen($identifier);
         if ($size <> preg_match('~\d~', $identifier) || !in_array($size, [8, 12, 13, 14, 17, 18], true)) {
             throw new InvalidArgumentException('Invalid GTIN number');

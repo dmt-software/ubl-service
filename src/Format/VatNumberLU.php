@@ -2,9 +2,7 @@
 
 namespace DMT\Ubl\Service\Format;
 
-use DMT\Ubl\Service\Format\Formatter;
-
-class LUVatNumber implements Formatter
+final class VatNumberLU implements Formatter
 {
     /**
      * {@inheritDoc}
@@ -13,6 +11,8 @@ class LUVatNumber implements Formatter
      */
     public function format(string $identifier): string
     {
+        $identifier = trim($identifier);
+
         if (str_starts_with(strtoupper($identifier), 'LU')) {
             $identifier = substr($identifier, 2);
         }
