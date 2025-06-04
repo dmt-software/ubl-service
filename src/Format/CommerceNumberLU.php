@@ -36,21 +36,26 @@ final class CommerceNumberLU implements Formatter
             throw new InvalidArgumentException('Invalid Luxembourg TIN number');
         }
 
-        /**
-         * The 11th digit corresponds to the difference between 11 and the remainder of the division by 11 of the
-         * sum of the products obtained by multiplying each of the first 10 digits of the ID number by the
-         * respective factors of 5, 4, 3, 2, 7, 6, 5, 4, 3 and 2, being understood that of the numbers generated,
-         * during the abovementioned division, a remainder of 1 is not allocated. A remainder of zero during that
-         * division is the check digit.
-         */
+        if ((new \DateTime('+ 1 year'))->format('Y') < $matches['year']) {
+            throw new InvalidArgumentException('Incorrect TIN number');
+        }
+
+        $weights = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+        $digits = array_map(intval(...), str_split($identifier));
+        $checkDigit = array_pop($digits);
+
+        $digit = 11 - (array_sum(array_map(array_product(...), array_map(null, $digits, $weights))) % 11);
+
+        if ($digit != $checkDigit || $digit == 1) {
+            throw new InvalidArgumentException('Incorrect TIN number');
+        }
 
         return $identifier;
     }
 
     private function validateNaturalPersonNumber(string $identifier): string
     {
-        $matches = [];
-        if (!preg_match('~^(?<year>[1-2][0-9]{3})(?<month>[0-1][0-9])(?<day>[0-3][0-9])\d{5}$~', $identifier, $matches)) {
+        if (!preg_match('~^(?<year>[1-2][0-9]{3})(?<month>[0-1][0-9])(?<day>[0-3][0-9])\d{5}$~', $identifier)) {
             throw new InvalidArgumentException('Invalid Luxembourg TIN number');
         }
 
@@ -60,10 +65,26 @@ final class CommerceNumberLU implements Formatter
             throw new InvalidArgumentException('Invalid Luxembourg TIN number');
         }
 
+
+        $digits = array_map(intval(...), str_split($identifier));
+        $digitPairs = array_chunk(array_merge(array_slice($digits, 0, 11), [0]), 2);
+
+        $sum = 0;
+        foreach ($digitPairs as &$pair) {
+            $pair[0] *= 2;
+            if ($pair[0] > 9) {
+                $pair[0] -= 9;
+            }
+            $sum += array_sum($pair);
+        }
+
+        if (($sum + $digits[11]) % 10 != 0) {
+            throw new InvalidArgumentException('Invalid Luxembourg TIN number');
+        }
+
         /**
-         * The identification number has 13 digits (9999999999999), the 2 last digits are check digits. The 12 th
-         * digit is a check digit calculated on the basis of the algorithm “de Luhn 10”, calculated on the 11 first
-         * digits.
+         * Not implemented:
+         *
          * The 13th digit is a check digit calculated on the basis of the algorithm “de Verhoeff”, calculated on
          * the 11 first digits.
          */
