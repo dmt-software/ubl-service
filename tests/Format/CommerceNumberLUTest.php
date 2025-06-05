@@ -35,9 +35,12 @@ class CommerceNumberLUTest extends TestCase
     {
         return [
             'non-numeric characters' => ['X9873451231'],
-            'too short number' => ['123456798732'],
-            'too long number' => ['12345678912333'],
+            'too short number' => ['199056798732'],
+            'too long number' => ['20205678912333'],
             'contains spaces' => ['123 45 678 222 531'],
+            'registered in the future' => ['31250311303'],
+            'non-existing birth date' => ['1975133199833'],
+            'deceased sole propriety' => ['1895031487612'],
         ];
     }
 }

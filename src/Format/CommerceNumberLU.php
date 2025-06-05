@@ -61,7 +61,11 @@ final class CommerceNumberLU implements Formatter
 
         $datetime = DateTime::createFromFormat('Ymd', substr($identifier, 0, 8));
 
-        if ($datetime === false || $datetime > new DateTime() || $datetime->format('Y') < 1900) {
+        if ($datetime === false
+            || $datetime->format('Ymd') != substr($identifier, 0, 8)
+            || $datetime > new DateTime()
+            || $datetime < new DateTime('-125 years')
+        ) {
             throw new InvalidArgumentException('Invalid Luxembourg TIN number');
         }
 
