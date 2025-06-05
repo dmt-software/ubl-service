@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 class GlobalTradeItemNumberTest extends TestCase
 {
     #[DataProvider('validGTINProvider')]
-    public function testFormatValidGTIN(string $identifier, ?int $size, string $expected): void
+    public function testValidGTINFormats(string $identifier, ?int $size, string $expected): void
     {
         $this->assertEquals($expected, (new GlobalTradeItemNumber($size))->format($identifier));
     }
@@ -28,7 +28,7 @@ class GlobalTradeItemNumberTest extends TestCase
     }
 
     #[DataProvider('invalidGTINProvider')]
-    public function testFormatInvalidGTIN(string $identifier, ?int $size): void
+    public function testInvalidGTINFormats(string $identifier, ?int $size): void
     {
         $this->expectException(InvalidArgumentException::class);
 

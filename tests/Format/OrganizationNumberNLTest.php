@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 class OrganizationNumberNLTest extends TestCase
 {
     #[DataProvider('validOrganizationNumberProvider')]
-    public function testFormatValidOrganizationNumber(string $identifier, string $expected): void
+    public function testValidOrganizationNumberFormats(string $identifier, string $expected): void
     {
         $this->assertSame($expected, (new OrganizationNumberNL())->format($identifier));
     }
@@ -24,7 +24,7 @@ class OrganizationNumberNLTest extends TestCase
     }
 
     #[DataProvider('invalidOrganizationNumberProvider')]
-    public function testFormatThrowsExceptionForInvalidOrganizationNumber(string $identifier): void
+    public function testInvalidOrganizationNumberFormats(string $identifier): void
     {
         $this->expectException(InvalidArgumentException::class);
 

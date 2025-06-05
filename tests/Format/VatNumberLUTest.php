@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 class VatNumberLUTest extends TestCase
 {
     #[DataProvider('provideValidVatNumbers')]
-    public function testFormatValidVatNumbers(string $identifier, string $expected): void
+    public function testValidVatNumberFormats(string $identifier, string $expected): void
     {
         $this->assertSame($expected, (new VatNumberLU())->format($identifier));
     }
@@ -25,7 +25,7 @@ class VatNumberLUTest extends TestCase
     }
 
     #[DataProvider('provideInvalidVatNumbers')]
-    public function testFormatInvalidVatNumbers(string $identifier): void
+    public function testInvalidVatNumberFormats(string $identifier): void
     {
         $this->expectException(InvalidArgumentException::class);
 

@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 class DUNSNumberTest extends TestCase
 {
     #[DataProvider('validDUNSNumberProvider')]
-    public function testValidDUNSNumbers(string $identifier, string $expected): void
+    public function testValidDUNSNumberFormats(string $identifier, string $expected): void
     {
         $this->assertSame($expected, (new DUNSNumber())->format($identifier));
     }
@@ -24,7 +24,7 @@ class DUNSNumberTest extends TestCase
     }
 
     #[DataProvider('invalidDUNSNumberProvider')]
-    public function testInvalidDUNSNumbers(string $identifier): void
+    public function testInvalidDUNSNumberFormats(string $identifier): void
     {
         $this->expectException(InvalidArgumentException::class);
 
