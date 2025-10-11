@@ -29,4 +29,9 @@ class Item
     #[Type(name: StandardItemIdentification::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|StandardItemIdentification $standardItemIdentification = null;
+
+    #[SerializedName(name: "ClassifiedTaxCategory")]
+    #[Type(name: ClassifiedTaxCategory::class)]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
+    public null|ClassifiedTaxCategory $classifiedTaxCategory = null;
 }

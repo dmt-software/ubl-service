@@ -4,8 +4,11 @@ namespace DMT\Ubl\Service;
 
 use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Event\AmountCurrencyEventSubscriber;
+use DMT\Ubl\Service\Event\LegalMonetaryTotalEventSubscriber;
+use DMT\Ubl\Service\Event\TaxCategoryEventSubscriber;
 use DMT\Ubl\Service\Event\ElectronicAddressSchemeEventSubscriber;
 use DMT\Ubl\Service\Event\InvoiceCustomizationEventSubscriber;
+use DMT\Ubl\Service\Event\MandatoryDefaultsEventSubscriber;
 use DMT\Ubl\Service\Event\NormalizeAddressEventSubscriber;
 use DMT\Ubl\Service\Event\QuantityUnitEventSubscriber;
 use DMT\Ubl\Service\Event\SkipWhenEmptyEventSubscriber;
@@ -95,11 +98,14 @@ class InvoiceService
             ->enableEnumSupport()
             ->configureListeners(function (EventDispatcher $dispatcher) {
                 $dispatcher->addSubscriber(new SkipWhenEmptyEventSubscriber());
-                $dispatcher->addSubscriber(new AmountCurrencyEventSubscriber());
                 $dispatcher->addSubscriber(new ElectronicAddressSchemeEventSubscriber());
                 $dispatcher->addSubscriber(new InvoiceCustomizationEventSubscriber());
                 $dispatcher->addSubscriber(new NormalizeAddressEventSubscriber());
+                $dispatcher->addSubscriber(new TaxCategoryEventSubscriber());
                 $dispatcher->addSubscriber(new QuantityUnitEventSubscriber());
+                $dispatcher->addSubscriber(new LegalMonetaryTotalEventSubscriber());
+                $dispatcher->addSubscriber(new AmountCurrencyEventSubscriber());
+                $dispatcher->addSubscriber(new MandatoryDefaultsEventSubscriber());
             })
             ->addDefaultHandlers()
             ->configureHandlers(function (HandlerRegistry $registry) {

@@ -38,6 +38,11 @@ class Party
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|PostalAddress $postalAddress = null;
 
+    #[SerializedName(name: "PartyTaxScheme")]
+    #[Type(name: PartyTaxScheme::class)]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
+    public null|PartyTaxScheme $partyTaxScheme = null;
+
     #[SerializedName(name: "PartyLegalEntity")]
     #[Type(name: PartyLegalEntity::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]

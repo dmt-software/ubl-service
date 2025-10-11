@@ -10,6 +10,7 @@ use DMT\Ubl\Service\Entity\Invoice\Delivery;
 use DMT\Ubl\Service\Entity\Invoice\InvoicePeriod;
 use DMT\Ubl\Service\Entity\Invoice\LegalMonetaryTotal;
 use DMT\Ubl\Service\Entity\Invoice\OrderReference;
+use DMT\Ubl\Service\Entity\Invoice\PaymentTerms;
 use DMT\Ubl\Service\Entity\Invoice\TaxTotal;
 use DMT\Ubl\Service\Entity\Invoice\Type\DocumentCurrencyCode;
 use DMT\Ubl\Service\Entity\Invoice\Type\InvoiceTypeCode;
@@ -56,6 +57,11 @@ class Invoice implements Entity
     #[Type(name: "DateTime<'Y-m-d'>")]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|DateTime $issueDate = null;
+
+    #[SerializedName(name: "DueDate")]
+    #[Type(name: "DateTime<'Y-m-d'>")]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
+    public null|DateTime $duaDate = null;
 
     #[SerializedName(name: "InvoiceTypeCode")]
     #[Type(name: InvoiceTypeCode::class)]
@@ -105,6 +111,11 @@ class Invoice implements Entity
     #[Type(name: Delivery::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|Delivery $delivery = null;
+
+    #[SerializedName(name: "PaymentTerms")]
+    #[Type(name: PaymentTerms::class)]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
+    public null|PaymentTerms $paymentTerms = null;
 
     #[Type(name: "array<DMT\Ubl\Service\Entity\Invoice\AllowanceCharge>")]
     #[XmlList(
