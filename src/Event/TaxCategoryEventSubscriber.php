@@ -58,7 +58,7 @@ final class TaxCategoryEventSubscriber implements EventSubscriberInterface
     {
         /** @var Invoice $invoice */
         $invoice = $event->getObject();
-        $invoiceLines = $invoice->invoiceLine;
+        $invoiceLines = $invoice->invoiceLine ?? [];
 
         usort(
             $invoiceLines,

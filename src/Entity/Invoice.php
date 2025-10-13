@@ -61,7 +61,7 @@ class Invoice implements Entity
     #[SerializedName(name: "DueDate")]
     #[Type(name: "DateTime<'Y-m-d'>")]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|DateTime $duaDate = null;
+    public null|DateTime $dueDate = null;
 
     #[SerializedName(name: "InvoiceTypeCode")]
     #[Type(name: InvoiceTypeCode::class)]

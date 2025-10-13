@@ -20,7 +20,7 @@ final class QuantityHelper
             $value = (object)['quantity' => $value];
         }
 
-        if ($value->quantity) {
+        if (!isset($value->quantity)) {
             return null;
         }
 

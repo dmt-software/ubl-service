@@ -15,4 +15,8 @@ class OrderReference
     #[SerializedName(name: "ID")]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|string $id = null;
+
+    #[SerializedName(name: "SalesOrderID")]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
+    public null|string $salesOrderId = null;
 }
