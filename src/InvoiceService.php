@@ -2,8 +2,6 @@
 
 namespace DMT\Ubl\Service;
 
-use DateTime;
-use DMT\Ubl\Service\Builder\InvoiceBuilder;
 use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Event\AmountCurrencyEventSubscriber;
 use DMT\Ubl\Service\Event\LegalMonetaryTotalEventSubscriber;
@@ -42,31 +40,6 @@ class InvoiceService
         }
 
         return $type->getFormatter()->format($identifier);
-    }
-
-    /**
-     * @param int $documentId
-     * @param DateTime|null $invoiceDate
-     * @param DateTime|null $dueDate
-     * @param string|null $invoiceType
-     * @param array<DateTime>|null $invoicePeriod
-     * @param string|null $orderReference
-     * @param string|null $salesOrderReference
-     * @param float $total
-     * @return InvoiceBuilder
-     */
-    public function createInvoice(
-        int $documentId,
-        null|DateTime $invoiceDate = null,
-        null|DateTime $dueDate = null,
-        null|string $invoiceType = null,
-        null|string $orderReference = null,
-        null|string $salesOrderReference = null,
-        null|string $paymentTerm = null,
-        null|array $invoicePeriod = null,
-        float $total = 0.0
-    ): InvoiceBuilder {
-        return new InvoiceBuilder(...func_get_args());
     }
 
     /**
@@ -119,6 +92,9 @@ class InvoiceService
         return $this->getSerializer()->serialize($invoice, 'xml', $context);
     }
 
+    /**
+     * @internal
+     */
     private function getSerializer(): Serializer
     {
         return SerializerBuilder::create()

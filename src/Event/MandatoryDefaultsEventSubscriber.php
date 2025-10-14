@@ -7,6 +7,7 @@ use DMT\Ubl\Service\Entity\Invoice\OrderReference;
 use DMT\Ubl\Service\Entity\Invoice\Party;
 use DMT\Ubl\Service\Entity\Invoice\PartyLegalEntity;
 use DMT\Ubl\Service\Entity\Invoice\StandardItemIdentification;
+use DMT\Ubl\Service\Entity\InvoiceLine;
 use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
@@ -49,6 +50,13 @@ class MandatoryDefaultsEventSubscriber implements EventSubscriberInterface
             if (!$invoice?->orderReference->id) {
                 $invoice->orderReference ??= new OrderReference();
                 $invoice->orderReference->id = 'NA';
+            }
+        }
+
+        $max = max(array_map(fn(InvoiceLine $line) => intval($line->id), $invoice->invoiceLine)) ?: 1;
+        foreach ($invoice->invoiceLine as $key => $invoiceLine) {
+            if (!$invoiceLine->id) {
+                $invoiceLine->id = $key + $max;
             }
         }
     }
