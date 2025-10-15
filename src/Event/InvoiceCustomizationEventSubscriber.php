@@ -18,9 +18,6 @@ final readonly class InvoiceCustomizationEventSubscriber implements EventSubscri
         . 'extended:urn:www.peppol.eu:bis:peppol4a:ver2.0:extended:urn:www.simplerinvoicing.org:si:si-ubl:ver1.2';
     public const string CUSTOMIZATION_2_0_NLCIUS = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:nen.nl:nlcius:v1.0';
 
-    /**
-     * @inheritDoc
-     */
     public static function getSubscribedEvents(): iterable
     {
         return [
@@ -53,7 +50,7 @@ final readonly class InvoiceCustomizationEventSubscriber implements EventSubscri
         }
 
         $invoice->profileId = 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0';
-        if (version_compare($version, '1.2', '<=')) {
+        if (version_compare($version ?? '', '1.2', '<=')) {
             $invoice->profileId = 'urn:www.cenbii.eu:profile:bii04:ver1.0';
         }
     }

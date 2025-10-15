@@ -13,9 +13,6 @@ final readonly class AmountCurrencyEventSubscriber implements EventSubscriberInt
     {
     }
 
-    /**
-     * @inheritDoc
-     */
     public static function getSubscribedEvents(): iterable
     {
         return [
@@ -63,7 +60,7 @@ final readonly class AmountCurrencyEventSubscriber implements EventSubscriberInt
         /** @var AmountType $amount */
         $amount = $event->getObject();
 
-        if (empty($amount->amount)) {
+        if ($amount == '' || $amount->amount === null) {
             return;
         }
 

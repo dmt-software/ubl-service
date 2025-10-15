@@ -16,11 +16,8 @@ use DMT\Ubl\Service\Entity\InvoiceLine;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
-final class TaxCategoryEventSubscriber implements EventSubscriberInterface
+final readonly class TaxCategoryEventSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @inheritDoc
-     */
     public static function getSubscribedEvents(): iterable
     {
         return [

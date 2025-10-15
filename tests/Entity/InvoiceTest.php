@@ -574,7 +574,7 @@ class InvoiceTest extends TestCase
             'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
             $xml->xpath('*[local-name()="InvoiceTypeCode"]')[0]->getNamespaces(),
         );
-        $this->assertEmpty(strval($xml->xpath('*[local-name()="TaxPointDate"]')[0]));
+        $this->assertEmpty(strval($xml->xpath('*[local-name()="TaxPointDate"]')[0] ?? ''));
         $this->assertEquals(
             $invoice->documentCurrencyCode,
             strval($xml->xpath('*[local-name()="DocumentCurrencyCode"]')[0])
@@ -583,7 +583,7 @@ class InvoiceTest extends TestCase
             'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
             $xml->xpath('*[local-name()="DocumentCurrencyCode"]')[0]->getNamespaces(),
         );
-        $this->assertEmpty(strval($xml->xpath('*[local-name()="AccountingCost"]')[0]));
+        $this->assertEmpty(strval($xml->xpath('*[local-name()="AccountingCost"]')[0] ?? ''));
         $this->assertEmpty($xml->xpath('*[local-name()="InvoicePeriod"]'));
         $this->assertEmpty($xml->xpath('*[local-name()="OrderReference"]'));
         $this->assertContainsEquals(

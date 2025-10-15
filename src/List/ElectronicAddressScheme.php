@@ -28,8 +28,6 @@ enum ElectronicAddressScheme: string
     case NLOrganizationNumber = '0190';
     case DeprecatedNLOrganizationNumber = '9954';
 
-    private const string DEPRECATED_NL_ORGANIZATION_NUMBER = 'NL:OIN';
-
     public static function lookup(?string $schemeId, string $version = null): ?self
     {
         $testVersions = $version ? [$version] : [Invoice::VERSION_1_1, Invoice::VERSION_2_0];

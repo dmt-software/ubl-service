@@ -87,9 +87,7 @@ class InvoiceService
      */
     public function toXml(Invoice $invoice, string $version = Invoice::DEFAULT_VERSION): string
     {
-        $context = SerializationContext::create()->setVersion($version);
-
-        return $this->getSerializer()->serialize($invoice, 'xml', $context);
+        return $this->getSerializer()->serialize($invoice, 'xml', SerializationContext::create()->setVersion($version));
     }
 
     /**

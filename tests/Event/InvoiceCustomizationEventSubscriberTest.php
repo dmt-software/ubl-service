@@ -35,7 +35,7 @@ class InvoiceCustomizationEventSubscriberTest extends TestCase
         $name = $object::class;
 
         return new PreSerializeEvent(
-            SerializationContext::create(),
+            SerializationContext::create()->setAttribute('version', null),
             $object,
             compact('name')
         );

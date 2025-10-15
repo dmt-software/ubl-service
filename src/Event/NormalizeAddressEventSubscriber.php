@@ -9,9 +9,6 @@ use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
 final readonly class NormalizeAddressEventSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @inheritDoc
-     */
     public static function getSubscribedEvents(): iterable
     {
         return [
