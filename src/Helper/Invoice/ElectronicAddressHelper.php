@@ -4,6 +4,7 @@ namespace DMT\Ubl\Service\Helper\Invoice;
 
 use DMT\Ubl\Service\Entity\Invoice\Type\ElectronicAddressType;
 use DMT\Ubl\Service\Entity\Invoice\Type\EndpointId;
+use DMT\Ubl\Service\List\ElectronicAddressScheme;
 
 final class ElectronicAddressHelper
 {
@@ -27,9 +28,14 @@ final class ElectronicAddressHelper
         $endpointId = new $type();
         $endpointId->id = $value->id;
 
-        if (isset($value->schemeId)) {
+        if (isset($value->schemeId) && !$value->schemeId instanceof ElectronicAddressScheme) {
+            $value->schemeId = ElectronicAddressScheme::lookup($value->schemeId);
+        }
+
+        if ($value->schemeId instanceof ElectronicAddressScheme) {
             $endpointId->schemeId = $value->schemeId;
         }
+
         if (isset($value->schemeAgencyId)) {
             $endpointId->schemeAgencyId = $value->schemeAgencyId;
         }

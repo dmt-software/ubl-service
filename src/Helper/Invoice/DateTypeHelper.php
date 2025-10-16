@@ -2,6 +2,7 @@
 
 namespace DMT\Ubl\Service\Helper\Invoice;
 
+use DateMalformedStringException;
 use DateTime;
 use DateTimeInterface;
 
@@ -9,7 +10,7 @@ final class DateTypeHelper
 {
     public static function fetchFromValue(string|DateTimeInterface|null $value): ?DateTime
     {
-        if ($value === null) {
+        if ($value === null || $value === '') {
             return null;
         }
 
@@ -17,6 +18,10 @@ final class DateTypeHelper
             return DateTime::createFromInterface($value);
         }
 
-        return new DateTime($value);
+        try {
+            return new DateTime($value);
+        } catch (DateMalformedStringException) {
+            return null;
+        }
     }
 }

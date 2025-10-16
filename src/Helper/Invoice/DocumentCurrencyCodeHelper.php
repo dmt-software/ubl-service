@@ -6,7 +6,7 @@ use DMT\Ubl\Service\Entity\Invoice\Type\DocumentCurrencyCode;
 
 final class DocumentCurrencyCodeHelper
 {
-    public static function fetchFromValue(null|string|object $value): ?DocumentCurrencyCode
+    public static function fetchFromValue(null|string|object $value): null|DocumentCurrencyCode
     {
         if (!is_object($value)) {
             $value = (object)['code' => $value];
@@ -17,7 +17,7 @@ final class DocumentCurrencyCodeHelper
         }
 
         $currencyCode = new DocumentCurrencyCode();
-        $currencyCode->code = $value;
+        $currencyCode->code = $value->code;
 
         if (isset($value->listId)) {
             $currencyCode->listId = $value->listId;

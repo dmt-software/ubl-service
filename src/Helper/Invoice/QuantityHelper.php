@@ -14,7 +14,7 @@ final class QuantityHelper
      *
      * @return QuantityType|null
      */
-    public static function fetchFromValue(null|int|object $value, string $quantityType): ?QuantityType
+    public static function fetchFromValue(null|int|object $value, string $quantityType): null|QuantityType
     {
         if (!is_object($value)) {
             $value = (object)['quantity' => $value];

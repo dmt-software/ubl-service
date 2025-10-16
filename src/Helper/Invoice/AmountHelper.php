@@ -14,9 +14,9 @@ final class AmountHelper
      *
      * @return AmountType|null
      */
-    public static function fetchFromValue(mixed $value, string $amountType): ?AmountType
+    public static function fetchFromValue(mixed $value, string $amountType): null|AmountType
     {
-        if (!is_object($value)) {
+        if (is_scalar($value)) {
             $value = (object)['amount' => $value];
         }
 

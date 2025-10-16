@@ -7,18 +7,24 @@ use DMT\Ubl\Service\List\InvoiceType;
 
 final class InvoiceTypeHelper
 {
-    public static function fetchFromValue(mixed $value): InvoiceTypeCode
+    public static function fetchFromValue(string|object|null $value): InvoiceTypeCode
     {
-        if (is_null($value) || is_object($value) || is_scalar($value)) {
-            $type = InvoiceType::tryFrom(is_scalar($value) ? (string) $value : (string) $value->code ?? '');
+        if (!is_object($value) || $value instanceof InvoiceType) {
+            $value = (object)['code' => $value];
+        }
+
+        $type = $value->code;
+        if (!$value->code instanceof InvoiceType) {
+            $type = InvoiceType::tryFrom($value->code ?? '');
         }
 
         $invoiceType = new InvoiceTypeCode();
-        $invoiceType->code = $type ?? null;
+        $invoiceType->code = $type ?? InvoiceType::Normal;
 
         if (isset($value->listId)) {
             $invoiceType->listId = $value->listId;
         }
+
         if (isset($value->listAgencyId)) {
             $invoiceType->listAgencyId = $value->listAgencyId;
         }

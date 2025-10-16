@@ -6,11 +6,12 @@ use DMT\Ubl\Service\Entity\Invoice\Type\IdentificationCode;
 
 final class IdentificationCodeHelper
 {
-    public static function fetchFromValue(null|string|object $value): ?IdentificationCode
+    public static function fetchFromValue(null|string|object $value): null|IdentificationCode
     {
         if (!is_object($value)) {
             $value = (object)['code' => $value];
         }
+
         if (empty($value->code)) {
             return null;
         }
@@ -18,10 +19,11 @@ final class IdentificationCodeHelper
         $identificationCode = new IdentificationCode();
         $identificationCode->code = $value->code;
 
-        if ($value?->listId) {
+        if (isset($value->listId)) {
             $identificationCode->listId = $value?->listId;
         }
-        if ($value?->listAgencyId) {
+
+        if (isset($value->listAgencyId)) {
             $identificationCode->listAgencyId = $value->listAgencyId;
         }
 
