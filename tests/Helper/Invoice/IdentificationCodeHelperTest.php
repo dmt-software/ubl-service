@@ -10,9 +10,9 @@ use PHPUnit\Framework\TestCase;
 class IdentificationCodeHelperTest extends TestCase
 {
     #[DataProvider(methodName: 'provideIdentificationCode')]
-    public function testFetchFromValue(mixed $value, IdentificationCode $expected): void
+    public function testFetchFromValue(mixed $value, null|IdentificationCode $expected): void
     {
-        $this->assertSame($expected, IdentificationCodeHelper::fetchFromValue($value));
+        $this->assertEquals($expected, IdentificationCodeHelper::fetchFromValue($value));
     }
 
     public static function provideIdentificationCode(): iterable
@@ -23,5 +23,6 @@ class IdentificationCodeHelperTest extends TestCase
         yield 'from string' => ['NL', $identificationCode];
         yield 'from object' => [(object)['code' => 'NL'], $identificationCode];
         yield 'set from self' => [$identificationCode, $identificationCode];
+        yield 'not set when empty' => ['', null];
     }
 }

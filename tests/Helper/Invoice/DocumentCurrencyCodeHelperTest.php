@@ -23,5 +23,6 @@ class DocumentCurrencyCodeHelperTest extends TestCase
         yield 'from string' => ['EUR', $documentCurrencyCode];
         yield 'from object' => [(object)['code' => 'EUR'], $documentCurrencyCode];
         yield 'set from self' => [$documentCurrencyCode, $documentCurrencyCode];
+        yield 'not set when empty' => ['', null];
     }
 }

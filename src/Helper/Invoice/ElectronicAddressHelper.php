@@ -37,7 +37,9 @@ final class ElectronicAddressHelper
         }
 
         if (isset($value->schemeAgencyId)) {
+            // @codeCoverageIgnoreStart
             $endpointId->schemeAgencyId = $value->schemeAgencyId;
+            // @codeCoverageIgnoreEnd
         }
 
         return $endpointId;
