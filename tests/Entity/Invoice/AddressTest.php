@@ -25,11 +25,11 @@ class AddressTest extends TestCase
 
         $this->assertEquals('Address', $xml->getName());
         $this->assertStringStartsWith(
-            $address->streetName,
+            $this->getAddress()->streetName,
             strval($xml->xpath('*[local-name()="StreetName"]')[0])
         );
         $this->assertStringEndsWith(
-            $address->buildingNumber,
+            $this->getAddress()->buildingNumber,
             strval($xml->xpath('*[local-name()="StreetName"]')[0])
         );
         $this->assertcontains(
