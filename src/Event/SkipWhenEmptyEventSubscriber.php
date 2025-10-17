@@ -6,13 +6,15 @@ use DMT\Ubl\Service\Entity\Invoice\Type\AmountType;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use JMS\Serializer\Metadata\PropertyMetadata;
-use Stringable;
 
 /**
  * This event subscriber clears xml value objects that have default attribute values, but without a text value present.
  */
 final readonly class SkipWhenEmptyEventSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getSubscribedEvents(): iterable
     {
         return [

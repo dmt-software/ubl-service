@@ -18,6 +18,9 @@ final readonly class InvoiceCustomizationEventSubscriber implements EventSubscri
         . 'extended:urn:www.peppol.eu:bis:peppol4a:ver2.0:extended:urn:www.simplerinvoicing.org:si:si-ubl:ver1.2';
     public const string CUSTOMIZATION_2_0_NLCIUS = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:nen.nl:nlcius:v1.0';
 
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getSubscribedEvents(): iterable
     {
         return [

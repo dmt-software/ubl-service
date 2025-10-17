@@ -11,6 +11,9 @@ use JMS\Serializer\EventDispatcher\ObjectEvent;
 
 final readonly class ElectronicAddressSchemeEventSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getSubscribedEvents(): iterable
     {
         return [

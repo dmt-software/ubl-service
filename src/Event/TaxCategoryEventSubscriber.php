@@ -18,6 +18,9 @@ use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
 final readonly class TaxCategoryEventSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getSubscribedEvents(): iterable
     {
         return [

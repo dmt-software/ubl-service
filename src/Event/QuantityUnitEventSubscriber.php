@@ -13,6 +13,9 @@ final readonly class QuantityUnitEventSubscriber implements EventSubscriberInter
     {
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getSubscribedEvents(): iterable
     {
         return [

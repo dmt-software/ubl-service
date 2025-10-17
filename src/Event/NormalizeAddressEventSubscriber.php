@@ -9,6 +9,9 @@ use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
 final readonly class NormalizeAddressEventSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getSubscribedEvents(): iterable
     {
         return [
@@ -36,8 +39,13 @@ final readonly class NormalizeAddressEventSubscriber implements EventSubscriberI
         /** @var Address|PostalAddress $address */
         $address = $event->getObject();
 
+        $m = [];
         if (version_compare($event->getContext()->getAttribute('version'), "2.0", '>=')) {
             $address->streetName .= ' ' . $address->buildingNumber;
+            $address->buildingNumber = null;
+        } elseif (!$address->buildingNumber && preg_match('~^(.*)((?<=\s)\d+(\s?.+)?)$~', $address->streetName, $m)) {
+            $address->streetName = trim($m[1]);
+            $address->buildingNumber = trim($m[2]);
         }
     }
 }

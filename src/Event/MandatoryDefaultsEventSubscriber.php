@@ -12,6 +12,9 @@ use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
 final readonly class MandatoryDefaultsEventSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getSubscribedEvents(): iterable
     {
         return [

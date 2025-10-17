@@ -13,6 +13,9 @@ final readonly class AmountCurrencyEventSubscriber implements EventSubscriberInt
     {
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getSubscribedEvents(): iterable
     {
         return [

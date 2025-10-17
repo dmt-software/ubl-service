@@ -16,6 +16,9 @@ use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
 final readonly class LegalMonetaryTotalEventSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @codeCoverageIgnore
+     */
     public static function getSubscribedEvents(): iterable
     {
         return [
