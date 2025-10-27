@@ -65,10 +65,34 @@ $invoice = $service->fromInvoice($ublInvoice, new InvoiceLineToSimpleObjectTrans
 
 ```php
 use DMT\Ubl\Service\InvoiceService;
+use InvalidArgumentException;
 
 $service = new InvoiceService();
-if ($service->checkIdentifier('0000000000123', 'GTIN')) {
-    // the number format is valid. (does not tell anything about the existence)
+try {
+    // test (and formats) the identifier
+    $identifier = $service->checkIdentifier('0000000000123', 'GTIN');
+} catch (InvalidArgumentException) {
+    // identifier is invalid
 }
 ```
 
+### Different UBL versions
+
+By default `toXml` will return an UBL Invoice in PEPPOL BIS Billing 3.0 format.  
+To change the format you can add the correct format in the call:
+
+```php
+use DMT\Ubl\Service\Entity\Invoice;
+use DMT\Ubl\Service\InvoiceService;
+
+/** @var Invoice $invoice */
+$service = new InvoiceService();
+print $service->toXml($invoice, Invoice::VERSION_NLCIUS);
+
+// output is according to the NLCIUS format
+```
+
+It is possible to change format from an existing XML by creating an invoice using `fromXML` followed by `toXML` with a 
+different format.
+
+> NOTE: When changing format, especially from new to older one, some data may be lost or invalid.

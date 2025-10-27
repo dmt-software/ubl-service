@@ -35,7 +35,7 @@ class InvoiceLineToSimpleObjectTransformer implements EntityToObjectTransformer
 
         $invoiceLine = new InvoiceLine(
             product: $product,
-            amount: $entity->invoicedQuantity,
+            amount: $entity->invoicedQuantity->quantity,
             price: $price,
             vatPercentage: $entity?->item?->classifiedTaxCategory->percent ?? 21,
         );

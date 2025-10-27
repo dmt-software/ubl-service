@@ -3,6 +3,7 @@
 namespace DMT\Ubl\Service\Transformer\Invoice;
 
 use Closure;
+use DateTime;
 use DMT\Ubl\Service\Entity\Entity;
 use DMT\Ubl\Service\Entity\Invoice as UBLInvoice;
 use DMT\Ubl\Service\Entity\Invoice\Address as UBLAddress;
@@ -35,7 +36,7 @@ class InvoiceToSimpleObjectTransformer implements EntityToObjectTransformer
         }
 
         $invoice = new Invoice(documentId: $entity->id);
-        $invoice->invoiceDate = $entity->issueDate;
+        $invoice->invoiceDate = $entity->issueDate ?? new DateTime();
         $invoice->dueDate = $entity->dueDate;
         $invoice->invoiceType = $entity?->invoiceTypeCode?->code?->value;
         $invoice->orderReference = $entity?->orderReference->id;
