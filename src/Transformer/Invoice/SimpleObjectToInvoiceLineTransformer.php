@@ -21,7 +21,7 @@ use DMT\Ubl\Service\Objects\InvoiceLine as InvoiceLineDTO;
 use DMT\Ubl\Service\Transformer\ObjectToEntityTransformer;
 use InvalidArgumentException;
 
-class SimpleObjectInvoiceLineTransformer implements ObjectToEntityTransformer
+class SimpleObjectToInvoiceLineTransformer implements ObjectToEntityTransformer
 {
     public function transform(object $object): Entity
     {
@@ -29,21 +29,28 @@ class SimpleObjectInvoiceLineTransformer implements ObjectToEntityTransformer
             throw new InvalidArgumentException('Expected instance of ' . InvoiceLineDTO::class);
         }
 
+        if (!$object->sku && !$object->gtin) {
+            throw new InvalidArgumentException('No product identification given');
+        }
+
         $invoiceLine = new InvoiceLine();
         $invoiceLine->id = $object->lineNumber;
         $invoiceLine->invoicedQuantity = QuantityHelper::fetchFromValue($object->amount, InvoicedQuantity::class);
         $invoiceLine->lineExtensionAmount = AmountHelper::fetchFromValue($object->price * $object->amount, LineExtensionAmount::class);
         $invoiceLine->item = new Item();
-        $invoiceLine->item->name = $object->product;
-        $invoiceLine->item->sellersItemIdentification = new SellersItemIdentification();
-        $invoiceLine->item->sellersItemIdentification->id = ElectronicAddressHelper::fetchFromValue($object->sku, Id::class);
         $invoiceLine->item->classifiedTaxCategory = new ClassifiedTaxCategory();
         $invoiceLine->item->classifiedTaxCategory->percent = $object->vatPercentage;
         $invoiceLine->price = new Price();
         $invoiceLine->price->priceAmount = AmountHelper::fetchFromValue($object->price, PriceAmount::class);
         $invoiceLine->price->baseQuantity = QuantityHelper::fetchFromValue(1, BaseQuantity::class);
 
-        if ($object->gtin !== null) {
+        if ($object->sku) {
+            $invoiceLine->item->name = $object->product;
+            $invoiceLine->item->sellersItemIdentification = new SellersItemIdentification();
+            $invoiceLine->item->sellersItemIdentification->id = ElectronicAddressHelper::fetchFromValue($object->sku, Id::class);
+        }
+
+        if ($object->gtin) {
             $invoiceLine->item->standardItemIdentification = new StandardItemIdentification();
             $invoiceLine->item->standardItemIdentification->id = ElectronicAddressHelper::fetchFromValue($object->gtin, Id::class);
             $invoiceLine->item->standardItemIdentification->id->schemeId = 'GTIN';

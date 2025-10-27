@@ -17,6 +17,7 @@ use DMT\Ubl\Service\Entity\Invoice\LegalMonetaryTotal;
 use DMT\Ubl\Service\Entity\Invoice\OrderReference;
 use DMT\Ubl\Service\Entity\Invoice\Party;
 use DMT\Ubl\Service\Entity\Invoice\PartyLegalEntity;
+use DMT\Ubl\Service\Entity\Invoice\PartyName;
 use DMT\Ubl\Service\Entity\Invoice\PartyTaxScheme;
 use DMT\Ubl\Service\Entity\Invoice\PaymentTerms;
 use DMT\Ubl\Service\Entity\Invoice\PostalAddress;
@@ -28,20 +29,21 @@ use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\ElectronicAddressHelper;
 use DMT\Ubl\Service\Helper\Invoice\IdentificationCodeHelper;
 use DMT\Ubl\Service\Helper\Invoice\InvoiceTypeHelper;
+use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use DMT\Ubl\Service\Objects\Address as AddressDTO;
 use DMT\Ubl\Service\Objects\Invoice as InvoiceDTO;
 use DMT\Ubl\Service\Objects\Party as PartyDTO;
 use DMT\Ubl\Service\Transformer\ObjectToEntityTransformer;
 use InvalidArgumentException;
 
-class SimpleObjectInvoiceTransformer implements ObjectToEntityTransformer
+class SimpleObjectToInvoiceTransformer implements ObjectToEntityTransformer
 {
     private Closure $invoiceLineCallback;
 
     public function __construct(bool $transformInvoiceLines = true)
     {
         if ($transformInvoiceLines) {
-            $this->invoiceLineCallback = (new SimpleObjectInvoiceLineTransformer())->transform(...);
+            $this->invoiceLineCallback = (new SimpleObjectToInvoiceLineTransformer())->transform(...);
         }
     }
 
@@ -75,6 +77,7 @@ class SimpleObjectInvoiceTransformer implements ObjectToEntityTransformer
 
         $invoice->accountingSupplierParty = $this->renderParty($object->seller ?? null, AccountingSupplierParty::class);
         $invoice->accountingCustomerParty = $this->renderParty($object->buyer ?? null, AccountingCustomerParty::class);
+        $invoice->delivery = $this->renderDelivery($object->address ?? null);
 
         if (isset($this->invoiceLineCallback)) {
             $invoice->invoiceLine = array_map($this->invoiceLineCallback, $object->invoiceLines);
@@ -99,6 +102,8 @@ class SimpleObjectInvoiceTransformer implements ObjectToEntityTransformer
 
         $party = new Party();
         $party->endpointId = ElectronicAddressHelper::fetchFromValue($object->identification);
+        $party->partyName = new PartyName();
+        $party->partyName->name = $object->companyName;
         $party->postalAddress = new PostalAddress();
         $party->postalAddress->streetName = $object->address;
         $party->postalAddress->cityName = $object->city;
@@ -111,6 +116,12 @@ class SimpleObjectInvoiceTransformer implements ObjectToEntityTransformer
         if ($object->vatNumber) {
             $party->partyTaxScheme = new PartyTaxScheme();
             $party->partyTaxScheme->companyId = ElectronicAddressHelper::fetchFromValue($object->vatNumber, CompanyId::class);
+            $party->partyTaxScheme->companyId->schemeId = match($object->country) {
+                'BE' => ElectronicAddressScheme::BEVatNumber,
+                'NL' => ElectronicAddressScheme::NLVatNumber,
+                'LU' => ElectronicAddressScheme::LUVatNumber,
+                default => null,
+            };
             $party->partyTaxScheme->taxScheme = new TaxScheme();
             $party->partyTaxScheme->taxScheme->id = ElectronicAddressHelper::fetchFromValue('VAT', Id::class);
         }
