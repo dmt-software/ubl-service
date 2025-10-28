@@ -19,6 +19,7 @@ class Invoice
      * @param string|null $orderReference The order reference given by the buyer.
      * @param string|null $salesOrderReference The order reference given by the supplier.
      * @param string|null $paymentTerm The term(s) for the payment.
+     * @param null|string $bankAccountNumber The account number to transfer the payment to.
      * @param array<DateTime>|null $invoicePeriod The invoice or delivery period.
      * @param float $total The total amount (to be) paid.
      */
@@ -30,6 +31,7 @@ class Invoice
         public null|string $orderReference = null,
         public null|string $salesOrderReference = null,
         public null|string $paymentTerm = null,
+        public null|string $bankAccountNumber = null,
         public null|array $invoicePeriod = null,
         public float $total = 0.0,
     ) {

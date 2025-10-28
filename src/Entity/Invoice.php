@@ -10,6 +10,7 @@ use DMT\Ubl\Service\Entity\Invoice\Delivery;
 use DMT\Ubl\Service\Entity\Invoice\InvoicePeriod;
 use DMT\Ubl\Service\Entity\Invoice\LegalMonetaryTotal;
 use DMT\Ubl\Service\Entity\Invoice\OrderReference;
+use DMT\Ubl\Service\Entity\Invoice\PaymentMeans;
 use DMT\Ubl\Service\Entity\Invoice\PaymentTerms;
 use DMT\Ubl\Service\Entity\Invoice\TaxTotal;
 use DMT\Ubl\Service\Entity\Invoice\Type\DocumentCurrencyCode;
@@ -111,6 +112,15 @@ class Invoice implements Entity
     #[Type(name: Delivery::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|Delivery $delivery = null;
+
+    #[Type(name: "array<DMT\Ubl\Service\Entity\Invoice\PaymentMeans>")]
+    #[XmlList(
+        entry: "PaymentMeans",
+        inline: true,
+        namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    )]
+    /** @var array<PaymentMeans> $paymentMeans */
+    public null|array $paymentMeans = null;
 
     #[SerializedName(name: "PaymentTerms")]
     #[Type(name: PaymentTerms::class)]

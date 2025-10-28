@@ -60,6 +60,15 @@ class InvoiceToSimpleObjectTransformer implements EntityToObjectTransformer
             $invoice->address = $this->renderDeliveryAddress($entity->delivery->deliveryLocation->address);
         }
 
+        if ($entity?->paymentMeans) {
+            foreach ($entity->paymentMeans as $paymentMeans) {
+                if ($paymentMeans->payeeFinancialAccount?->id?->id) {
+                    $invoice->bankAccountNumber = $paymentMeans->payeeFinancialAccount->id->id;
+                    break;
+                }
+            }
+        }
+
         if (isset($this->invoiceLineCallback)) {
             $invoice->invoiceLines = array_map($this->invoiceLineCallback, $entity->invoiceLine);
         }

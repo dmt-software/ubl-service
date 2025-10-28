@@ -19,12 +19,16 @@ use DMT\Ubl\Service\Entity\Invoice\Party;
 use DMT\Ubl\Service\Entity\Invoice\PartyLegalEntity;
 use DMT\Ubl\Service\Entity\Invoice\PartyName;
 use DMT\Ubl\Service\Entity\Invoice\PartyTaxScheme;
+use DMT\Ubl\Service\Entity\Invoice\PayeeFinancialAccount;
+use DMT\Ubl\Service\Entity\Invoice\PaymentMeans;
 use DMT\Ubl\Service\Entity\Invoice\PaymentTerms;
 use DMT\Ubl\Service\Entity\Invoice\PostalAddress;
 use DMT\Ubl\Service\Entity\Invoice\TaxScheme;
 use DMT\Ubl\Service\Entity\Invoice\Type\CompanyId;
 use DMT\Ubl\Service\Entity\Invoice\Type\Id;
 use DMT\Ubl\Service\Entity\Invoice\Type\PayableAmount;
+use DMT\Ubl\Service\Entity\Invoice\Type\PaymentMeansCode;
+use DMT\Ubl\Service\Entity\Invoice\Type\PrepaidAmount;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\ElectronicAddressHelper;
 use DMT\Ubl\Service\Helper\Invoice\IdentificationCodeHelper;
@@ -68,6 +72,20 @@ class SimpleObjectToInvoiceTransformer implements ObjectToEntityTransformer
             $invoice->invoicePeriod = new InvoicePeriod();
             $invoice->invoicePeriod->startDate = min($object->invoicePeriod);
             $invoice->invoicePeriod->endDate = max($object->invoicePeriod);
+        }
+
+        if ($object->bankAccountNumber) {
+            $invoice->paymentMeans = [0 => new PaymentMeans()];
+            $invoice->paymentMeans[0]->paymentMeansCode = new PaymentMeansCode();
+            $invoice->paymentMeans[0]->paymentMeansCode->code = '30';
+            $invoice->paymentMeans[0]->paymentId = sprintf(
+                '%s Ref %s',
+                $invoice->id,
+                $invoice->orderReference->salesOrderId
+            );
+            $invoice->paymentMeans[0]->payeeFinancialAccount = new PayeeFinancialAccount();
+            $invoice->paymentMeans[0]->payeeFinancialAccount->id =
+                ElectronicAddressHelper::fetchFromValue($object->bankAccountNumber, Id::class);
         }
 
         if ($object->paymentTerm) {
