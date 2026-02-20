@@ -2,6 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Invoice;
 
+use DMT\Ubl\Service\Entity\Invoice\BuyersItemIdentification;
 use DMT\Ubl\Service\Entity\Invoice\Item;
 use DMT\Ubl\Service\Entity\Invoice\SellersItemIdentification;
 use DMT\Ubl\Service\Entity\Invoice\StandardItemIdentification;
@@ -16,6 +17,8 @@ class ItemTest extends TestCase
     {
         $item = new Item();
         $item->name = 'Product 123';
+        $item->buyersItemIdentification = new BuyersItemIdentification();
+        $item->buyersItemIdentification->id = '123';
         $item->sellersItemIdentification = new SellersItemIdentification();
         $item->sellersItemIdentification->id = '123';
         $item->standardItemIdentification = new StandardItemIdentification();
@@ -25,6 +28,10 @@ class ItemTest extends TestCase
         $xml = simplexml_load_string($this->getSerializer()->serialize($item, 'xml'));
 
         $this->assertEquals('Item', $xml->getName());
+        $this->assertcontains(
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            $xml->xpath('*[local-name()="BuyersItemIdentification"]')[0]->getNamespaces()
+        );
         $this->assertcontains(
             'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
             $xml->xpath('*[local-name()="SellersItemIdentification"]')[0]->getNamespaces()

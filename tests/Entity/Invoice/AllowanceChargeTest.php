@@ -15,6 +15,7 @@ class AllowanceChargeTest extends TestCase
     {
         $allowance = new AllowanceCharge();
         $allowance->chargeIndicator = false;
+        $allowance->allowanceChargeReasonCode = 'D10';
         $allowance->allowanceChargeReason = '10% discount';
         $allowance->taxCategory = new TaxCategory();
         $allowance->taxCategory->percent = 10;
@@ -29,6 +30,10 @@ class AllowanceChargeTest extends TestCase
         $this->assertcontains(
             'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
             $xml->xpath('*[local-name()="ChargeIndicator"]')[0]->getNamespaces()
+        );
+        $this->assertEquals(
+            $allowance->allowanceChargeReasonCode,
+            strval($xml->xpath('*[local-name()="AllowanceChargeReasonCode"]')[0])
         );
         $this->assertEquals(
             $allowance->allowanceChargeReason,

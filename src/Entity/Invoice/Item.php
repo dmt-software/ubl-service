@@ -18,6 +18,12 @@ class Item
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|string $name = null;
 
+    #[SerializedName(name: "BuyersItemIdentification")]
+    #[SkipWhenEmpty]
+    #[Type(name: BuyersItemIdentification::class)]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
+    public null|BuyersItemIdentification $buyersItemIdentification = null;
+
     #[SerializedName(name: "SellersItemIdentification")]
     #[SkipWhenEmpty]
     #[Type(name: SellersItemIdentification::class)]

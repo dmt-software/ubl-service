@@ -2,6 +2,7 @@
 
 namespace DMT\Ubl\Service\Entity\Invoice;
 
+use DMT\Ubl\Service\Entity\Entity;
 use DMT\Ubl\Service\Entity\Invoice\Type\Amount;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
@@ -12,12 +13,16 @@ use JMS\Serializer\Annotation\XmlRoot;
     name: "AllowanceCharge",
     namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
 )]
-class AllowanceCharge
+class AllowanceCharge implements Entity
 {
     #[SerializedName(name: "ChargeIndicator")]
     #[Type(name: "bool")]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
     public null|bool $chargeIndicator = null;
+
+    #[SerializedName(name: "AllowanceChargeReasonCode")]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
+    public null|string $allowanceChargeReasonCode = null;
 
     #[SerializedName(name: "AllowanceChargeReason")]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
