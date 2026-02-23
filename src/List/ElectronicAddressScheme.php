@@ -10,6 +10,8 @@ use DMT\Ubl\Service\Format\GlobalLocationNumber;
 use DMT\Ubl\Service\Format\GlobalTradeItemNumber;
 use DMT\Ubl\Service\Format\CommerceNumberBE;
 use DMT\Ubl\Service\Format\CommerceNumberNL;
+use DMT\Ubl\Service\Format\VatNumberDE;
+use DMT\Ubl\Service\Format\VatNumberDK;
 use DMT\Ubl\Service\Format\VatNumberLU;
 use DMT\Ubl\Service\Format\VatNumberNL;
 use DMT\Ubl\Service\Format\CommerceNumberLU;
@@ -20,12 +22,15 @@ enum ElectronicAddressScheme: string
     case GLNNumber = '0088';
     case NLCommerceNumber = '0106';
     case GTINNumber = '0160';
+    case NLOrganizationNumber = '0190';
+    case DKVatNumber = '0198';
     case BECommerceNumber = '0208';
     case LUCommerceNumber = '0240';
     case BEVatNumber = '9925';
+    case DEVatNumber = '9930';
     case LUVatNumber = '9938';
     case NLVatNumber = '9944';
-    case NLOrganizationNumber = '0190';
+    case DeprecatedDKVatNumber = '9904';
     case DeprecatedNLOrganizationNumber = '9954';
 
     public static function lookup(null|string $schemeId, string $version = null): null|self
@@ -43,7 +48,7 @@ enum ElectronicAddressScheme: string
     }
 
     /**
-     * @see https://docs.peppol.eu/edelivery/codelists/v9.1/Peppol%20Code%20Lists%20-%20Participant%20identifier%20schemes%20v9.1.html
+     * @see https://docs.peppol.eu/edelivery/codelists/index.html
      */
     public function getSchemeId(string $version): string
     {
@@ -63,8 +68,11 @@ enum ElectronicAddressScheme: string
             self::BECommerceNumber => 'BE:EN',
             self::LUCommerceNumber => 'LU:MAT',
             self::BEVatNumber => 'BE:VAT',
+            self::DEVatNumber => 'DE:VAT',
+            self::DKVatNumber => 'DK:ERST',
             self::NLVatNumber => 'NL:VAT',
             self::LUVatNumber => 'LU:VAT',
+            self::DeprecatedDKVatNumber => 'DK:SE',
             self::NLOrganizationNumber => 'NL:OINO',
             self::DeprecatedNLOrganizationNumber => 'NL:OIN',
         };
@@ -92,10 +100,11 @@ enum ElectronicAddressScheme: string
             self::BECommerceNumber => new CommerceNumberBE(),
             self::LUCommerceNumber => new CommerceNumberLU(),
             self::BEVatNumber => new VatNumberBE(),
+            self::DEVatNumber => new VatNumberDE(),
+            self::DKVatNumber, self::DeprecatedDKVatNumber => new VatNumberDK(),
             self::NLVatNumber => new VatNumberNL(),
             self::LUVatNumber => new VatNumberLU(),
-            self::NLOrganizationNumber,
-            self::DeprecatedNLOrganizationNumber => new OrganizationNumberNL(),
+            self::NLOrganizationNumber, self::DeprecatedNLOrganizationNumber => new OrganizationNumberNL(),
         };
     }
 }
