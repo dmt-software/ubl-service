@@ -12,6 +12,7 @@ use DMT\Ubl\Service\Format\CommerceNumberBE;
 use DMT\Ubl\Service\Format\CommerceNumberNL;
 use DMT\Ubl\Service\Format\VatNumberDE;
 use DMT\Ubl\Service\Format\VatNumberDK;
+use DMT\Ubl\Service\Format\VatNumberES;
 use DMT\Ubl\Service\Format\VatNumberLU;
 use DMT\Ubl\Service\Format\VatNumberNL;
 use DMT\Ubl\Service\Format\CommerceNumberLU;
@@ -26,12 +27,14 @@ enum ElectronicAddressScheme: string
     case DKVatNumber = '0198';
     case BECommerceNumber = '0208';
     case LUCommerceNumber = '0240';
+    case ESVatNumber = '9920';
     case BEVatNumber = '9925';
     case DEVatNumber = '9930';
     case LUVatNumber = '9938';
     case NLVatNumber = '9944';
     case DeprecatedDKVatNumber = '9904';
     case DeprecatedNLOrganizationNumber = '9954';
+
 
     public static function lookup(null|string $schemeId, string $version = null): null|self
     {
@@ -70,6 +73,7 @@ enum ElectronicAddressScheme: string
             self::BEVatNumber => 'BE:VAT',
             self::DEVatNumber => 'DE:VAT',
             self::DKVatNumber => 'DK:ERST',
+            self::ESVatNumber => 'ES:VAT',
             self::NLVatNumber => 'NL:VAT',
             self::LUVatNumber => 'LU:VAT',
             self::DeprecatedDKVatNumber => 'DK:SE',
@@ -96,14 +100,15 @@ enum ElectronicAddressScheme: string
         return match ($this) {
             self::GLNNumber => new GlobalLocationNumber(),
             self::GTINNumber => new GlobalTradeItemNumber(),
-            self::NLCommerceNumber => new CommerceNumberNL(),
             self::BECommerceNumber => new CommerceNumberBE(),
             self::LUCommerceNumber => new CommerceNumberLU(),
+            self::NLCommerceNumber => new CommerceNumberNL(),
             self::BEVatNumber => new VatNumberBE(),
             self::DEVatNumber => new VatNumberDE(),
             self::DKVatNumber, self::DeprecatedDKVatNumber => new VatNumberDK(),
-            self::NLVatNumber => new VatNumberNL(),
+            self::ESVatNumber => new VatNumberES(),
             self::LUVatNumber => new VatNumberLU(),
+            self::NLVatNumber => new VatNumberNL(),
             self::NLOrganizationNumber, self::DeprecatedNLOrganizationNumber => new OrganizationNumberNL(),
         };
     }
