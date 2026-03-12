@@ -3,23 +3,23 @@
 namespace DMT\Ubl\Service;
 
 use DMT\Ubl\Service\Entity\CreditNote;
+use DMT\Ubl\Service\Entity\Document;
 use DMT\Ubl\Service\Entity\Entity;
-use DMT\Ubl\Service\Entity\CommonAggregateComponents;
 use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\AmountCurrencyEventSubscriber;
-use DMT\Ubl\Service\Event\LegalMonetaryTotalEventSubscriber;
-use DMT\Ubl\Service\Event\TaxCategoryEventSubscriber;
 use DMT\Ubl\Service\Event\ElectronicAddressSchemeEventSubscriber;
 use DMT\Ubl\Service\Event\InvoiceCustomizationEventSubscriber;
+use DMT\Ubl\Service\Event\LegalMonetaryTotalEventSubscriber;
 use DMT\Ubl\Service\Event\MandatoryDefaultsEventSubscriber;
 use DMT\Ubl\Service\Event\NormalizeAddressEventSubscriber;
 use DMT\Ubl\Service\Event\QuantityUnitEventSubscriber;
 use DMT\Ubl\Service\Event\SkipWhenEmptyEventSubscriber;
+use DMT\Ubl\Service\Event\TaxCategoryEventSubscriber;
 use DMT\Ubl\Service\Handler\UnionHandler;
 use DMT\Ubl\Service\List\ElectronicAddressScheme;
-use DMT\Ubl\Service\Transformer\ObjectToEntityTransformer;
-use DMT\Ubl\Service\Transformer\EntityToObjectTransformer;
+use DMT\Ubl\Service\Transformer\DocumentToObjectTransformer;
+use DMT\Ubl\Service\Transformer\ObjectToDocumentTransformer;
 use InvalidArgumentException;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
 use JMS\Serializer\Handler\HandlerRegistry;
@@ -47,47 +47,71 @@ class InvoiceService
     }
 
     /**
-     * Transform an UBL credit-note entity into a custom credit-note object.
+     * Transform an UBL document into a custom object.
+     *
+     * @param Document $document An UBL-Document object
+     * @param DocumentToObjectTransformer $transformer The transformer to use
+     * @return object
+     */
+    public function fromDocument(Document $document, DocumentToObjectTransformer $transformer): object
+    {
+        return $transformer->transform($document);
+    }
+
+    /**
+     * Transform an UBL credit-note document into a custom credit-note object.
      *
      * @param CreditNote $creditNote An UBL-CreditNote object
-     * @param EntityToObjectTransformer $transformer The transformer to use
+     * @param DocumentToObjectTransformer $transformer The transformer to use
      * @return object
      */
-    public function fromCreditNote(CreditNote $creditNote, EntityToObjectTransformer $transformer): object
+    public function fromCreditNote(CreditNote $creditNote, DocumentToObjectTransformer $transformer): object
     {
-        return $transformer->transform($creditNote);
+        return $this->fromDocument($creditNote, $transformer);
     }
 
     /**
-     * Transform an UBL invoice entity into a custom invoice object.
+     * Transform an UBL invoice document into a custom invoice object.
      *
      * @param Invoice $invoice An UBL-Invoice object
-     * @param EntityToObjectTransformer $transformer The transformer to use
+     * @param DocumentToObjectTransformer $transformer The transformer to use
      * @return object
      */
-    public function fromInvoice(Invoice $invoice, EntityToObjectTransformer $transformer): object
+    public function fromInvoice(Invoice $invoice, DocumentToObjectTransformer $transformer): object
     {
-        return $transformer->transform($invoice);
+        return $this->fromDocument($invoice, $transformer);
     }
 
     /**
-     * Get an object representation of an UBL-Invoice xml message.
+     * Get an object representation of an UBL-document XML message.
      *
      * @template T
-     * @param string $xml An incoming UBL-entity message to deserialize
-     * @param class-string<T> $type entity-type
-     * @return Entity|T
+     * @param string $xml An incoming UBL-document message to deserialize
+     * @param class-string<T> $type document-type
+     * @return Document|T
      */
-    public function fromXml(string $xml, string $type): Entity
+    public function fromXml(string $xml, string $type): Document
     {
         return $this->getSerializer()->deserialize($xml, $type, 'xml');
     }
 
+    /**
+     * Get an object representation of an UBL-credit-note XML message.
+     *
+     * @param string $xml
+     * @return CreditNote
+     */
     public function creditNoteFromXml(string $xml): CreditNote
     {
         return $this->fromXml($xml, CreditNote::class);
     }
 
+    /**
+     * Get an object representation of an UBL-invoice XML message.
+     *
+     * @param string $xml
+     * @return Invoice
+     */
     public function invoiceFromXml(string $xml): Invoice
     {
         return $this->fromXml($xml, Invoice::class);
@@ -97,10 +121,10 @@ class InvoiceService
      * Transform an entity object into a UBL entity.
      *
      * @param object $object Custom representation of an entity
-     * @param ObjectToEntityTransformer $transformer The transformer to use
-     * @return Entity
+     * @param ObjectToDocumentTransformer $transformer The transformer to use
+     * @return Document
      */
-    public function toEntity(object $object, ObjectToEntityTransformer $transformer): Entity
+    public function toDocument(object $object, ObjectToDocumentTransformer $transformer): Document
     {
         return $transformer->transform($object);
     }
@@ -109,12 +133,12 @@ class InvoiceService
      * Transform an invoice object into a UBL Invoice.
      *
      * @param object $object Custom representation of an invoice
-     * @param ObjectToEntityTransformer $transformer The transformer to use
+     * @param ObjectToDocumentTransformer $transformer The transformer to use
      * @return CreditNote
      */
-    public function toCreditNote(object $object, ObjectToEntityTransformer $transformer): CreditNote
+    public function toCreditNote(object $object, ObjectToDocumentTransformer $transformer): CreditNote
     {
-        $entity = $this->toEntity($object, $transformer);
+        $entity = $this->toDocument($object, $transformer);
 
         if (!$entity instanceof CreditNote) {
             throw new InvalidArgumentException("transformer failed to produce a CreditNote");
@@ -127,12 +151,12 @@ class InvoiceService
      * Transform an invoice object into a UBL Invoice.
      *
      * @param object $object Custom representation of an invoice
-     * @param ObjectToEntityTransformer $transformer The transformer to use
+     * @param ObjectToDocumentTransformer $transformer The transformer to use
      * @return Invoice
      */
-    public function toInvoice(object $object, ObjectToEntityTransformer $transformer): Invoice
+    public function toInvoice(object $object, ObjectToDocumentTransformer $transformer): Invoice
     {
-        $entity = $this->toEntity($object, $transformer);
+        $entity = $this->toDocument($object, $transformer);
 
         if (!$entity instanceof Invoice) {
             throw new InvalidArgumentException("transformer failed to produce an Invoice");
@@ -142,14 +166,14 @@ class InvoiceService
     }
 
     /**
-     * Get an UBL-Invoice xml message for an Invoice.
+     * Get an UBL-entity XML message for an Entity.
      *
-     * @param Invoice|CreditNote $entity
+     * @param Entity $entity
      * @param string $version
      *
      * @return string
      */
-    public function toXml(Invoice|CreditNote $entity, string $version = Versions::DEFAULT_VERSION): string
+    public function toXml(Entity $entity, string $version = Versions::DEFAULT_VERSION): string
     {
         return $this->getSerializer()->serialize($entity, 'xml', SerializationContext::create()->setVersion($version));
     }

@@ -30,15 +30,16 @@ use DMT\Ubl\Service\Entity\CommonBasicComponents\PrepaidAmount;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxExclusiveAmount;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxInclusiveAmount;
+use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\DateTypeHelper;
 use DMT\Ubl\Service\Helper\Invoice\DocumentCurrencyCodeHelper;
 use DMT\Ubl\Service\Helper\Invoice\ElectronicAddressHelper;
 use DMT\Ubl\Service\Helper\Invoice\IdentificationCodeHelper;
 use DMT\Ubl\Service\Helper\Invoice\InvoiceTypeHelper;
-use DMT\Ubl\Service\Transformer\ObjectToEntityTransformer;
+use DMT\Ubl\Service\Transformer\ObjectToDocumentTransformer;
 
-class IdenticalPropertiesInvoiceTransformer implements ObjectToEntityTransformer
+class IdenticalPropertiesInvoiceTransformer implements ObjectToDocumentTransformer
 {
     /**
      * @inheritDoc

@@ -36,10 +36,11 @@ use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use DMT\Ubl\Service\Objects\Address as AddressDTO;
 use DMT\Ubl\Service\Objects\Invoice as InvoiceDTO;
 use DMT\Ubl\Service\Objects\Party as PartyDTO;
+use DMT\Ubl\Service\Transformer\ObjectToDocumentTransformer;
 use DMT\Ubl\Service\Transformer\ObjectToEntityTransformer;
 use InvalidArgumentException;
 
-class SimpleObjectToInvoiceTransformer implements ObjectToEntityTransformer
+class SimpleObjectToInvoiceTransformer implements ObjectToDocumentTransformer
 {
     private Closure $invoiceLineCallback;
 

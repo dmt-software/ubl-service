@@ -16,7 +16,7 @@ use JMS\Serializer\Annotation\XmlRoot;
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2", prefix: "")]
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", prefix: "cac")]
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", prefix: "cbc")]
-class Invoice implements RootEntity
+class Invoice implements Document
 {
     use SharedCBCTrait;
     use SharedCACTrait;

@@ -4,7 +4,7 @@ namespace DMT\Ubl\Service\Transformer\Invoice;
 
 use Closure;
 use DateTime;
-use DMT\Ubl\Service\Entity\Entity;
+use DMT\Ubl\Service\Entity\Document as UBLDocument;
 use DMT\Ubl\Service\Entity\Invoice as UBLInvoice;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Address as UBLAddress;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party as UBLParty;
@@ -12,10 +12,11 @@ use DMT\Ubl\Service\Objects\Address;
 use DMT\Ubl\Service\Objects\CompanyId;
 use DMT\Ubl\Service\Objects\Invoice;
 use DMT\Ubl\Service\Objects\Party;
-use DMT\Ubl\Service\Transformer\EntityToObjectTransformer;
+use DMT\Ubl\Service\Objects;
+use DMT\Ubl\Service\Transformer\DocumentToObjectTransformer;
 use InvalidArgumentException;
 
-class InvoiceToSimpleObjectTransformer implements EntityToObjectTransformer
+class InvoiceToSimpleObjectTransformer implements DocumentToObjectTransformer
 {
     private Closure $invoiceLineCallback;
 
@@ -29,39 +30,39 @@ class InvoiceToSimpleObjectTransformer implements EntityToObjectTransformer
     /**
      * @inheritDoc
      */
-    public function transform(Entity|UBLInvoice $entity): Invoice
+    public function transform(UBLDocument $document): Objects\Invoice
     {
-        if (!$entity instanceof UBLInvoice) {
-            throw new InvalidArgumentException('Expected instance of ' . UBLInvoice::class);
+        if (!$document instanceof UBLInvoice) {
+            throw new InvalidArgumentException('Expected instance of ' . UBLDocument::class);
         }
 
-        $invoice = new Invoice(documentId: $entity->id);
-        $invoice->invoiceDate = $entity->issueDate ?? new DateTime();
-        $invoice->dueDate = $entity->dueDate;
-        $invoice->invoiceType = $entity?->invoiceTypeCode?->code?->value;
-        $invoice->orderReference = $entity?->orderReference->id;
-        $invoice->salesOrderReference = $entity?->orderReference->salesOrderId;
+        $invoice = new Invoice(documentId: $document->id);
+        $invoice->invoiceDate = $document->issueDate ?? new DateTime();
+        $invoice->dueDate = $document->dueDate;
+        $invoice->invoiceType = $document?->invoiceTypeCode?->code?->value;
+        $invoice->orderReference = $document?->orderReference->id;
+        $invoice->salesOrderReference = $document?->orderReference->salesOrderId;
         $invoice->invoicePeriod = array_filter([
-            $entity?->invoicePeriod?->startDate,
-            $entity?->invoicePeriod?->endDate,
+            $document?->invoicePeriod?->startDate,
+            $document?->invoicePeriod?->endDate,
         ]) ?: null;
-        $invoice->paymentTerm = $entity?->paymentTerms?->note;
-        $invoice->total = $entity?->legalMonetaryTotal?->payableAmount->amount;
+        $invoice->paymentTerm = $document?->paymentTerms?->note;
+        $invoice->total = $document?->legalMonetaryTotal?->payableAmount->amount;
 
-        if ($entity->accountingSupplierParty) {
-            $invoice->seller = $this->renderParty($entity->accountingSupplierParty);
+        if ($document->accountingSupplierParty) {
+            $invoice->seller = $this->renderParty($document->accountingSupplierParty);
         }
 
-        if ($entity->accountingCustomerParty) {
-            $invoice->buyer = $this->renderParty($entity->accountingCustomerParty);
+        if ($document->accountingCustomerParty) {
+            $invoice->buyer = $this->renderParty($document->accountingCustomerParty);
         }
 
-        if ($entity?->delivery?->deliveryLocation?->address) {
-            $invoice->address = $this->renderDeliveryAddress($entity->delivery->deliveryLocation->address);
+        if ($document?->delivery?->deliveryLocation?->address) {
+            $invoice->address = $this->renderDeliveryAddress($document->delivery->deliveryLocation->address);
         }
 
-        if ($entity?->paymentMeans) {
-            foreach ($entity->paymentMeans as $paymentMeans) {
+        if ($document?->paymentMeans) {
+            foreach ($document->paymentMeans as $paymentMeans) {
                 if ($paymentMeans->payeeFinancialAccount?->id?->id) {
                     $invoice->bankAccountNumber = $paymentMeans->payeeFinancialAccount->id->id;
                     break;
@@ -70,7 +71,7 @@ class InvoiceToSimpleObjectTransformer implements EntityToObjectTransformer
         }
 
         if (isset($this->invoiceLineCallback)) {
-            $invoice->invoiceLines = array_map($this->invoiceLineCallback, $entity->invoiceLine);
+            $invoice->invoiceLines = array_map($this->invoiceLineCallback, $document->invoiceLine);
         }
 
         return $invoice;
