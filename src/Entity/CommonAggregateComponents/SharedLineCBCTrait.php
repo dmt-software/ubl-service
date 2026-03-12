@@ -1,6 +1,6 @@
 <?php
 
-namespace DMT\Ubl\Service\Entity;
+namespace DMT\Ubl\Service\Entity\CommonAggregateComponents;
 
 use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
 use JMS\Serializer\Annotation\SerializedName;

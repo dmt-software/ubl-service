@@ -3,8 +3,6 @@
 namespace DMT\Ubl\Service\Entity\CommonAggregateComponents;
 
 use DMT\Ubl\Service\Entity\CommonBasicComponents\CreditedQuantity;
-use DMT\Ubl\Service\Entity\SharedLineCACTrait;
-use DMT\Ubl\Service\Entity\SharedLineCBCTrait;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\XmlElement;
