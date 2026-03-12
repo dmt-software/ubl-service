@@ -2,9 +2,9 @@
 
 namespace DMT\Test\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Components\Price;
-use DMT\Ubl\Service\Entity\Components\Type\Amount;
-use DMT\Ubl\Service\Entity\Components\Type\AmountType;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Price;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\AmountType;
 use DMT\Ubl\Service\Event\AmountCurrencyEventSubscriber;
 use JMS\Serializer\Builder\DefaultDriverFactory;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;

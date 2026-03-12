@@ -2,8 +2,8 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
-use DMT\Ubl\Service\Entity\Components\PartyLegalEntity;
-use DMT\Ubl\Service\Entity\Components\Type\CompanyId;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegal;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\CompanyId;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;
@@ -12,7 +12,7 @@ class PartyLegalEntityTest extends TestCase
 {
     public function testSerialize(): void
     {
-        $partyLegalEntity = new PartyLegalEntity();
+        $partyLegalEntity = new PartyLegal();
         $partyLegalEntity->registrationName = 'Holding BV';
         $partyLegalEntity->companyId = new CompanyId();
         $partyLegalEntity->companyId->id = '01000332';

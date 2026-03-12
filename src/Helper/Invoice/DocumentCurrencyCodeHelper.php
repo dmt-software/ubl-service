@@ -2,7 +2,7 @@
 
 namespace DMT\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Components\Type\DocumentCurrencyCode;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\DocumentCurrencyCode;
 
 final class DocumentCurrencyCodeHelper
 {

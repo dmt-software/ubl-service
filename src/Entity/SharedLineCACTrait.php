@@ -2,10 +2,10 @@
 
 namespace DMT\Ubl\Service\Entity;
 
-use DMT\Ubl\Service\Entity\Components\AllowanceCharge;
-use DMT\Ubl\Service\Entity\Components\Item;
-use DMT\Ubl\Service\Entity\Components\Price;
-use DMT\Ubl\Service\Entity\Components\TaxTotal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AllowanceCharge;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Item;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Price;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Since;
 use JMS\Serializer\Annotation\Type;

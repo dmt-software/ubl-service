@@ -2,7 +2,7 @@
 
 namespace DMT\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Components\Type\InvoiceTypeCode;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\InvoiceTypeCode;
 use DMT\Ubl\Service\List\InvoiceType;
 
 final class InvoiceTypeHelper

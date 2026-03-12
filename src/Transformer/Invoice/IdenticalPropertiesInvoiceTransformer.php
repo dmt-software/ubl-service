@@ -2,35 +2,34 @@
 
 namespace DMT\Ubl\Service\Transformer\Invoice;
 
-use DMT\Ubl\Service\Entity\Components;
-use DMT\Ubl\Service\Entity\Components\AccountingCustomerParty;
-use DMT\Ubl\Service\Entity\Components\AccountingSupplierParty;
-use DMT\Ubl\Service\Entity\Components\Address;
-use DMT\Ubl\Service\Entity\Components\AllowanceCharge;
-use DMT\Ubl\Service\Entity\Components\Contact;
-use DMT\Ubl\Service\Entity\Components\Country;
-use DMT\Ubl\Service\Entity\Components\Delivery;
-use DMT\Ubl\Service\Entity\Components\DeliveryLocation;
-use DMT\Ubl\Service\Entity\Components\InvoicePeriod;
-use DMT\Ubl\Service\Entity\Components\LegalMonetaryTotal;
-use DMT\Ubl\Service\Entity\Components\OrderReference;
-use DMT\Ubl\Service\Entity\Components\Party;
-use DMT\Ubl\Service\Entity\Components\PartyIdentification;
-use DMT\Ubl\Service\Entity\Components\PartyLegalEntity;
-use DMT\Ubl\Service\Entity\Components\PartyName;
-use DMT\Ubl\Service\Entity\Components\PostalAddress;
-use DMT\Ubl\Service\Entity\Components\TaxTotal;
-use DMT\Ubl\Service\Entity\Components\Type\AllowanceTotalAmount;
-use DMT\Ubl\Service\Entity\Components\Type\Amount;
-use DMT\Ubl\Service\Entity\Components\Type\ChargeTotalAmount;
-use DMT\Ubl\Service\Entity\Components\Type\CompanyId;
-use DMT\Ubl\Service\Entity\Components\Type\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\Components\Type\PayableAmount;
-use DMT\Ubl\Service\Entity\Components\Type\PayableRoundingAmount;
-use DMT\Ubl\Service\Entity\Components\Type\PrepaidAmount;
-use DMT\Ubl\Service\Entity\Components\Type\TaxAmount;
-use DMT\Ubl\Service\Entity\Components\Type\TaxExclusiveAmount;
-use DMT\Ubl\Service\Entity\Components\Type\TaxInclusiveAmount;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AccountingCustomerParty;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AccountingSupplierParty;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Address;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AllowanceCharge;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Contact;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Country;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Delivery;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\DeliveryLocation;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoicePeriod;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\LegalMonetaryTotal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyIdentification;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyName;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PostalAddress;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\AllowanceTotalAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\ChargeTotalAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\CompanyId;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableRoundingAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PrepaidAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxExclusiveAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxInclusiveAmount;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\DateTypeHelper;
 use DMT\Ubl\Service\Helper\Invoice\DocumentCurrencyCodeHelper;
@@ -170,13 +169,13 @@ class IdenticalPropertiesInvoiceTransformer implements ObjectToEntityTransformer
         return $country ?? null;
     }
 
-    private function renderPartyLegalEntity(null|object $object): ?PartyLegalEntity
+    private function renderPartyLegalEntity(null|object $object): ?PartyLegal
     {
         if ($object === null) {
             return null;
         }
 
-        $partyLegalEntity = new PartyLegalEntity();
+        $partyLegalEntity = new PartyLegal();
         $partyLegalEntity->registrationName = $object->registrationName ?? null;
         $partyLegalEntity->companyId = ElectronicAddressHelper::fetchFromValue($object->companyId ?? null, CompanyId::class);
 

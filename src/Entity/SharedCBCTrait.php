@@ -3,8 +3,8 @@
 namespace DMT\Ubl\Service\Entity;
 
 use DateTime;
-use DMT\Ubl\Service\Entity\Components\Type\DocumentCurrencyCode;
-use DMT\Ubl\Service\Entity\Components\Type\TaxCurrencyCode;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\DocumentCurrencyCode;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxCurrencyCode;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Since;
 use JMS\Serializer\Annotation\Type;

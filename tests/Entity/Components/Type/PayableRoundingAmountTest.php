@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components\Type;
 
-use DMT\Ubl\Service\Entity\Components\Type\PayableRoundingAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableRoundingAmount;
 
 class PayableRoundingAmountTest extends AmountTestCase
 {

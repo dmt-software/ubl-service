@@ -2,16 +2,15 @@
 
 namespace DMT\Test\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Components;
-use DMT\Ubl\Service\Entity\Components\ClassifiedTaxCategory;
-use DMT\Ubl\Service\Entity\Components\Item;
-use DMT\Ubl\Service\Entity\Components\TaxScheme;
-use DMT\Ubl\Service\Entity\Components\TaxTotal;
-use DMT\Ubl\Service\Entity\Components\Type\Id;
-use DMT\Ubl\Service\Entity\Components\Type\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\Components\Type\TaxAmount;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\ClassifiedTaxCategory;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoiceLine;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Item;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxScheme;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Id;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\InvoiceLine;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\TaxCategoryEventSubscriber;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;

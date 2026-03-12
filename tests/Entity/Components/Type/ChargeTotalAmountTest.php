@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components\Type;
 
-use DMT\Ubl\Service\Entity\Components\Type\ChargeTotalAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\ChargeTotalAmount;
 
 class ChargeTotalAmountTest extends AmountTestCase
 {

@@ -2,7 +2,7 @@
 
 namespace DMT\Ubl\Service\List;
 
-use DMT\Ubl\Service\Entity\Components;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents;
 use DMT\Ubl\Service\Entity\Entity;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Format\DUNSNumber;

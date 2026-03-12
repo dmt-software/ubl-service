@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
-use DMT\Ubl\Service\Entity\Components\OrderReference;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;

@@ -2,7 +2,8 @@
 
 namespace DMT\Ubl\Service\Entity;
 
-use DMT\Ubl\Service\Entity\Components\Type\CreditNoteTypeCode;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\CreditNoteLine;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\CreditNoteTypeCode;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\XmlElement;
@@ -14,7 +15,7 @@ use JMS\Serializer\Annotation\XmlRoot;
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2", prefix: "")]
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", prefix: "cac")]
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2", prefix: "cbc")]
-class CreditNote implements Entity
+class CreditNote implements RootEntity
 {
     use SharedCBCTrait;
     use SharedCACTrait;

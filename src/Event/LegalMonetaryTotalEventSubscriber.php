@@ -2,15 +2,15 @@
 
 namespace DMT\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Components\LegalMonetaryTotal;
-use DMT\Ubl\Service\Entity\Components\Type\AllowanceTotalAmount;
-use DMT\Ubl\Service\Entity\Components\Type\ChargeTotalAmount;
-use DMT\Ubl\Service\Entity\Components\Type\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\Components\Type\PayableAmount;
-use DMT\Ubl\Service\Entity\Components\Type\PayableRoundingAmount;
-use DMT\Ubl\Service\Entity\Components\Type\TaxExclusiveAmount;
-use DMT\Ubl\Service\Entity\Components\Type\TaxInclusiveAmount;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\LegalMonetaryTotal;
 use DMT\Ubl\Service\Entity\Invoice;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\AllowanceTotalAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\ChargeTotalAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableRoundingAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxExclusiveAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxInclusiveAmount;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 

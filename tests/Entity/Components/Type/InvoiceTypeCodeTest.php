@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components\Type;
 
-use DMT\Ubl\Service\Entity\Components\Type\InvoiceTypeCode;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\InvoiceTypeCode;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\InvoiceCustomizationEventSubscriber;
 use DMT\Ubl\Service\List\InvoiceType;

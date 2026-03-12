@@ -2,9 +2,9 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
-use DMT\Ubl\Service\Entity\Components\AllowanceCharge;
-use DMT\Ubl\Service\Entity\Components\TaxCategory;
-use DMT\Ubl\Service\Entity\Components\Type\Amount;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AllowanceCharge;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxCategory;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;

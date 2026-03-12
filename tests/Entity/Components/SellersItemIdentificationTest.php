@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
-use DMT\Ubl\Service\Entity\Components\SellersItemIdentification;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\SellersItemIdentification;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;

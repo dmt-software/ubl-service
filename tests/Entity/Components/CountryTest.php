@@ -2,8 +2,8 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
-use DMT\Ubl\Service\Entity\Components\Country;
-use DMT\Ubl\Service\Entity\Components\Type\IdentificationCode;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Country;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\IdentificationCode;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;

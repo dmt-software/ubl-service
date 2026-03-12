@@ -2,13 +2,11 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components\Type;
 
-use DMT\Ubl\Service\Entity\Components;
-use DMT\Ubl\Service\Entity\Components\Type\EndpointId;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\EndpointId;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\ElectronicAddressSchemeEventSubscriber;
 use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
-use JMS\Serializer\Handler\HandlerRegistry;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;

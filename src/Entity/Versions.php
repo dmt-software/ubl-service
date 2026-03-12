@@ -2,7 +2,7 @@
 
 namespace DMT\Ubl\Service\Entity;
 
-class Versions
+final readonly class Versions
 {
     public const string DEFAULT_VERSION = Versions::VERSION_2_0;
     public const string VERSION_1_0 = '1.0';

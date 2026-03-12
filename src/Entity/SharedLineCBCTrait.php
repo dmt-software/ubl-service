@@ -2,8 +2,7 @@
 
 namespace DMT\Ubl\Service\Entity;
 
-use DMT\Ubl\Service\Entity\Components\Type\InvoicedQuantity;
-use DMT\Ubl\Service\Entity\Components\Type\LineExtensionAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\XmlElement;

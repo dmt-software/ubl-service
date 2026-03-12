@@ -2,9 +2,9 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
-use DMT\Ubl\Service\Entity\Components\Country;
-use DMT\Ubl\Service\Entity\Components\PostalAddress;
-use DMT\Ubl\Service\Entity\Components\Type\IdentificationCode;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Country;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PostalAddress;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\IdentificationCode;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\NormalizeAddressEventSubscriber;
 use JMS\Serializer\EventDispatcher\EventDispatcher;

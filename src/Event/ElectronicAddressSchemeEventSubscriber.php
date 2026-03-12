@@ -3,7 +3,7 @@
 namespace DMT\Ubl\Service\Event;
 
 use BackedEnum;
-use DMT\Ubl\Service\Entity\Components\Type\ElectronicAddressType;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\ElectronicAddressType;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;

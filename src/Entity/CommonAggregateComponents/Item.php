@@ -1,0 +1,43 @@
+<?php
+
+namespace DMT\Ubl\Service\Entity\CommonAggregateComponents;
+
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\SkipWhenEmpty;
+use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\XmlElement;
+use JMS\Serializer\Annotation\XmlRoot;
+
+#[XmlRoot(
+    name: "Item",
+    namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+)]
+class Item implements CommonAggregateComponent
+{
+    #[SerializedName(name: "Name")]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
+    public null|string $name = null;
+
+    #[SerializedName(name: "BuyersItemIdentification")]
+    #[SkipWhenEmpty]
+    #[Type(name: BuyersItemIdentification::class)]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
+    public null|BuyersItemIdentification $buyersItemIdentification = null;
+
+    #[SerializedName(name: "SellersItemIdentification")]
+    #[SkipWhenEmpty]
+    #[Type(name: SellersItemIdentification::class)]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
+    public null|SellersItemIdentification $sellersItemIdentification = null;
+
+    #[SerializedName(name: "StandardItemIdentification")]
+    #[SkipWhenEmpty]
+    #[Type(name: StandardItemIdentification::class)]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
+    public null|StandardItemIdentification $standardItemIdentification = null;
+
+    #[SerializedName(name: "ClassifiedTaxCategory")]
+    #[Type(name: ClassifiedTaxCategory::class)]
+    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
+    public null|ClassifiedTaxCategory $classifiedTaxCategory = null;
+}

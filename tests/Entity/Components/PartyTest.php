@@ -2,13 +2,13 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
-use DMT\Ubl\Service\Entity\Components\Party;
-use DMT\Ubl\Service\Entity\Components\PartyIdentification;
-use DMT\Ubl\Service\Entity\Components\PartyLegalEntity;
-use DMT\Ubl\Service\Entity\Components\PartyName;
-use DMT\Ubl\Service\Entity\Components\PostalAddress;
-use DMT\Ubl\Service\Entity\Components\Type\EndpointId;
-use DMT\Ubl\Service\Entity\Components\Type\Id;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyIdentification;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyName;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PostalAddress;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\EndpointId;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Id;
 use DMT\Ubl\Service\Entity\Versions;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -86,7 +86,7 @@ class PartyTest extends TestCase
         $party->partyName->name = 'Holding BV';
         $party->postalAddress = new PostalAddress();
         $party->postalAddress->postalZone = '1234XX';
-        $party->partyLegalEntity = new PartyLegalEntity();
+        $party->partyLegalEntity = new PartyLegal();
         $party->partyLegalEntity->registrationName = 'Holding BV';
 
         return $party;

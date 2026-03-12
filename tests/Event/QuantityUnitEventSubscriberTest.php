@@ -2,9 +2,9 @@
 
 namespace DMT\Test\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Components\Price;
-use DMT\Ubl\Service\Entity\Components\Type\BaseQuantity;
-use DMT\Ubl\Service\Entity\Components\Type\QuantityType;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Price;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\BaseQuantity;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\QuantityType;
 use DMT\Ubl\Service\Event\QuantityUnitEventSubscriber;
 use JMS\Serializer\Builder\DefaultDriverFactory;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;

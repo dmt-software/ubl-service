@@ -2,7 +2,7 @@
 
 namespace DMT\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Components\Type\QuantityType;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\QuantityType;
 
 final class QuantityHelper
 {

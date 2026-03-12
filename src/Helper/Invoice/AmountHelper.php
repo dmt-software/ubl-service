@@ -2,7 +2,7 @@
 
 namespace DMT\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Components\Type\AmountType;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\AmountType;
 
 final class AmountHelper
 {
@@ -16,6 +16,10 @@ final class AmountHelper
      */
     public static function fetchFromValue(mixed $value, string $amountType): null|AmountType
     {
+        if (is_null($value)) {
+            return null;
+        }
+
         if (is_scalar($value)) {
             $value = (object)['amount' => $value];
         }

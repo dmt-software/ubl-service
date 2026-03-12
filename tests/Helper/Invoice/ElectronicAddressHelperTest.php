@@ -2,9 +2,9 @@
 
 namespace DMT\Test\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Components\Type\CompanyId;
-use DMT\Ubl\Service\Entity\Components\Type\ElectronicAddressType;
-use DMT\Ubl\Service\Entity\Components\Type\EndpointId;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\CompanyId;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\ElectronicAddressType;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\EndpointId;
 use DMT\Ubl\Service\Helper\Invoice\ElectronicAddressHelper;
 use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use PHPUnit\Framework\Attributes\DataProvider;

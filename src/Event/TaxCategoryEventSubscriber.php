@@ -2,17 +2,17 @@
 
 namespace DMT\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Components\ClassifiedTaxCategory;
-use DMT\Ubl\Service\Entity\Components\PostalAddress;
-use DMT\Ubl\Service\Entity\Components\TaxCategory;
-use DMT\Ubl\Service\Entity\Components\TaxScheme;
-use DMT\Ubl\Service\Entity\Components\TaxSubtotal;
-use DMT\Ubl\Service\Entity\Components\TaxTotal;
-use DMT\Ubl\Service\Entity\Components\Type\Id;
-use DMT\Ubl\Service\Entity\Components\Type\TaxableAmount;
-use DMT\Ubl\Service\Entity\Components\Type\TaxAmount;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\ClassifiedTaxCategory;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoiceLine;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PostalAddress;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxCategory;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxScheme;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxSubtotal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Id;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxableAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\InvoiceLine;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 

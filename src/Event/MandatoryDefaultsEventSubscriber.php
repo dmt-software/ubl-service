@@ -2,11 +2,11 @@
 
 namespace DMT\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Components\OrderReference;
-use DMT\Ubl\Service\Entity\Components\Party;
-use DMT\Ubl\Service\Entity\Components\PartyLegalEntity;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoiceLine;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegal;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\InvoiceLine;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
@@ -72,7 +72,7 @@ final readonly class MandatoryDefaultsEventSubscriber implements EventSubscriber
 
         if (version_compare($event->getContext()->getAttribute('version'), "1.2", '>=')) {
             if (empty($party?->partyLegalEntity->registrationName)) {
-                $party->partyLegalEntity ??= new PartyLegalEntity();
+                $party->partyLegalEntity ??= new PartyLegal();
                 $party->partyLegalEntity->registrationName = $party->partyName?->name;
             }
         }

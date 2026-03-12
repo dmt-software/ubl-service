@@ -2,16 +2,16 @@
 
 namespace DMT\Ubl\Service\Entity;
 
-use DMT\Ubl\Service\Entity\Components\AccountingCustomerParty;
-use DMT\Ubl\Service\Entity\Components\AccountingSupplierParty;
-use DMT\Ubl\Service\Entity\Components\AllowanceCharge;
-use DMT\Ubl\Service\Entity\Components\Delivery;
-use DMT\Ubl\Service\Entity\Components\InvoicePeriod;
-use DMT\Ubl\Service\Entity\Components\LegalMonetaryTotal;
-use DMT\Ubl\Service\Entity\Components\OrderReference;
-use DMT\Ubl\Service\Entity\Components\PaymentMeans;
-use DMT\Ubl\Service\Entity\Components\PaymentTerms;
-use DMT\Ubl\Service\Entity\Components\TaxTotal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AccountingCustomerParty;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AccountingSupplierParty;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AllowanceCharge;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Delivery;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoicePeriod;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\LegalMonetaryTotal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PaymentMeans;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PaymentTerms;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Since;
 use JMS\Serializer\Annotation\Type;

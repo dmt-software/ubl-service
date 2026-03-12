@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
-use DMT\Ubl\Service\Entity\Components\Contact;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Contact;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;

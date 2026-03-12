@@ -2,8 +2,8 @@
 
 namespace DMT\Test\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Components;
-use DMT\Ubl\Service\Entity\Components\Address;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Address;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\NormalizeAddressEventSubscriber;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;

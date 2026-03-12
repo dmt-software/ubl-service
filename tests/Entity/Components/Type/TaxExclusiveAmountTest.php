@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components\Type;
 
-use DMT\Ubl\Service\Entity\Components\Type\TaxExclusiveAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxExclusiveAmount;
 
 class TaxExclusiveAmountTest extends AmountTestCase
 {

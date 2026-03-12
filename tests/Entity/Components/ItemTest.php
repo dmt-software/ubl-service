@@ -2,11 +2,11 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
-use DMT\Ubl\Service\Entity\Components\BuyersItemIdentification;
-use DMT\Ubl\Service\Entity\Components\Item;
-use DMT\Ubl\Service\Entity\Components\SellersItemIdentification;
-use DMT\Ubl\Service\Entity\Components\StandardItemIdentification;
-use DMT\Ubl\Service\Entity\Components\Type\Id;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\BuyersItemIdentification;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Item;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\SellersItemIdentification;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\StandardItemIdentification;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Id;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;

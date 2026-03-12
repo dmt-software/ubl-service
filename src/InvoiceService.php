@@ -4,7 +4,7 @@ namespace DMT\Ubl\Service;
 
 use DMT\Ubl\Service\Entity\CreditNote;
 use DMT\Ubl\Service\Entity\Entity;
-use DMT\Ubl\Service\Entity\Components;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents;
 use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\AmountCurrencyEventSubscriber;

@@ -2,9 +2,9 @@
 
 namespace DMT\Test\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Components\Type\ElectronicAddressType;
-use DMT\Ubl\Service\Entity\Components\Type\EndpointId;
-use DMT\Ubl\Service\Entity\Components\Type\Id;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\ElectronicAddressType;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\EndpointId;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Id;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\ElectronicAddressSchemeEventSubscriber;
 use DMT\Ubl\Service\List\ElectronicAddressScheme;

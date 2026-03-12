@@ -2,9 +2,9 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
-use DMT\Ubl\Service\Entity\Components\Price;
-use DMT\Ubl\Service\Entity\Components\Type\BaseQuantity;
-use DMT\Ubl\Service\Entity\Components\Type\PriceAmount;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Price;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\BaseQuantity;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PriceAmount;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;

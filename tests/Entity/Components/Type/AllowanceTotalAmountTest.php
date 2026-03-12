@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components\Type;
 
-use DMT\Ubl\Service\Entity\Components\Type\AllowanceTotalAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\AllowanceTotalAmount;
 
 class AllowanceTotalAmountTest extends AmountTestCase
 {

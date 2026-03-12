@@ -3,7 +3,7 @@
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
 use DateTime;
-use DMT\Ubl\Service\Entity\Components\InvoicePeriod;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoicePeriod;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;

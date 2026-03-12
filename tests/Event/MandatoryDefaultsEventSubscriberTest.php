@@ -2,12 +2,12 @@
 
 namespace DMT\Test\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Components\OrderReference;
-use DMT\Ubl\Service\Entity\Components\Party;
-use DMT\Ubl\Service\Entity\Components\PartyLegalEntity;
-use DMT\Ubl\Service\Entity\Components\PartyName;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoiceLine;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyName;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\InvoiceLine;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\MandatoryDefaultsEventSubscriber;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
@@ -124,7 +124,7 @@ class MandatoryDefaultsEventSubscriberTest extends TestCase
         yield 'set default for version 2.0.0-nlcius' => [clone($party), Versions::VERSION_NLCIUS, 'Business'];
 
         $party1 = clone($party);
-        $party1->partyLegalEntity = new PartyLegalEntity();
+        $party1->partyLegalEntity = new PartyLegal();
         $party1->partyLegalEntity->registrationName = 'Business BV';
 
         yield 'not override set default' => [$party1, Versions::VERSION_2_0, 'Business BV'];

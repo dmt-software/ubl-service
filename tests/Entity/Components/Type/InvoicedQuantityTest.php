@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components\Type;
 
-use DMT\Ubl\Service\Entity\Components\Type\InvoicedQuantity;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\InvoicedQuantity;
 
 class InvoicedQuantityTest extends QuantityTestCase
 {

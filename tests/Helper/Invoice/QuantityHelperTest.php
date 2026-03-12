@@ -2,9 +2,9 @@
 
 namespace DMT\Test\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Components\Type\BaseQuantity;
-use DMT\Ubl\Service\Entity\Components\Type\InvoicedQuantity;
-use DMT\Ubl\Service\Entity\Components\Type\QuantityType;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\BaseQuantity;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\InvoicedQuantity;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\QuantityType;
 use DMT\Ubl\Service\Helper\Invoice\QuantityHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

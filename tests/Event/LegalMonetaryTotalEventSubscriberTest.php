@@ -2,15 +2,15 @@
 
 namespace DMT\Test\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Components\AllowanceCharge;
-use DMT\Ubl\Service\Entity\Components\LegalMonetaryTotal;
-use DMT\Ubl\Service\Entity\Components\TaxTotal;
-use DMT\Ubl\Service\Entity\Components\Type\Amount;
-use DMT\Ubl\Service\Entity\Components\Type\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\Components\Type\PayableAmount;
-use DMT\Ubl\Service\Entity\Components\Type\TaxAmount;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AllowanceCharge;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoiceLine;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\LegalMonetaryTotal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\InvoiceLine;
 use DMT\Ubl\Service\Event\LegalMonetaryTotalEventSubscriber;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;

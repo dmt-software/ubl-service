@@ -2,9 +2,9 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
-use DMT\Ubl\Service\Entity\Components\AccountingCustomerParty;
-use DMT\Ubl\Service\Entity\Components\Party;
-use DMT\Ubl\Service\Entity\Components\PartyName;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AccountingCustomerParty;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyName;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;

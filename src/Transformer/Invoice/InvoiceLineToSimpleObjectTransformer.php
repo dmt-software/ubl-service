@@ -2,8 +2,8 @@
 
 namespace DMT\Ubl\Service\Transformer\Invoice;
 
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoiceLine as UBLInvoiceLine;
 use DMT\Ubl\Service\Entity\Entity;
-use DMT\Ubl\Service\Entity\InvoiceLine as UBLInvoiceLine;
 use DMT\Ubl\Service\Objects\InvoiceLine;
 use DMT\Ubl\Service\Transformer\EntityToObjectTransformer;
 use InvalidArgumentException;

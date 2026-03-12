@@ -2,8 +2,8 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
-use DMT\Ubl\Service\Entity\Components\TaxScheme;
-use DMT\Ubl\Service\Entity\Components\Type\Id;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxScheme;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Id;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;

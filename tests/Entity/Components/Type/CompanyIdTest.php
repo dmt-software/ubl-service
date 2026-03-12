@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components\Type;
 
-use DMT\Ubl\Service\Entity\Components\Type\CompanyId;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\CompanyId;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\ElectronicAddressSchemeEventSubscriber;
 use DMT\Ubl\Service\List\ElectronicAddressScheme;

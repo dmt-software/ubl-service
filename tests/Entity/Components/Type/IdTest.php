@@ -2,8 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components\Type;
 
-use DMT\Ubl\Service\Entity\Components;
-use DMT\Ubl\Service\Entity\Components\Type\Id;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Id;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\ElectronicAddressSchemeEventSubscriber;
 use JMS\Serializer\EventDispatcher\EventDispatcher;

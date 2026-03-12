@@ -2,8 +2,8 @@
 
 namespace DMT\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Components\Address;
-use DMT\Ubl\Service\Entity\Components\PostalAddress;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Address;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PostalAddress;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 

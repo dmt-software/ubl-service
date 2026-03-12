@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components\Type;
 
-use DMT\Ubl\Service\Entity\Components\Type\IdentificationCode;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\IdentificationCode;
 use DMT\Ubl\Service\Entity\Versions;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;

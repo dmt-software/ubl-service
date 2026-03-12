@@ -2,8 +2,8 @@
 
 namespace DMT\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Components\Type\ElectronicAddressType;
-use DMT\Ubl\Service\Entity\Components\Type\EndpointId;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\ElectronicAddressType;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\EndpointId;
 use DMT\Ubl\Service\List\ElectronicAddressScheme;
 
 final class ElectronicAddressHelper
@@ -13,7 +13,7 @@ final class ElectronicAddressHelper
      *
      * @param string|object|null $value
      * @param class-string<T> $type
-     * @return T|null
+     * @return ElectronicAddressType|T|null
      */
     public static function fetchFromValue(null|string|object $value, string $type = EndpointId::class): ?ElectronicAddressType
     {
@@ -32,7 +32,7 @@ final class ElectronicAddressHelper
             $value->schemeId = ElectronicAddressScheme::lookup($value->schemeId);
         }
 
-        if ($value->schemeId instanceof ElectronicAddressScheme) {
+        if (isset($value->schemeId) && $value->schemeId instanceof ElectronicAddressScheme) {
             $endpointId->schemeId = $value->schemeId;
         }
 
