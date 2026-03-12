@@ -47,6 +47,20 @@ class InvoiceService
     }
 
     /**
+     * @param string $xml
+     * @return class-string
+     */
+    public function detectDocumentType(string $xml): string
+    {
+        $doc = simplexml_load_string($xml);
+
+        return match ($doc->getName()) {
+            'Invoice' => Invoice::class,
+            'CreditNote' => CreditNote::class,
+        };
+    }
+
+    /**
      * Transform an UBL document into a custom object.
      *
      * @param Document $document An UBL-Document object
@@ -87,11 +101,15 @@ class InvoiceService
      *
      * @template T
      * @param string $xml An incoming UBL-document message to deserialize
-     * @param class-string<T> $type document-type
+     * @param class-string<T>|null $type document-type
      * @return Document|T
      */
-    public function fromXml(string $xml, string $type): Document
+    public function fromXml(string $xml, string|null $type = null): Document
     {
+        if (is_null($type)) {
+            $type = $this->detectDocumentType($xml);
+        }
+
         return $this->getSerializer()->deserialize($xml, $type, 'xml');
     }
 
