@@ -3,13 +3,14 @@
 namespace DMT\Test\Ubl\Service;
 
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\Invoice\Item;
-use DMT\Ubl\Service\Entity\Invoice\LegalMonetaryTotal;
-use DMT\Ubl\Service\Entity\Invoice\Price;
-use DMT\Ubl\Service\Entity\Invoice\SellersItemIdentification;
-use DMT\Ubl\Service\Entity\Invoice\Type\InvoicedQuantity;
-use DMT\Ubl\Service\Entity\Invoice\Type\PayableAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\PriceAmount;
+use DMT\Ubl\Service\Entity\CreditNote;
+use DMT\Ubl\Service\Entity\Components\Item;
+use DMT\Ubl\Service\Entity\Components\LegalMonetaryTotal;
+use DMT\Ubl\Service\Entity\Components\Price;
+use DMT\Ubl\Service\Entity\Components\SellersItemIdentification;
+use DMT\Ubl\Service\Entity\Components\Type\InvoicedQuantity;
+use DMT\Ubl\Service\Entity\Components\Type\PayableAmount;
+use DMT\Ubl\Service\Entity\Components\Type\PriceAmount;
 use DMT\Ubl\Service\Entity\InvoiceLine;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\QuantityHelper;
@@ -59,7 +60,27 @@ class InvoiceServiceTest extends TestCase
     public function testFromXml(): void
     {
         $service = new InvoiceService();
-        $invoice = $service->fromXml('<Invoice/>');
+
+        $entity = $service->fromXml('<Invoice/>', Invoice::class);
+        $this->assertInstanceOf(Invoice::class, $entity);
+
+        $entity = $service->fromXml('<CreditNote/>', CreditNote::class);
+        $this->assertInstanceOf(CreditNote::class, $entity);
+    }
+
+    public function testCreditNoteFromXml(): void
+    {
+        $service = new InvoiceService();
+
+        $creditNote = $service->creditNoteFromXml('<CreditNote/>');
+
+        $this->assertInstanceOf(CreditNote::class, $creditNote);
+    }
+
+    public function testInvoiceFromXml(): void
+    {
+        $service = new InvoiceService();
+        $invoice = $service->invoiceFromXml('<Invoice/>');
 
         $this->assertInstanceOf(Invoice::class, $invoice);
     }

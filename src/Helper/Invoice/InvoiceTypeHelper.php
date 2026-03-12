@@ -2,7 +2,7 @@
 
 namespace DMT\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Invoice\Type\InvoiceTypeCode;
+use DMT\Ubl\Service\Entity\Components\Type\InvoiceTypeCode;
 use DMT\Ubl\Service\List\InvoiceType;
 
 final class InvoiceTypeHelper
@@ -19,7 +19,7 @@ final class InvoiceTypeHelper
         }
 
         $invoiceType = new InvoiceTypeCode();
-        $invoiceType->code = $type ?? InvoiceType::Normal;
+        $invoiceType->code = $type ?? InvoiceType::CommercialInvoice;
 
         if (isset($value->listId)) {
             $invoiceType->listId = $value->listId;

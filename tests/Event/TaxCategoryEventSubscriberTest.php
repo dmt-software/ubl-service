@@ -2,15 +2,17 @@
 
 namespace DMT\Test\Ubl\Service\Event;
 
+use DMT\Ubl\Service\Entity\Components;
+use DMT\Ubl\Service\Entity\Components\ClassifiedTaxCategory;
+use DMT\Ubl\Service\Entity\Components\Item;
+use DMT\Ubl\Service\Entity\Components\TaxScheme;
+use DMT\Ubl\Service\Entity\Components\TaxTotal;
+use DMT\Ubl\Service\Entity\Components\Type\Id;
+use DMT\Ubl\Service\Entity\Components\Type\LineExtensionAmount;
+use DMT\Ubl\Service\Entity\Components\Type\TaxAmount;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\Invoice\ClassifiedTaxCategory;
-use DMT\Ubl\Service\Entity\Invoice\Item;
-use DMT\Ubl\Service\Entity\Invoice\TaxScheme;
-use DMT\Ubl\Service\Entity\Invoice\TaxTotal;
-use DMT\Ubl\Service\Entity\Invoice\Type\Id;
-use DMT\Ubl\Service\Entity\Invoice\Type\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\TaxAmount;
 use DMT\Ubl\Service\Entity\InvoiceLine;
+use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\TaxCategoryEventSubscriber;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\ElectronicAddressHelper;
@@ -51,7 +53,7 @@ class TaxCategoryEventSubscriberTest extends TestCase
         $invoice->invoiceLine[0]->taxTotal->taxAmount = AmountHelper::fetchFromValue(6.00, TaxAmount::class);
 
         $event = new PreSerializeEvent(
-            SerializationContext::create()->setVersion(Invoice::VERSION_1_0),
+            SerializationContext::create()->setVersion(Versions::VERSION_1_0),
             $invoice,
             ['name' => Invoice::class]
         );
@@ -100,7 +102,7 @@ class TaxCategoryEventSubscriberTest extends TestCase
 
 
         $event = new PreSerializeEvent(
-            SerializationContext::create()->setVersion(Invoice::VERSION_2_0),
+            SerializationContext::create()->setVersion(Versions::VERSION_2_0),
             $invoice,
             ['name' => Invoice::class]
         );

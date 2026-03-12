@@ -3,25 +3,26 @@
 namespace DMT\Test\Ubl\Service\Entity;
 
 use DateTime;
+use DMT\Ubl\Service\Entity\Components\AccountingCustomerParty;
+use DMT\Ubl\Service\Entity\Components\AccountingSupplierParty;
+use DMT\Ubl\Service\Entity\Components\Address;
+use DMT\Ubl\Service\Entity\Components\AllowanceCharge;
+use DMT\Ubl\Service\Entity\Components\Delivery;
+use DMT\Ubl\Service\Entity\Components\DeliveryLocation;
+use DMT\Ubl\Service\Entity\Components\InvoicePeriod;
+use DMT\Ubl\Service\Entity\Components\LegalMonetaryTotal;
+use DMT\Ubl\Service\Entity\Components\OrderReference;
+use DMT\Ubl\Service\Entity\Components\Party;
+use DMT\Ubl\Service\Entity\Components\PartyName;
+use DMT\Ubl\Service\Entity\Components\TaxTotal;
+use DMT\Ubl\Service\Entity\Components\Type\DocumentCurrencyCode;
+use DMT\Ubl\Service\Entity\Components\Type\EndpointId;
+use DMT\Ubl\Service\Entity\Components\Type\InvoiceTypeCode;
+use DMT\Ubl\Service\Entity\Components\Type\PayableAmount;
+use DMT\Ubl\Service\Entity\Components\Type\TaxAmount;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\Invoice\AccountingCustomerParty;
-use DMT\Ubl\Service\Entity\Invoice\AccountingSupplierParty;
-use DMT\Ubl\Service\Entity\Invoice\Address;
-use DMT\Ubl\Service\Entity\Invoice\AllowanceCharge;
-use DMT\Ubl\Service\Entity\Invoice\Delivery;
-use DMT\Ubl\Service\Entity\Invoice\DeliveryLocation;
-use DMT\Ubl\Service\Entity\Invoice\InvoicePeriod;
-use DMT\Ubl\Service\Entity\Invoice\LegalMonetaryTotal;
-use DMT\Ubl\Service\Entity\Invoice\OrderReference;
-use DMT\Ubl\Service\Entity\Invoice\Party;
-use DMT\Ubl\Service\Entity\Invoice\PartyName;
-use DMT\Ubl\Service\Entity\Invoice\TaxTotal;
-use DMT\Ubl\Service\Entity\Invoice\Type\DocumentCurrencyCode;
-use DMT\Ubl\Service\Entity\Invoice\Type\EndpointId;
-use DMT\Ubl\Service\Entity\Invoice\Type\InvoiceTypeCode;
-use DMT\Ubl\Service\Entity\Invoice\Type\PayableAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\TaxAmount;
 use DMT\Ubl\Service\Entity\InvoiceLine;
+use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\InvoiceCustomizationEventSubscriber;
 use DMT\Ubl\Service\List\InvoiceType;
 use JMS\Serializer\EventDispatcher\EventDispatcher;
@@ -36,7 +37,7 @@ class InvoiceTest extends TestCase
     {
         $invoice = $this->getInvoice();
 
-        $context = SerializationContext::create()->setVersion(Invoice::VERSION_2_0);
+        $context = SerializationContext::create()->setVersion(Versions::VERSION_2_0);
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoice, 'xml', $context));
 
@@ -160,7 +161,7 @@ class InvoiceTest extends TestCase
     {
         $invoice = $this->getInvoice();
 
-        $context = SerializationContext::create()->setVersion(Invoice::VERSION_NLCIUS);
+        $context = SerializationContext::create()->setVersion(Versions::VERSION_NLCIUS);
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoice, 'xml', $context));
 
@@ -284,7 +285,7 @@ class InvoiceTest extends TestCase
     {
         $invoice = $this->getInvoice();
 
-        $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_2);
+        $context = SerializationContext::create()->setVersion(Versions::VERSION_1_2);
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoice, 'xml', $context));
 
@@ -408,7 +409,7 @@ class InvoiceTest extends TestCase
     {
         $invoice = $this->getInvoice();
 
-        $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_1);
+        $context = SerializationContext::create()->setVersion(Versions::VERSION_1_1);
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoice, 'xml', $context));
 
@@ -528,7 +529,7 @@ class InvoiceTest extends TestCase
     {
         $invoice = $this->getInvoice();
 
-        $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_0);
+        $context = SerializationContext::create()->setVersion(Versions::VERSION_1_0);
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoice, 'xml', $context));
 
@@ -631,7 +632,7 @@ class InvoiceTest extends TestCase
         $invoice->id = '1442356';
         $invoice->issueDate = new DateTime('2025-03-08');
         $invoice->invoiceTypeCode = new InvoiceTypeCode();
-        $invoice->invoiceTypeCode->code = InvoiceType::Normal;
+        $invoice->invoiceTypeCode->code = InvoiceType::CommercialInvoice;
         $invoice->taxPointDate = new DateTime('2025-03-08');
         $invoice->documentCurrencyCode = new DocumentCurrencyCode();
         $invoice->documentCurrencyCode->code = 'EUR';

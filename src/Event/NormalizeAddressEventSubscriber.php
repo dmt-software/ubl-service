@@ -2,8 +2,8 @@
 
 namespace DMT\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Invoice\Address;
-use DMT\Ubl\Service\Entity\Invoice\PostalAddress;
+use DMT\Ubl\Service\Entity\Components\Address;
+use DMT\Ubl\Service\Entity\Components\PostalAddress;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 

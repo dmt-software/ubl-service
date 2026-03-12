@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Invoice\Type\InvoiceTypeCode;
+use DMT\Ubl\Service\Entity\Components\Type\InvoiceTypeCode;
 use DMT\Ubl\Service\Helper\Invoice\InvoiceTypeHelper;
 use DMT\Ubl\Service\List\InvoiceType;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -19,10 +19,10 @@ class InvoiceTypeHelperTest extends TestCase
     public static function provideInvoiceTypeCode(): iterable
     {
         $invoiceTypeCode = new InvoiceTypeCode();
-        $invoiceTypeCode->code = InvoiceType::Normal;
+        $invoiceTypeCode->code = InvoiceType::CommercialInvoice;
 
         $debetTypeCode = new InvoiceTypeCode();
-        $debetTypeCode->code = InvoiceType::Debit;
+        $debetTypeCode->code = InvoiceType::DebitNote;
 
         yield 'from string' => ['380', $invoiceTypeCode];
         yield 'from object' => [(object)['code' => '383'], $debetTypeCode];

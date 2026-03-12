@@ -3,6 +3,7 @@
 namespace DMT\Ubl\Service\Event;
 
 use DMT\Ubl\Service\Entity\Invoice;
+use DMT\Ubl\Service\Entity\Versions;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
@@ -40,10 +41,10 @@ final readonly class InvoiceCustomizationEventSubscriber implements EventSubscri
         $version = $event->getContext()->getAttribute('version');
 
         $invoice->customizationId = match ($version) {
-            Invoice::VERSION_1_0 => self::CUSTOMIZATION_1_0,
-            Invoice::VERSION_1_1 => self::CUSTOMIZATION_1_1,
-            Invoice::VERSION_1_2 => self::CUSTOMIZATION_1_2,
-            Invoice::VERSION_NLCIUS => self::CUSTOMIZATION_2_0_NLCIUS,
+            Versions::VERSION_1_0 => self::CUSTOMIZATION_1_0,
+            Versions::VERSION_1_1 => self::CUSTOMIZATION_1_1,
+            Versions::VERSION_1_2 => self::CUSTOMIZATION_1_2,
+            Versions::VERSION_NLCIUS => self::CUSTOMIZATION_2_0_NLCIUS,
             default => self::CUSTOMIZATION_DEFAULT,
         };
 

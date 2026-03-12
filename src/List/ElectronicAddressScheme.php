@@ -2,7 +2,10 @@
 
 namespace DMT\Ubl\Service\List;
 
-use DMT\Ubl\Service\Entity\Invoice;
+use DMT\Ubl\Service\Entity\Components;
+use DMT\Ubl\Service\Entity\Entity;
+use DMT\Ubl\Service\Entity\Versions;
+use DMT\Ubl\Service\Format\DUNSNumber;
 use DMT\Ubl\Service\Format\OrganizationNumberNL;
 use DMT\Ubl\Service\Format\VatNumberBE;
 use DMT\Ubl\Service\Format\Formatter;
@@ -35,10 +38,9 @@ enum ElectronicAddressScheme: string
     case DeprecatedDKVatNumber = '9904';
     case DeprecatedNLOrganizationNumber = '9954';
 
-
     public static function lookup(null|string $schemeId, string $version = null): null|self
     {
-        $testVersions = $version ? [$version] : [Invoice::VERSION_1_1, Invoice::VERSION_2_0];
+        $testVersions = $version ? [$version] : [Versions::VERSION_1_1, Versions::VERSION_2_0];
         foreach (self::cases() as $case) {
             foreach ($testVersions as $testVersion) {
                 if ($case->getSchemeId($testVersion) === $schemeId) {
@@ -55,7 +57,7 @@ enum ElectronicAddressScheme: string
      */
     public function getSchemeId(string $version): string
     {
-        if ($this == self::DeprecatedNLOrganizationNumber && $version !== Invoice::VERSION_1_0) {
+        if ($this == self::DeprecatedNLOrganizationNumber && $version !== Versions::VERSION_1_0) {
             return self::NLOrganizationNumber->getSchemeId($version);
         }
 
@@ -110,6 +112,7 @@ enum ElectronicAddressScheme: string
             self::LUVatNumber => new VatNumberLU(),
             self::NLVatNumber => new VatNumberNL(),
             self::NLOrganizationNumber, self::DeprecatedNLOrganizationNumber => new OrganizationNumberNL(),
+            self::DUNSNumber => new DUNSNumber(),
         };
     }
 }

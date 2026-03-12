@@ -2,15 +2,15 @@
 
 namespace DMT\Ubl\Service\Event;
 
+use DMT\Ubl\Service\Entity\Components\LegalMonetaryTotal;
+use DMT\Ubl\Service\Entity\Components\Type\AllowanceTotalAmount;
+use DMT\Ubl\Service\Entity\Components\Type\ChargeTotalAmount;
+use DMT\Ubl\Service\Entity\Components\Type\LineExtensionAmount;
+use DMT\Ubl\Service\Entity\Components\Type\PayableAmount;
+use DMT\Ubl\Service\Entity\Components\Type\PayableRoundingAmount;
+use DMT\Ubl\Service\Entity\Components\Type\TaxExclusiveAmount;
+use DMT\Ubl\Service\Entity\Components\Type\TaxInclusiveAmount;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\Invoice\LegalMonetaryTotal;
-use DMT\Ubl\Service\Entity\Invoice\Type\AllowanceTotalAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\ChargeTotalAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\PayableAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\PayableRoundingAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\TaxExclusiveAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\TaxInclusiveAmount;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
@@ -31,7 +31,7 @@ final readonly class LegalMonetaryTotalEventSubscriber implements EventSubscribe
         ];
     }
 
-    public function setLegalMonetaryTotal(PreSerializeEvent $event)
+    public function setLegalMonetaryTotal(PreSerializeEvent $event): void
     {
         /** @var Invoice $invoice */
         $invoice = $event->getObject();

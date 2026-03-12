@@ -3,7 +3,7 @@
 namespace DMT\Ubl\Service\Transformer;
 
 use DMT\Ubl\Service\Entity\Entity;
-use DMT\Ubl\Service\Entity\Invoice;
+use DMT\Ubl\Service\Entity\Components;
 use RuntimeException;
 
 interface EntityToObjectTransformer

@@ -2,10 +2,10 @@
 
 namespace DMT\Ubl\Service\Event;
 
+use DMT\Ubl\Service\Entity\Components\OrderReference;
+use DMT\Ubl\Service\Entity\Components\Party;
+use DMT\Ubl\Service\Entity\Components\PartyLegalEntity;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\Invoice\OrderReference;
-use DMT\Ubl\Service\Entity\Invoice\Party;
-use DMT\Ubl\Service\Entity\Invoice\PartyLegalEntity;
 use DMT\Ubl\Service\Entity\InvoiceLine;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;

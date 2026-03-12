@@ -2,7 +2,11 @@
 
 namespace DMT\Ubl\Service;
 
+use DMT\Ubl\Service\Entity\CreditNote;
+use DMT\Ubl\Service\Entity\Entity;
+use DMT\Ubl\Service\Entity\Components;
 use DMT\Ubl\Service\Entity\Invoice;
+use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\AmountCurrencyEventSubscriber;
 use DMT\Ubl\Service\Event\LegalMonetaryTotalEventSubscriber;
 use DMT\Ubl\Service\Event\TaxCategoryEventSubscriber;
@@ -43,6 +47,18 @@ class InvoiceService
     }
 
     /**
+     * Transform an UBL credit-note entity into a custom credit-note object.
+     *
+     * @param CreditNote $creditNote An UBL-CreditNote object
+     * @param EntityToObjectTransformer $transformer The transformer to use
+     * @return object
+     */
+    public function fromCreditNote(CreditNote $creditNote, EntityToObjectTransformer $transformer): object
+    {
+        return $transformer->transform($creditNote);
+    }
+
+    /**
      * Transform an UBL invoice entity into a custom invoice object.
      *
      * @param Invoice $invoice An UBL-Invoice object
@@ -57,12 +73,54 @@ class InvoiceService
     /**
      * Get an object representation of an UBL-Invoice xml message.
      *
-     * @param string $xml An incoming UBL-Invoice message to deserialize
-     * @return Invoice
+     * @template T
+     * @param string $xml An incoming UBL-entity message to deserialize
+     * @param class-string<T> $type entity-type
+     * @return Entity|T
      */
-    public function fromXml(string $xml): Invoice
+    public function fromXml(string $xml, string $type): Entity
     {
-        return $this->getSerializer()->deserialize($xml, Invoice::class, 'xml');
+        return $this->getSerializer()->deserialize($xml, $type, 'xml');
+    }
+
+    public function creditNoteFromXml(string $xml): CreditNote
+    {
+        return $this->fromXml($xml, CreditNote::class);
+    }
+
+    public function invoiceFromXml(string $xml): Invoice
+    {
+        return $this->fromXml($xml, Invoice::class);
+    }
+
+    /**
+     * Transform an entity object into a UBL entity.
+     *
+     * @param object $object Custom representation of an entity
+     * @param ObjectToEntityTransformer $transformer The transformer to use
+     * @return Entity
+     */
+    public function toEntity(object $object, ObjectToEntityTransformer $transformer): Entity
+    {
+        return $transformer->transform($object);
+    }
+
+    /**
+     * Transform an invoice object into a UBL Invoice.
+     *
+     * @param object $object Custom representation of an invoice
+     * @param ObjectToEntityTransformer $transformer The transformer to use
+     * @return CreditNote
+     */
+    public function toCreditNote(object $object, ObjectToEntityTransformer $transformer): CreditNote
+    {
+        $entity = $this->toEntity($object, $transformer);
+
+        if (!$entity instanceof CreditNote) {
+            throw new InvalidArgumentException("transformer failed to produce a CreditNote");
+        }
+
+        return $entity;
     }
 
     /**
@@ -74,20 +132,26 @@ class InvoiceService
      */
     public function toInvoice(object $object, ObjectToEntityTransformer $transformer): Invoice
     {
-        return $transformer->transform($object);
+        $entity = $this->toEntity($object, $transformer);
+
+        if (!$entity instanceof Invoice) {
+            throw new InvalidArgumentException("transformer failed to produce an Invoice");
+        }
+
+        return $entity;
     }
 
     /**
      * Get an UBL-Invoice xml message for an Invoice.
      *
-     * @param Invoice $invoice
+     * @param Invoice|CreditNote $entity
      * @param string $version
      *
      * @return string
      */
-    public function toXml(Invoice $invoice, string $version = Invoice::DEFAULT_VERSION): string
+    public function toXml(Invoice|CreditNote $entity, string $version = Versions::DEFAULT_VERSION): string
     {
-        return $this->getSerializer()->serialize($invoice, 'xml', SerializationContext::create()->setVersion($version));
+        return $this->getSerializer()->serialize($entity, 'xml', SerializationContext::create()->setVersion($version));
     }
 
     /**

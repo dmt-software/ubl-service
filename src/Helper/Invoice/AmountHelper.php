@@ -2,7 +2,7 @@
 
 namespace DMT\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Invoice\Type\AmountType;
+use DMT\Ubl\Service\Entity\Components\Type\AmountType;
 
 final class AmountHelper
 {

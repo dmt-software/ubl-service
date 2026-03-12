@@ -2,7 +2,7 @@
 
 namespace DMT\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Invoice\Type\AmountType;
+use DMT\Ubl\Service\Entity\Components\Type\AmountType;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use JMS\Serializer\Metadata\PropertyMetadata;

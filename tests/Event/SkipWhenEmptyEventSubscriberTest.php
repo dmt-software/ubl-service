@@ -2,8 +2,8 @@
 
 namespace DMT\Test\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Invoice\LegalMonetaryTotal;
-use DMT\Ubl\Service\Entity\Invoice\Type\AllowanceTotalAmount;
+use DMT\Ubl\Service\Entity\Components\LegalMonetaryTotal;
+use DMT\Ubl\Service\Entity\Components\Type\AllowanceTotalAmount;
 use DMT\Ubl\Service\Event\SkipWhenEmptyEventSubscriber;
 use JMS\Serializer\Builder\DefaultDriverFactory;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;

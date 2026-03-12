@@ -2,12 +2,13 @@
 
 namespace DMT\Test\Ubl\Service\Event;
 
+use DMT\Ubl\Service\Entity\Components\OrderReference;
+use DMT\Ubl\Service\Entity\Components\Party;
+use DMT\Ubl\Service\Entity\Components\PartyLegalEntity;
+use DMT\Ubl\Service\Entity\Components\PartyName;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\Invoice\OrderReference;
-use DMT\Ubl\Service\Entity\Invoice\Party;
-use DMT\Ubl\Service\Entity\Invoice\PartyLegalEntity;
-use DMT\Ubl\Service\Entity\Invoice\PartyName;
 use DMT\Ubl\Service\Entity\InvoiceLine;
+use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\MandatoryDefaultsEventSubscriber;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use JMS\Serializer\SerializationContext;
@@ -33,17 +34,17 @@ class MandatoryDefaultsEventSubscriberTest extends TestCase
 
     public static function provideInvoiceForOrderReference(): iterable
     {
-        yield 'skip for version 1.0' => [new Invoice(), Invoice::VERSION_1_0, null];
-        yield 'skip for version 1,1' => [new Invoice(), Invoice::VERSION_1_1, null];
-        yield 'skip for version 1.2' => [new Invoice(), Invoice::VERSION_1_2, null];
-        yield 'set default for version 2.0' => [new Invoice(), Invoice::VERSION_2_0, 'NA'];
-        yield 'set default for version 2.0.0-nlcius' => [new Invoice(), Invoice::VERSION_NLCIUS, 'NA'];
+        yield 'skip for version 1.0' => [new Invoice(), Versions::VERSION_1_0, null];
+        yield 'skip for version 1,1' => [new Invoice(), Versions::VERSION_1_1, null];
+        yield 'skip for version 1.2' => [new Invoice(), Versions::VERSION_1_2, null];
+        yield 'set default for version 2.0' => [new Invoice(), Versions::VERSION_2_0, 'NA'];
+        yield 'set default for version 2.0.0-nlcius' => [new Invoice(), Versions::VERSION_NLCIUS, 'NA'];
 
         $invoice = new Invoice();
         $invoice->orderReference = new OrderReference();
         $invoice->orderReference->id = '2287663';
 
-        yield 'not override set reference' => [$invoice, Invoice::VERSION_2_0, '2287663'];
+        yield 'not override set reference' => [$invoice, Versions::VERSION_2_0, '2287663'];
     }
 
     #[DataProvider(methodName: 'provideInvoiceForLineNumberDefaults')]
@@ -116,17 +117,17 @@ class MandatoryDefaultsEventSubscriberTest extends TestCase
         $party->partyName = new PartyName();
         $party->partyName->name = 'Business';
 
-        yield 'skip for version 1.0' => [clone($party), Invoice::VERSION_1_0, null];
-        yield 'skip for version 1,1' => [clone($party), Invoice::VERSION_1_1, null];
-        yield 'skip for version 1.2' => [clone($party), Invoice::VERSION_1_2, 'Business'];
-        yield 'set default for version version 2.0' => [clone($party), Invoice::VERSION_2_0, 'Business'];
-        yield 'set default for version 2.0.0-nlcius' => [clone($party), Invoice::VERSION_NLCIUS, 'Business'];
+        yield 'skip for version 1.0' => [clone($party), Versions::VERSION_1_0, null];
+        yield 'skip for version 1,1' => [clone($party), Versions::VERSION_1_1, null];
+        yield 'skip for version 1.2' => [clone($party), Versions::VERSION_1_2, 'Business'];
+        yield 'set default for version version 2.0' => [clone($party), Versions::VERSION_2_0, 'Business'];
+        yield 'set default for version 2.0.0-nlcius' => [clone($party), Versions::VERSION_NLCIUS, 'Business'];
 
         $party1 = clone($party);
         $party1->partyLegalEntity = new PartyLegalEntity();
         $party1->partyLegalEntity->registrationName = 'Business BV';
 
-        yield 'not override set default' => [$party1, Invoice::VERSION_2_0, 'Business BV'];
-        yield 'no party name, no legal name' => [new Party(), Invoice::VERSION_2_0, null];
+        yield 'not override set default' => [$party1, Versions::VERSION_2_0, 'Business BV'];
+        yield 'no party name, no legal name' => [new Party(), Versions::VERSION_2_0, null];
     }
 }
