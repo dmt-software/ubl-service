@@ -55,35 +55,22 @@ class Party implements CommonAggregateComponent
     public null|Contact $contact = null;
 
     /**
-     * Convenience method to get a scheme-id and company-id for use in party identification.
+     * Convenience method to get an EndpointId with a fallback to partyLegalEntity->companyId.
      *
-     * @param string $separator
-     * @return string
+     * @return EndpointId|null
      */
-    public function findEndpoint(string $separator = ':'): string
-    {
-        return implode($separator, $this->findEndpointArray());
-    }
-
-    /**
-     * Convenience method to get a scheme-id and company-id for use in party identification.
-     *
-     * @return array
-     */
-    public function findEndpointArray(): array
+    public function findEndpointId(): ?EndpointId
     {
         if (isset($this->endpointId)) {
-            return [
-                $this->endpointId->schemeId,
-                $this->endpointId->id,
-            ];
+            return $this->endpointId;
         }
 
         if (isset($this->partyLegalEntity->companyId)) {
-            return [
-                $this->partyLegalEntity->companyId->schemeId,
-                $this->partyLegalEntity->companyId->id,
-            ];
+            $endpointId = new EndpointId();
+            $endpointId->schemeId = $this->partyLegalEntity->companyId;
+            $endpointId->id = $this->partyLegalEntity->companyId->id;
+
+            return $endpointId;
         }
 
         throw new InvalidArgumentException("no endpoint found");
