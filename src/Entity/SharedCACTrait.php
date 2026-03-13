@@ -4,6 +4,7 @@ namespace DMT\Ubl\Service\Entity;
 
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\AccountingCustomerParty;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\AccountingSupplierParty;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AdditionalDocumentReference;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\AllowanceCharge;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Delivery;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoicePeriod;
@@ -12,6 +13,7 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PaymentMeans;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PaymentTerms;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
+use Generator;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Since;
 use JMS\Serializer\Annotation\Type;
@@ -37,7 +39,16 @@ trait SharedCACTrait
     // ReceiptDocumentReference
     // OriginatorDocumentReference
     // ContractDocumentReference
-    // AdditionalDocumentReference
+
+    #[Type(name: 'array<' . AdditionalDocumentReference::class . '>')]
+    #[XmlList(
+        entry: "AdditionalDocumentReference",
+        inline: true,
+        namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    )]
+    /** @var array<AdditionalDocumentReference> $additionalDocumentReference */
+    public null|array $additionalDocumentReference = null;
+
     // ProjectReference
 
     #[SerializedName(name: "AccountingSupplierParty")]
@@ -91,4 +102,25 @@ trait SharedCACTrait
     #[Type(name: LegalMonetaryTotal::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|LegalMonetaryTotal $legalMonetaryTotal = null;
+
+    private function getEmbeddedFiles(string $mimeCode = 'application/pdf'): Generator
+    {
+        if (!isset($this->additionalDocumentReference)) {
+            return;
+        }
+
+        foreach($this->additionalDocumentReference as $documentReference) {
+            $embeddedDocumentBinaryObject = $documentReference->attachment->embeddedDocumentBinaryObject ?? null;
+
+            if (!$embeddedDocumentBinaryObject) {
+                continue;
+            }
+
+            if ($embeddedDocumentBinaryObject->mimeCode != $mimeCode) {
+                continue;
+            }
+
+            yield $embeddedDocumentBinaryObject->filename => strval($embeddedDocumentBinaryObject);
+        }
+    }
 }

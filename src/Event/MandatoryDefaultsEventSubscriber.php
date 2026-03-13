@@ -2,10 +2,13 @@
 
 namespace DMT\Ubl\Service\Event;
 
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\CreditNoteLine;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoiceLine;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegal;
+use DMT\Ubl\Service\Entity\CreditNote;
+use DMT\Ubl\Service\Entity\Document;
 use DMT\Ubl\Service\Entity\Invoice;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
@@ -20,14 +23,14 @@ final readonly class MandatoryDefaultsEventSubscriber implements EventSubscriber
         return [
             [
                 'event' => 'serializer.pre_serialize',
-                'interface' => Invoice::class,
+                'interface' => Document::class,
                 'method' => 'setDefaultOrderReference',
                 'format' => 'xml',
             ],
             [
                 'event' => 'serializer.pre_serialize',
-                'interface' => Invoice::class,
-                'method' => 'setDefaultInvoiceLineNumbers',
+                'interface' => Document::class,
+                'method' => 'setDefaultLineNumbers',
                 'format' => 'xml',
             ],
             [
@@ -41,26 +44,28 @@ final readonly class MandatoryDefaultsEventSubscriber implements EventSubscriber
 
     public function setDefaultOrderReference(PreSerializeEvent $event): void
     {
-        /** @var Invoice $invoice */
-        $invoice = $event->getObject();
+        /** @var Invoice|CreditNote $document */
+        $document = $event->getObject();
 
         if (version_compare($event->getContext()->getAttribute('version'), "2.0", '>=')) {
-            if (empty($invoice?->orderReference->id)) {
-                $invoice->orderReference ??= new OrderReference();
-                $invoice->orderReference->id = 'NA';
+            if (empty($document?->orderReference->id)) {
+                $document->orderReference ??= new OrderReference();
+                $document->orderReference->id = 'NA';
             }
         }
     }
 
-    public function setDefaultInvoiceLineNumbers(PreSerializeEvent $event): void
+    public function setDefaultLineNumbers(PreSerializeEvent $event): void
     {
-        /** @var Invoice $invoice */
-        $invoice = $event->getObject();
+        /** @var Invoice|CreditNote $document */
+        $document = $event->getObject();
 
-        $max = max(array_map(fn(InvoiceLine $line) => intval($line->id), $invoice->invoiceLine ?? [])) + 1;
-        foreach ($invoice->invoiceLine ?? [] as $key => $invoiceLine) {
-            if (!$invoiceLine->id) {
-                $invoiceLine->id = $key + $max;
+        $lines = $document->invoiceLine ?? $document->creditNoteLine ?? [];
+
+        $max = max(array_map(fn(InvoiceLine|CreditNoteLine $line) => intval($line->id), $lines)) + 1;
+        foreach ($lines as $key => $line) {
+            if (!$line->id) {
+                $line->id = $key + $max;
             }
         }
     }

@@ -11,6 +11,11 @@ use JMS\Serializer\Annotation\XmlList;
 use JMS\Serializer\Annotation\XmlNamespace;
 use JMS\Serializer\Annotation\XmlRoot;
 
+/**
+ * Class CreditNote
+ *
+ * https://docs.peppol.eu/poacc/billing/3.0/syntax/ubl-creditnote/tree/
+ */
 #[XmlRoot(name: "CreditNote", namespace: "urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2")]
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2", prefix: "")]
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", prefix: "cac")]

@@ -2,6 +2,8 @@
 
 namespace DMT\Ubl\Service\Event;
 
+use DMT\Ubl\Service\Entity\CreditNote;
+use DMT\Ubl\Service\Entity\Document;
 use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Versions;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
@@ -27,20 +29,20 @@ final readonly class InvoiceCustomizationEventSubscriber implements EventSubscri
         return [
             [
                 'event' => 'serializer.pre_serialize',
-                'interface' => Invoice::class,
+                'interface' => Document::class,
                 'method' => 'setCustomization',
                 'format' => 'xml'
-            ]
+            ],
         ];
     }
 
     public function setCustomization(PreSerializeEvent $event): void
     {
-        /** @var Invoice $invoice */
-        $invoice = $event->getObject();
+        /** @var Invoice|CreditNote $document */
+        $document = $event->getObject();
         $version = $event->getContext()->getAttribute('version');
 
-        $invoice->customizationId = match ($version) {
+        $document->customizationId = match ($version) {
             Versions::VERSION_1_0 => self::CUSTOMIZATION_1_0,
             Versions::VERSION_1_1 => self::CUSTOMIZATION_1_1,
             Versions::VERSION_1_2 => self::CUSTOMIZATION_1_2,
@@ -48,14 +50,14 @@ final readonly class InvoiceCustomizationEventSubscriber implements EventSubscri
             default => self::CUSTOMIZATION_DEFAULT,
         };
 
-        $invoice->ublVersionId = '2.1';
+        $document->ublVersionId = '2.1';
         if ($version == '1.0') {
-            $invoice->ublVersionId = '2.0';
+            $document->ublVersionId = '2.0';
         }
 
-        $invoice->profileId = 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0';
+        $document->profileId = 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0';
         if (version_compare($version ?? '', '1.2', '<=')) {
-            $invoice->profileId = 'urn:www.cenbii.eu:profile:bii04:ver1.0';
+            $document->profileId = 'urn:www.cenbii.eu:profile:bii04:ver1.0';
         }
     }
 }

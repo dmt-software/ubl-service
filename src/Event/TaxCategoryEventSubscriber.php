@@ -3,6 +3,7 @@
 namespace DMT\Ubl\Service\Event;
 
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\ClassifiedTaxCategory;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\CreditNoteLine;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoiceLine;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PostalAddress;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxCategory;
@@ -12,6 +13,8 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\Id;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxableAmount;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
+use DMT\Ubl\Service\Entity\CreditNote;
+use DMT\Ubl\Service\Entity\Document;
 use DMT\Ubl\Service\Entity\Invoice;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
@@ -26,42 +29,42 @@ final readonly class TaxCategoryEventSubscriber implements EventSubscriberInterf
         return [
             [
                 'event' => 'serializer.pre_serialize',
-                'interface' => Invoice::class,
+                'interface' => Document::class,
                 'method' => 'setClassifiedTaxCategories',
                 'format' => 'xml',
             ],
             [
                 'event' => 'serializer.pre_serialize',
-                'interface' => Invoice::class,
+                'interface' => Document::class,
                 'method' => 'setTaxTotal',
                 'format' => 'xml',
-            ]
+            ],
         ];
     }
 
     public function setClassifiedTaxCategories(PreSerializeEvent $event): void
     {
-        /** @var Invoice $invoice */
-        $invoice = $event->getObject();
+        /** @var Invoice|CreditNote $document */
+        $document = $event->getObject();
 
-        $forExport = $this->isInvoiceForExport(
-            $invoice->accountingSupplierParty?->party?->postalAddress,
-            $invoice->accountingCustomerParty?->party?->postalAddress
+        $forExport = $this->isDocumentForExport(
+            $document->accountingSupplierParty?->party?->postalAddress,
+            $document->accountingCustomerParty?->party?->postalAddress
         );
 
-        foreach ($invoice->invoiceLine as $invoiceLine) {
-            $this->setClassifiedTaxCategory($invoiceLine, $forExport);
+        foreach ($document->invoiceLine ?? $document->creditNoteLine ?? [] as $line) {
+            $this->setClassifiedTaxCategory($line, $forExport);
         }
     }
 
     public function setTaxTotal(PreSerializeEvent $event): void
     {
-        /** @var Invoice $invoice */
-        $invoice = $event->getObject();
-        $invoiceLines = $invoice->invoiceLine ?? [];
+        /** @var Invoice|CreditNote $document */
+        $document = $event->getObject();
+        $lines = $document->invoiceLine ?? $document->creditNoteLine ?? [];
 
         usort(
-            $invoiceLines,
+            $lines,
             function (InvoiceLine $a, InvoiceLine $b) {
                 $at = $a->item->classifiedTaxCategory;
                 $bt = $b->item->classifiedTaxCategory;
@@ -76,14 +79,14 @@ final readonly class TaxCategoryEventSubscriber implements EventSubscriberInterf
 
         $taxCategory = null;
         $taxTotal = new TaxTotal();
-        foreach ($invoiceLines as $invoiceLine) {
-            if ($taxCategory->id->id != $invoiceLine->item->classifiedTaxCategory->id->id
-                || $taxCategory->percent != $invoiceLine->item->classifiedTaxCategory->percent
+        foreach ($lines as $line) {
+            if ($taxCategory->id->id != $line->item->classifiedTaxCategory->id->id
+                || $taxCategory->percent != $line->item->classifiedTaxCategory->percent
             ) {
                 $taxCategory = new TaxCategory();
-                $taxCategory->id = clone($invoiceLine->item->classifiedTaxCategory->id);
-                $taxCategory->percent = $invoiceLine->item->classifiedTaxCategory->percent;
-                $taxCategory->taxScheme = clone($invoiceLine->item->classifiedTaxCategory->taxScheme);
+                $taxCategory->id = clone($line->item->classifiedTaxCategory->id);
+                $taxCategory->percent = $line->item->classifiedTaxCategory->percent;
+                $taxCategory->taxScheme = clone($line->item->classifiedTaxCategory->taxScheme);
 
                 $taxSubtotal = new TaxSubtotal();
                 $taxSubtotal->taxCategory = $taxCategory;
@@ -97,7 +100,7 @@ final readonly class TaxCategoryEventSubscriber implements EventSubscriberInterf
                 continue;
             }
 
-            $taxSubtotal->taxableAmount->amount += round($invoiceLine->lineExtensionAmount->amount, 2);
+            $taxSubtotal->taxableAmount->amount += round($line->lineExtensionAmount->amount, 2);
         }
 
         $taxTotal->taxAmount = new TaxAmount();
@@ -110,19 +113,19 @@ final readonly class TaxCategoryEventSubscriber implements EventSubscriberInterf
                 $taxTotal->taxAmount->amount += $taxSubtotal->taxAmount->amount;
             }
         } else {
-            foreach ($invoiceLines as $invoiceLine) {
-                $taxTotal->taxAmount->amount += round($invoiceLine->taxTotal->taxAmount->amount, 2);
+            foreach ($lines as $line) {
+                $taxTotal->taxAmount->amount += round($line->taxTotal->taxAmount->amount, 2);
             }
         }
 
-        $invoice->taxTotal = $taxTotal;
+        $document->taxTotal = $taxTotal;
     }
 
-    private function setClassifiedTaxCategory(InvoiceLine $invoiceLine, bool $forExport): void
+    private function setClassifiedTaxCategory(InvoiceLine|CreditNoteLine $line, bool $forExport): void
     {
-        $percentage = $invoiceLine->item?->classifiedTaxCategory?->percent;
-        if (!$percentage && $invoiceLine->taxTotal?->taxAmount && $invoiceLine->lineExtensionAmount->amount > 0) {
-            $percentage = round(($invoiceLine->taxTotal->taxAmount->amount / $invoiceLine->lineExtensionAmount->amount) * 100);
+        $percentage = $line->item?->classifiedTaxCategory?->percent;
+        if (!$percentage && $line->taxTotal?->taxAmount && $line->lineExtensionAmount->amount > 0) {
+            $percentage = round(($line->taxTotal->taxAmount->amount / $line->lineExtensionAmount->amount) * 100);
         }
 
         if ($percentage === null) {
@@ -142,14 +145,14 @@ final readonly class TaxCategoryEventSubscriber implements EventSubscriberInterf
         $classifiedTaxCategory->taxScheme->id = new Id();
         $classifiedTaxCategory->taxScheme->id->id = 'VAT';
 
-        $invoiceLine->taxTotal ??= new TaxTotal();
-        $invoiceLine->taxTotal->taxAmount ??= new TaxAmount();
-        $invoiceLine->taxTotal->taxAmount->amount ??= round($invoiceLine->lineExtensionAmount->amount * $percentage / 100, 2);
+        $line->taxTotal ??= new TaxTotal();
+        $line->taxTotal->taxAmount ??= new TaxAmount();
+        $line->taxTotal->taxAmount->amount ??= round($line->lineExtensionAmount->amount * $percentage / 100, 2);
 
-        $invoiceLine->item->classifiedTaxCategory = $classifiedTaxCategory;
+        $line->item->classifiedTaxCategory = $classifiedTaxCategory;
     }
 
-    private function isInvoiceForExport(null|PostalAddress $supplier, null|PostalAddress $customer): bool
+    private function isDocumentForExport(null|PostalAddress $supplier, null|PostalAddress $customer): bool
     {
         if ($supplier === null || $customer === null) {
             return false;

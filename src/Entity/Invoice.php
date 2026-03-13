@@ -12,6 +12,11 @@ use JMS\Serializer\Annotation\XmlList;
 use JMS\Serializer\Annotation\XmlNamespace;
 use JMS\Serializer\Annotation\XmlRoot;
 
+/**
+ * Class Invoice
+ *
+ * https://docs.peppol.eu/poacc/billing/3.0/syntax/ubl-invoice/
+ */
 #[XmlRoot(name: "Invoice", namespace: "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2")]
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2", prefix: "")]
 #[XmlNamespace(uri: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", prefix: "cac")]

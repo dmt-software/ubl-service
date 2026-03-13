@@ -27,7 +27,7 @@ use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 
-class InvoiceService
+class UblService
 {
     /**
      * Check if the identifier is valid (based on its format only).

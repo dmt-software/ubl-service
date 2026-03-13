@@ -4,6 +4,7 @@ namespace DMT\Ubl\Service\Entity\CommonAggregateComponents;
 
 use DMT\Ubl\Service\Entity\CommonBasicComponents\EndpointId;
 use DMT\Ubl\Service\Entity\Versions;
+use InvalidArgumentException;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Since;
 use JMS\Serializer\Annotation\Type;
@@ -52,4 +53,47 @@ class Party implements CommonAggregateComponent
     #[Type(name: Contact::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|Contact $contact = null;
+
+    /**
+     * Convenience method to get a scheme-id and company-id for use in party identification.
+     *
+     * @param string $separator
+     * @return string
+     */
+    public function findEndpoint(string $separator = ':'): string
+    {
+        if (isset($this->endpointId)) {
+            return implode($separator, [
+                $this->endpointId->schemeId,
+                $this->endpointId->id,
+            ]);
+        }
+
+        if (isset($this->partyLegalEntity->companyId)) {
+            return implode($separator, [
+                $this->partyLegalEntity->companyId->schemeId,
+                $this->partyLegalEntity->companyId->id,
+            ]);
+        }
+
+        throw new InvalidArgumentException("no endpoint found");
+    }
+
+    /**
+     * Convenience method to get the party name for use in identification.
+     *
+     * @return string
+     */
+    public function findName(): string
+    {
+        if (isset($this->partyName->name)) {
+            return $this->partyName->name;
+        }
+
+        if (isset($this->partyLegalEntity->registrationName)) {
+            return $this->partyLegalEntity->registrationName;
+        }
+
+        throw new InvalidArgumentException("no party name found");
+    }
 }
