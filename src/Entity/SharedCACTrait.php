@@ -103,7 +103,7 @@ trait SharedCACTrait
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|LegalMonetaryTotal $legalMonetaryTotal = null;
 
-    private function getEmbeddedFiles(string $mimeCode = 'application/pdf'): Generator
+    public function getEmbeddedFiles(string $mimeCode = 'application/pdf'): Generator
     {
         if (!isset($this->additionalDocumentReference)) {
             return;

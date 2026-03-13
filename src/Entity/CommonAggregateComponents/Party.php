@@ -62,18 +62,28 @@ class Party implements CommonAggregateComponent
      */
     public function findEndpoint(string $separator = ':'): string
     {
+        return implode($separator, $this->findEndpointArray());
+    }
+
+    /**
+     * Convenience method to get a scheme-id and company-id for use in party identification.
+     *
+     * @return array
+     */
+    public function findEndpointArray(): array
+    {
         if (isset($this->endpointId)) {
-            return implode($separator, [
+            return [
                 $this->endpointId->schemeId,
                 $this->endpointId->id,
-            ]);
+            ];
         }
 
         if (isset($this->partyLegalEntity->companyId)) {
-            return implode($separator, [
+            return [
                 $this->partyLegalEntity->companyId->schemeId,
                 $this->partyLegalEntity->companyId->id,
-            ]);
+            ];
         }
 
         throw new InvalidArgumentException("no endpoint found");

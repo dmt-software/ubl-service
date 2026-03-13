@@ -57,7 +57,7 @@ class MandatoryDefaultsEventSubscriberTest extends TestCase
         );
 
         $subscriber = new MandatoryDefaultsEventSubscriber();
-        $subscriber->setDefaultInvoiceLineNumbers($event);
+        $subscriber->setDefaultLineNumbers($event);
 
         $this->assertEquals($expected, $invoice->invoiceLine[0]->id);
     }
