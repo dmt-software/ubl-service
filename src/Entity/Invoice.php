@@ -44,4 +44,9 @@ class Invoice implements Document
     )]
     /** @var array<InvoiceLine> $invoiceLine */
     public null|array $invoiceLine = null;
+
+    public function findLines(): array
+    {
+        return $this->invoiceLine ?? [];
+    }
 }

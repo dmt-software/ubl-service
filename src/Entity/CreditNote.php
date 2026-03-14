@@ -38,4 +38,9 @@ class CreditNote implements Document
     )]
     /** @var array<CreditNoteLine> $creditNoteLine */
     public null|array $creditNoteLine = null;
+
+    public function findLines(): array
+    {
+        return $this->creditNoteLine ?? [];
+    }
 }
