@@ -2,8 +2,9 @@
 
 namespace DMT\Test\Ubl\Service\Event;
 
-use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\Invoice\Address;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Address;
+use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\NormalizeAddressEventSubscriber;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 use JMS\Serializer\SerializationContext;
@@ -21,7 +22,7 @@ class NormalizeAddressEventSubscriberTest extends TestCase
         $address->buildingNumber = '12';
 
         $subscriber->normalizeAddress(
-            $this->getPreSerializeEvent($address, Invoice::VERSION_NLCIUS)
+            $this->getPreSerializeEvent($address, Versions::VERSION_NLCIUS)
         );
 
         $this->assertEquals('Street of nowhere 12', $address->streetName);
@@ -36,7 +37,7 @@ class NormalizeAddressEventSubscriberTest extends TestCase
         $address->buildingNumber = '12';
 
         $subscriber->normalizeAddress(
-            $this->getPreSerializeEvent($address, Invoice::VERSION_1_1)
+            $this->getPreSerializeEvent($address, Versions::VERSION_1_1)
         );
 
         $this->assertEquals('Street of nowhere', $address->streetName);
@@ -51,7 +52,7 @@ class NormalizeAddressEventSubscriberTest extends TestCase
         $address->streetName = $addressLine;
 
         $subscriber->normalizeAddress(
-            $this->getPreSerializeEvent($address, Invoice::VERSION_1_1)
+            $this->getPreSerializeEvent($address, Versions::VERSION_1_1)
         );
 
         $this->assertEquals($street, $address->streetName);

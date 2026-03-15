@@ -15,10 +15,10 @@ composer require dmt-software/ubl-service
 
 ```php
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\InvoiceService;
+use DMT\Ubl\Service\UblService;
 
 /** @var Invoice $invoice */
-$service = new InvoiceService();
+$service = new UblService();
 print $service->toXml($invoice);
 
 // <Invoice xmlns:cac="...">...</Invoice>
@@ -27,9 +27,9 @@ print $service->toXml($invoice);
 #### Process an UBL Invoice XML
 
 ```php
-use DMT\Ubl\Service\InvoiceService;
+use DMT\Ubl\Service\UblService;
 
-$service = new InvoiceService();
+$service = new UblService();
 $invoice = $service->fromXml('<Invoice xmlns:cac="...">...</Invoice>');
 
 // process the invoice
@@ -40,34 +40,34 @@ $invoice = $service->fromXml('<Invoice xmlns:cac="...">...</Invoice>');
 #### Create UBL Invoice from DTO
 
 ```php
-use DMT\Ubl\Service\InvoiceService;
+use DMT\Ubl\Service\UblService;
 use DMT\Ubl\Service\Transformer\Invoice\SimpleObjectToInvoiceTransformer;
 use DMT\Ubl\Service\Objects\Invoice;
 
 /** @var Invoice $invoice */
-$service = new InvoiceService();
+$service = new UblService();
 $ublInvoice = $service->toInvoice($invoice, new SimpleObjectToInvoiceTransformer());
 ```
 
 #### Fetch DTO from UBL Invoice
 
 ```php
-use DMT\Ubl\Service\InvoiceService;
+use DMT\Ubl\Service\UblService;
 use DMT\Ubl\Service\Transformer\Invoice\InvoiceLineToSimpleObjectTransformer;
 use DMT\Ubl\Service\Entity\Invoice;
 
 /** @var Invoice $ublInvoice */
-$service = new InvoiceService();
+$service = new UblService();
 $invoice = $service->fromInvoice($ublInvoice, new InvoiceLineToSimpleObjectTransformer());
 ```
 
 ### Validation
 
 ```php
-use DMT\Ubl\Service\InvoiceService;
+use DMT\Ubl\Service\UblService;
 use InvalidArgumentException;
 
-$service = new InvoiceService();
+$service = new UblService();
 try {
     // test (and formats) the identifier
     $identifier = $service->checkIdentifier('0000000000123', 'GTIN');
@@ -83,10 +83,10 @@ To change the format you can add the correct format in the call:
 
 ```php
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\InvoiceService;
+use DMT\Ubl\Service\UblService;
 
 /** @var Invoice $invoice */
-$service = new InvoiceService();
+$service = new UblService();
 print $service->toXml($invoice, Invoice::VERSION_NLCIUS);
 
 // output is according to the NLCIUS format

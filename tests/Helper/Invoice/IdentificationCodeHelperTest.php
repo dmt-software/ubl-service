@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Invoice\Type\IdentificationCode;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\IdentificationCode;
 use DMT\Ubl\Service\Helper\Invoice\IdentificationCodeHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

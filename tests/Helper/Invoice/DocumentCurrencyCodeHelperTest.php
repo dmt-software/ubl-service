@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Invoice\Type\DocumentCurrencyCode;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\DocumentCurrencyCode;
 use DMT\Ubl\Service\Helper\Invoice\DocumentCurrencyCodeHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

@@ -2,19 +2,19 @@
 
 namespace DMT\Ubl\Service\Transformer\Invoice;
 
-use DMT\Ubl\Service\Entity\Invoice\AllowanceCharge;
-use DMT\Ubl\Service\Entity\Invoice\Item;
-use DMT\Ubl\Service\Entity\Invoice\Price;
-use DMT\Ubl\Service\Entity\Invoice\SellersItemIdentification;
-use DMT\Ubl\Service\Entity\Invoice\StandardItemIdentification;
-use DMT\Ubl\Service\Entity\Invoice\TaxTotal;
-use DMT\Ubl\Service\Entity\Invoice\Type\Amount;
-use DMT\Ubl\Service\Entity\Invoice\Type\BaseQuantity;
-use DMT\Ubl\Service\Entity\Invoice\Type\InvoicedQuantity;
-use DMT\Ubl\Service\Entity\Invoice\Type\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\PriceAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\TaxAmount;
-use DMT\Ubl\Service\Entity\InvoiceLine;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AllowanceCharge;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoiceLine;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Item;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Price;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\SellersItemIdentification;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\StandardItemIdentification;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\BaseQuantity;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\InvoicedQuantity;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PriceAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\ElectronicAddressHelper;
 use DMT\Ubl\Service\Helper\Invoice\QuantityHelper;

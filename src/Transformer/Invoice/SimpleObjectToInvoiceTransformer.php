@@ -4,31 +4,30 @@ namespace DMT\Ubl\Service\Transformer\Invoice;
 
 use Closure;
 use DateTime;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AccountingCustomerParty;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AccountingSupplierParty;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Address;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Contact;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Country;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Delivery;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\DeliveryLocation;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoicePeriod;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\LegalMonetaryTotal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyName;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyTaxScheme;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PayeeFinancialAccount;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PaymentMeans;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PaymentTerms;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PostalAddress;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxScheme;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\Invoice\AccountingCustomerParty;
-use DMT\Ubl\Service\Entity\Invoice\AccountingSupplierParty;
-use DMT\Ubl\Service\Entity\Invoice\Address;
-use DMT\Ubl\Service\Entity\Invoice\Contact;
-use DMT\Ubl\Service\Entity\Invoice\Country;
-use DMT\Ubl\Service\Entity\Invoice\Delivery;
-use DMT\Ubl\Service\Entity\Invoice\DeliveryLocation;
-use DMT\Ubl\Service\Entity\Invoice\InvoicePeriod;
-use DMT\Ubl\Service\Entity\Invoice\LegalMonetaryTotal;
-use DMT\Ubl\Service\Entity\Invoice\OrderReference;
-use DMT\Ubl\Service\Entity\Invoice\Party;
-use DMT\Ubl\Service\Entity\Invoice\PartyLegalEntity;
-use DMT\Ubl\Service\Entity\Invoice\PartyName;
-use DMT\Ubl\Service\Entity\Invoice\PartyTaxScheme;
-use DMT\Ubl\Service\Entity\Invoice\PayeeFinancialAccount;
-use DMT\Ubl\Service\Entity\Invoice\PaymentMeans;
-use DMT\Ubl\Service\Entity\Invoice\PaymentTerms;
-use DMT\Ubl\Service\Entity\Invoice\PostalAddress;
-use DMT\Ubl\Service\Entity\Invoice\TaxScheme;
-use DMT\Ubl\Service\Entity\Invoice\Type\CompanyId;
-use DMT\Ubl\Service\Entity\Invoice\Type\Id;
-use DMT\Ubl\Service\Entity\Invoice\Type\PayableAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\PaymentMeansCode;
-use DMT\Ubl\Service\Entity\Invoice\Type\PrepaidAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\CompanyId;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Id;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PaymentMeansCode;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\ElectronicAddressHelper;
 use DMT\Ubl\Service\Helper\Invoice\IdentificationCodeHelper;
@@ -37,10 +36,11 @@ use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use DMT\Ubl\Service\Objects\Address as AddressDTO;
 use DMT\Ubl\Service\Objects\Invoice as InvoiceDTO;
 use DMT\Ubl\Service\Objects\Party as PartyDTO;
+use DMT\Ubl\Service\Transformer\ObjectToDocumentTransformer;
 use DMT\Ubl\Service\Transformer\ObjectToEntityTransformer;
 use InvalidArgumentException;
 
-class SimpleObjectToInvoiceTransformer implements ObjectToEntityTransformer
+class SimpleObjectToInvoiceTransformer implements ObjectToDocumentTransformer
 {
     private Closure $invoiceLineCallback;
 
@@ -128,7 +128,7 @@ class SimpleObjectToInvoiceTransformer implements ObjectToEntityTransformer
         $party->postalAddress->postalZone = $object->postcode;
         $party->postalAddress->country = new Country();
         $party->postalAddress->country->identificationCode = IdentificationCodeHelper::fetchFromValue($object->country);
-        $party->partyLegalEntity = new PartyLegalEntity();
+        $party->partyLegalEntity = new PartyLegal();
         $party->partyLegalEntity->registrationName = $object->companyLegalName ?? $object->companyName;
 
         if ($object->vatNumber) {

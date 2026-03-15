@@ -2,17 +2,17 @@
 
 namespace DMT\Test\Ubl\Service\Entity;
 
-use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\Invoice\AllowanceCharge;
-use DMT\Ubl\Service\Entity\Invoice\Item;
-use DMT\Ubl\Service\Entity\Invoice\Price;
-use DMT\Ubl\Service\Entity\Invoice\TaxTotal;
-use DMT\Ubl\Service\Entity\Invoice\Type\Amount;
-use DMT\Ubl\Service\Entity\Invoice\Type\InvoicedQuantity;
-use DMT\Ubl\Service\Entity\Invoice\Type\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\PriceAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\TaxAmount;
-use DMT\Ubl\Service\Entity\InvoiceLine;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\AllowanceCharge;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoiceLine;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Item;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Price;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\InvoicedQuantity;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PriceAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
+use DMT\Ubl\Service\Entity\Versions;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -24,7 +24,7 @@ class InvoiceLineTest extends TestCase
     {
         $invoiceLine = $this->getInvoiceLine();
 
-        $context = SerializationContext::create()->setVersion(Invoice::VERSION_NLCIUS);
+        $context = SerializationContext::create()->setVersion(Versions::VERSION_NLCIUS);
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoiceLine, 'xml', $context));
 
@@ -72,7 +72,7 @@ class InvoiceLineTest extends TestCase
     {
         $invoiceLine = $this->getInvoiceLine();
 
-        $context = SerializationContext::create()->setVersion(Invoice::VERSION_1_2);
+        $context = SerializationContext::create()->setVersion(Versions::VERSION_1_2);
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($invoiceLine, 'xml', $context));
 

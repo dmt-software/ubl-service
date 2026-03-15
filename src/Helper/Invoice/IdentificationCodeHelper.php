@@ -2,7 +2,7 @@
 
 namespace DMT\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\Invoice\Type\IdentificationCode;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\IdentificationCode;
 
 final class IdentificationCodeHelper
 {

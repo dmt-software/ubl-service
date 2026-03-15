@@ -2,18 +2,19 @@
 
 namespace DMT\Test\Ubl\Service;
 
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoiceLine;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Item;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\LegalMonetaryTotal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Price;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\SellersItemIdentification;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\InvoicedQuantity;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\PriceAmount;
+use DMT\Ubl\Service\Entity\CreditNote;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\Invoice\Item;
-use DMT\Ubl\Service\Entity\Invoice\LegalMonetaryTotal;
-use DMT\Ubl\Service\Entity\Invoice\Price;
-use DMT\Ubl\Service\Entity\Invoice\SellersItemIdentification;
-use DMT\Ubl\Service\Entity\Invoice\Type\InvoicedQuantity;
-use DMT\Ubl\Service\Entity\Invoice\Type\PayableAmount;
-use DMT\Ubl\Service\Entity\Invoice\Type\PriceAmount;
-use DMT\Ubl\Service\Entity\InvoiceLine;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\QuantityHelper;
-use DMT\Ubl\Service\InvoiceService;
+use DMT\Ubl\Service\UblService;
 use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use DMT\Ubl\Service\Objects\Invoice as InvoiceDTO;
 use DMT\Ubl\Service\Objects\InvoiceLine as InvoiceLineDTO;
@@ -29,7 +30,7 @@ class InvoiceServiceTest extends TestCase
     public function testCheckIdentifier(string $identifier, string|ElectronicAddressScheme $scheme, string|false $expected): void
     {
         try {
-            $this->assertSame($expected, (new InvoiceService())->checkIdentifier($identifier, $scheme));
+            $this->assertSame($expected, (new UblService())->checkIdentifier($identifier, $scheme));
         } catch (InvalidArgumentException) {
             $this->assertSame(false, $expected);
         }
@@ -52,21 +53,41 @@ class InvoiceServiceTest extends TestCase
         $invoice = new Invoice();
         $invoice->invoiceLine[]= new InvoiceLine();
 
-        $service = new InvoiceService();
+        $service = new UblService();
         $this->assertStringContainsString('<Invoice', $service->toXml($invoice));
     }
 
     public function testFromXml(): void
     {
-        $service = new InvoiceService();
-        $invoice = $service->fromXml('<Invoice/>');
+        $service = new UblService();
+
+        $entity = $service->fromXml('<Invoice/>', Invoice::class);
+        $this->assertInstanceOf(Invoice::class, $entity);
+
+        $entity = $service->fromXml('<CreditNote/>', CreditNote::class);
+        $this->assertInstanceOf(CreditNote::class, $entity);
+    }
+
+    public function testCreditNoteFromXml(): void
+    {
+        $service = new UblService();
+
+        $creditNote = $service->creditNoteFromXml('<CreditNote/>');
+
+        $this->assertInstanceOf(CreditNote::class, $creditNote);
+    }
+
+    public function testInvoiceFromXml(): void
+    {
+        $service = new UblService();
+        $invoice = $service->invoiceFromXml('<Invoice/>');
 
         $this->assertInstanceOf(Invoice::class, $invoice);
     }
 
     public function testFromInvoice(): void
     {
-        $service = new InvoiceService();
+        $service = new UblService();
 
         $invoice = new Invoice();
         $invoice->id = '376399';
@@ -91,7 +112,7 @@ class InvoiceServiceTest extends TestCase
 
     public function testToInvoice(): void
     {
-        $service = new InvoiceService();
+        $service = new UblService();
 
         $invoice = new InvoiceDTO('1234');
         $invoice->invoiceLines[] = new InvoiceLineDTO(
