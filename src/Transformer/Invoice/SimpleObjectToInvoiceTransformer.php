@@ -15,7 +15,7 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoicePeriod;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\LegalMonetaryTotal;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party;
-use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegalEntity;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyName;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyTaxScheme;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PayeeFinancialAccount;
@@ -128,7 +128,7 @@ class SimpleObjectToInvoiceTransformer implements ObjectToDocumentTransformer
         $party->postalAddress->postalZone = $object->postcode;
         $party->postalAddress->country = new Country();
         $party->postalAddress->country->identificationCode = IdentificationCodeHelper::fetchFromValue($object->country);
-        $party->partyLegalEntity = new PartyLegal();
+        $party->partyLegalEntity = new PartyLegalEntity();
         $party->partyLegalEntity->registrationName = $object->companyLegalName ?? $object->companyName;
 
         if ($object->vatNumber) {

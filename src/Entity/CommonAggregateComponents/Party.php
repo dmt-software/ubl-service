@@ -45,9 +45,9 @@ class Party implements CommonAggregateComponent
     public null|PartyTaxScheme $partyTaxScheme = null;
 
     #[SerializedName(name: "PartyLegalEntity")]
-    #[Type(name: PartyLegal::class)]
+    #[Type(name: PartyLegalEntity::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
-    public null|PartyLegal $partyLegalEntity = null;
+    public null|PartyLegalEntity $partyLegalEntity = null;
 
     #[SerializedName(name: "Contact")]
     #[Type(name: Contact::class)]
@@ -67,7 +67,7 @@ class Party implements CommonAggregateComponent
 
         if (isset($this->partyLegalEntity->companyId)) {
             $endpointId = new EndpointId();
-            $endpointId->schemeId = $this->partyLegalEntity->companyId;
+            $endpointId->schemeId = $this->partyLegalEntity->companyId->schemeId;
             $endpointId->id = $this->partyLegalEntity->companyId->id;
 
             return $endpointId;

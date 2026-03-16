@@ -6,7 +6,7 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\CreditNoteLine;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoiceLine;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party;
-use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegalEntity;
 use DMT\Ubl\Service\Entity\CreditNote;
 use DMT\Ubl\Service\Entity\Document;
 use DMT\Ubl\Service\Entity\Invoice;
@@ -77,7 +77,7 @@ final readonly class MandatoryDefaultsEventSubscriber implements EventSubscriber
 
         if (version_compare($event->getContext()->getAttribute('version'), "1.2", '>=')) {
             if (empty($party?->partyLegalEntity->registrationName)) {
-                $party->partyLegalEntity ??= new PartyLegal();
+                $party->partyLegalEntity ??= new PartyLegalEntity();
                 $party->partyLegalEntity->registrationName = $party->partyName?->name;
             }
         }

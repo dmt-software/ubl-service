@@ -15,7 +15,7 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\LegalMonetaryTotal;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyIdentification;
-use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegalEntity;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyName;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PostalAddress;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
@@ -170,13 +170,13 @@ class IdenticalPropertiesInvoiceTransformer implements ObjectToDocumentTransform
         return $country ?? null;
     }
 
-    private function renderPartyLegalEntity(null|object $object): ?PartyLegal
+    private function renderPartyLegalEntity(null|object $object): ?PartyLegalEntity
     {
         if ($object === null) {
             return null;
         }
 
-        $partyLegalEntity = new PartyLegal();
+        $partyLegalEntity = new PartyLegalEntity();
         $partyLegalEntity->registrationName = $object->registrationName ?? null;
         $partyLegalEntity->companyId = ElectronicAddressHelper::fetchFromValue($object->companyId ?? null, CompanyId::class);
 

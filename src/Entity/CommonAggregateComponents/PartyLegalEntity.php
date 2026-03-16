@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation\XmlRoot;
     name: "PartyLegalEntity",
     namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
 )]
-class PartyLegal implements CommonAggregateComponent
+class PartyLegalEntity implements CommonAggregateComponent
 {
     #[SerializedName(name: "RegistrationName")]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
