@@ -3,8 +3,8 @@
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Price;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\BaseQuantity;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PriceAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Quantity;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;
@@ -14,10 +14,10 @@ class PriceTest extends TestCase
     public function testSerialize(): void
     {
         $price = new Price();
-        $price->priceAmount = new PriceAmount();
+        $price->priceAmount = new Amount();
         $price->priceAmount->amount = 44.97;
         $price->priceAmount->currencyId = 'EUR';
-        $price->baseQuantity = new BaseQuantity();
+        $price->baseQuantity = new Quantity();
         $price->baseQuantity->quantity = 3;
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($price, 'xml'));

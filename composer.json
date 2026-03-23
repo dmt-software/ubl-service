@@ -21,11 +21,18 @@
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "^12.0"
+    "phpunit/phpunit": "^12.0",
+    "jawira/case-converter": "^3.6",
+    "ext-zip": "*",
+    "nikic/php-parser": "^5.7"
   },
   "autoload-dev": {
     "psr-4": {
-      "DMT\\Test\\Ubl\\Service\\": "tests/"
+      "DMT\\Test\\Ubl\\Service\\": "tests/",
+      "DMT\\Ubl\\Generate\\": "generate-src/"
     }
+  },
+  "scripts": {
+    "generate": "bin/generate.php"
   }
 }

@@ -8,10 +8,7 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\Item;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Price;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\InvoicedQuantity;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PriceAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Quantity;
 use DMT\Ubl\Service\Entity\Versions;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -120,21 +117,21 @@ class InvoiceLineTest extends TestCase
     {
         $invoiceLine = new InvoiceLine();
         $invoiceLine->id = '1345';
-        $invoiceLine->invoicedQuantity = new InvoicedQuantity();
+        $invoiceLine->invoicedQuantity = new Quantity();
         $invoiceLine->invoicedQuantity->quantity = 3;
-        $invoiceLine->lineExtensionAmount = new LineExtensionAmount();
+        $invoiceLine->lineExtensionAmount = new Amount();
         $invoiceLine->lineExtensionAmount->amount = 45.00;
         $invoiceLine->lineExtensionAmount->currencyId = 'EUR';
         $invoiceLine->allowanceCharge = [new AllowanceCharge()];
         $invoiceLine->allowanceCharge[0]->amount = new Amount();
         $invoiceLine->allowanceCharge[0]->amount->amount = 3.00;
         $invoiceLine->taxTotal = new TaxTotal();
-        $invoiceLine->taxTotal->taxAmount = new TaxAmount();
+        $invoiceLine->taxTotal->taxAmount = new Amount();
         $invoiceLine->taxTotal->taxAmount->amount = 0.00;
         $invoiceLine->item = new Item();
         $invoiceLine->item->name = 'Sku 1345';
         $invoiceLine->price = new Price();
-        $invoiceLine->price->priceAmount = new PriceAmount();
+        $invoiceLine->price->priceAmount = new Amount();
         $invoiceLine->price->priceAmount->amount = 15.00;
 
         return $invoiceLine;

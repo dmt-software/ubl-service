@@ -5,6 +5,7 @@ namespace DMT\Ubl\Service\Entity\CommonAggregateComponents;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\EmbeddedDocumentBinaryObject;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\XmlElement;
+use JMS\Serializer\Annotation\XmlRoot;
 
 #[XmlRoot(
     name: "Attachment",

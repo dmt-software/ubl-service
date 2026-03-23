@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\CommonBasicComponents\DocumentCurrencyCode;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\CurrencyCode;
 use DMT\Ubl\Service\Helper\Invoice\DocumentCurrencyCodeHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -10,14 +10,14 @@ use PHPUnit\Framework\TestCase;
 class DocumentCurrencyCodeHelperTest extends TestCase
 {
     #[DataProvider(methodName: 'provideDocumentCurrencyCode')]
-    public function testFetchFromValue(mixed $value, null|DocumentCurrencyCode $expected): void
+    public function testFetchFromValue(mixed $value, null|CurrencyCode $expected): void
     {
         $this->assertEquals($expected, DocumentCurrencyCodeHelper::fetchFromValue($value));
     }
 
     public static function provideDocumentCurrencyCode(): iterable
     {
-        $documentCurrencyCode = new DocumentCurrencyCode();
+        $documentCurrencyCode = new CurrencyCode();
         $documentCurrencyCode->code = 'EUR';
 
         yield 'from string' => ['EUR', $documentCurrencyCode];

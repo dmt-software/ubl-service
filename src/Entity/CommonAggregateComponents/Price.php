@@ -2,8 +2,8 @@
 
 namespace DMT\Ubl\Service\Entity\CommonAggregateComponents;
 
-use DMT\Ubl\Service\Entity\CommonBasicComponents\BaseQuantity;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PriceAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Quantity;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\XmlElement;
@@ -16,12 +16,12 @@ use JMS\Serializer\Annotation\XmlRoot;
 class Price implements CommonAggregateComponent
 {
     #[SerializedName(name: "PriceAmount")]
-    #[Type(name: PriceAmount::class)]
+    #[Type(name: Amount::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|float|PriceAmount $priceAmount = null;
+    public null|float|Amount $priceAmount = null;
 
     #[SerializedName(name: "BaseQuantity")]
-    #[Type(name: BaseQuantity::class)]
+    #[Type(name: Quantity::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|int|BaseQuantity $baseQuantity = null;
+    public null|int|Quantity $baseQuantity = null;
 }

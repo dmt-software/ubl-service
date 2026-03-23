@@ -10,11 +10,7 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\SellersItemIdentification;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\StandardItemIdentification;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\BaseQuantity;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\InvoicedQuantity;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PriceAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Quantity;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\ElectronicAddressHelper;
 use DMT\Ubl\Service\Helper\Invoice\QuantityHelper;
@@ -29,8 +25,8 @@ class IdenticalPropertiesInvoiceLineTransformer implements ObjectToEntityTransfo
     {
         $invoiceLine = new InvoiceLine();
         $invoiceLine->id = $object->id ?? null;
-        $invoiceLine->invoicedQuantity = QuantityHelper::fetchFromValue($object->number ?? null, InvoicedQuantity::class);
-        $invoiceLine->lineExtensionAmount = AmountHelper::fetchFromValue($object->lineExtensionAmount ?? null, LineExtensionAmount::class);
+        $invoiceLine->invoicedQuantity = QuantityHelper::fetchFromValue($object->number ?? null, Quantity::class);
+        $invoiceLine->lineExtensionAmount = AmountHelper::fetchFromValue($object->lineExtensionAmount ?? null, Amount::class);
         $invoiceLine->allowanceCharge = $this->renderAllowanceCharges($object->allowanceCharge ?? null);
         $invoiceLine->taxTotal = $this->renderTaxTotal($object->taxTotal ?? null);
         $invoiceLine->item = $this->renderItem($object->item ?? null);
@@ -74,7 +70,7 @@ class IdenticalPropertiesInvoiceLineTransformer implements ObjectToEntityTransfo
         }
 
         $taxTotal = new TaxTotal();
-        $taxTotal->taxAmount = AmountHelper::fetchFromValue($object->taxAmount ?? null, TaxAmount::class);
+        $taxTotal->taxAmount = AmountHelper::fetchFromValue($object->taxAmount ?? null, Amount::class);
 
         return $taxTotal;
     }
@@ -117,8 +113,8 @@ class IdenticalPropertiesInvoiceLineTransformer implements ObjectToEntityTransfo
         }
 
         $price = new Price();
-        $price->priceAmount = AmountHelper::fetchFromValue($object->priceAmount ?? null, PriceAmount::class);
-        $price->baseQuantity = QuantityHelper::fetchFromValue($object->baseQuantity ?? null, BaseQuantity::class);
+        $price->priceAmount = AmountHelper::fetchFromValue($object->priceAmount ?? null, Amount::class);
+        $price->baseQuantity = QuantityHelper::fetchFromValue($object->baseQuantity ?? null, Quantity::class);
 
         return $price;
     }

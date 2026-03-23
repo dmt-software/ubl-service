@@ -3,7 +3,7 @@
 namespace DMT\Test\Ubl\Service\Entity\Components;
 
 use DateTime;
-use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoicePeriod;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Period;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit\Framework\TestCase;
@@ -12,7 +12,7 @@ class InvoicePeriodTest extends TestCase
 {
     public function testSerialize(): void
     {
-        $invoicingPeriod = new InvoicePeriod();
+        $invoicingPeriod = new Period();
         $invoicingPeriod->startDate = new DateTime('2025-03-12');
         $invoicingPeriod->endDate = new DateTime('2025-03-15');
 

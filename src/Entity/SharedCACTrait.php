@@ -6,12 +6,15 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\AccountingCustomerParty;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\AccountingSupplierParty;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\AdditionalDocumentReference;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\AllowanceCharge;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\BillingReference;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Delivery;
-use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoicePeriod;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\DespatchDocumentReference;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Period;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\LegalMonetaryTotal;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PaymentMeans;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PaymentTerms;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\ReceiptDocumentReference;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
 use Generator;
 use JMS\Serializer\Annotation\SerializedName;
@@ -24,21 +27,15 @@ trait SharedCACTrait
 {
     #[SerializedName(name: "InvoicePeriod")]
     #[Since(version: Versions::VERSION_1_1)]
-    #[Type(name: InvoicePeriod::class)]
+    #[Type(name: Period::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
-    public null|InvoicePeriod $invoicePeriod = null;
+    public null|Period $invoicePeriod = null;
 
     #[SerializedName(name: "OrderReference")]
     #[Since(version: Versions::VERSION_1_1)]
     #[Type(name: OrderReference::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")]
     public null|OrderReference $orderReference = null;
-
-    // BillingReference
-    // DespatchDocumentReference
-    // ReceiptDocumentReference
-    // OriginatorDocumentReference
-    // ContractDocumentReference
 
     #[Type(name: 'array<' . AdditionalDocumentReference::class . '>')]
     #[XmlList(
@@ -48,6 +45,36 @@ trait SharedCACTrait
     )]
     /** @var array<AdditionalDocumentReference> $additionalDocumentReference */
     public null|array $additionalDocumentReference = null;
+
+    #[Type(name: 'array<' . BillingReference::class . '>')]
+    #[XmlList(
+        entry: "BillingReference",
+        inline: true,
+        namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    )]
+    /** @var array<BillingReference> $billingReference */
+    public array $billingReference = [];
+
+    #[Type(name: 'array<' . DespatchDocumentReference::class . '>')]
+    #[XmlList(
+        entry: "DespatchDocumentReference",
+        inline: true,
+        namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    )]
+    /** @var array<DespatchDocumentReference> $despatchDocumentReference */
+    public array $despatchDocumentReference = [];
+
+    #[Type(name: 'array<' . ReceiptDocumentReference::class . '>')]
+    #[XmlList(
+        entry: "ReceiptDocumentReference",
+        inline: true,
+        namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    )]
+    /** @var array<ReceiptDocumentReference> $receiptDocumentReference */
+    public array $receiptDocumentReference = [];
+
+    // OriginatorDocumentReference
+    // ContractDocumentReference
 
     // ProjectReference
 

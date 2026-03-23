@@ -3,16 +3,10 @@
 namespace DMT\Ubl\Service\Event;
 
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\LegalMonetaryTotal;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
 use DMT\Ubl\Service\Entity\CreditNote;
 use DMT\Ubl\Service\Entity\Document;
 use DMT\Ubl\Service\Entity\Invoice;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\AllowanceTotalAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\ChargeTotalAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableRoundingAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxExclusiveAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxInclusiveAmount;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
 
@@ -58,25 +52,25 @@ final readonly class LegalMonetaryTotalEventSubscriber implements EventSubscribe
         $prepaidAmount = $document->legalMonetaryTotal?->prepaidAmount?->amount ?? 0.0;
 
         $document->legalMonetaryTotal ??= new LegalMonetaryTotal();
-        $document->legalMonetaryTotal->lineExtensionAmount ??= new LineExtensionAmount();
+        $document->legalMonetaryTotal->lineExtensionAmount ??= new Amount();
         $document->legalMonetaryTotal->lineExtensionAmount->amount = $lineExtensionAmount;
-        $document->legalMonetaryTotal->taxExclusiveAmount ??= new TaxExclusiveAmount();
+        $document->legalMonetaryTotal->taxExclusiveAmount ??= new Amount();
         $document->legalMonetaryTotal->taxExclusiveAmount->amount = $taxExclusiveAmount;
-        $document->legalMonetaryTotal->taxInclusiveAmount ??= new TaxInclusiveAmount();
+        $document->legalMonetaryTotal->taxInclusiveAmount ??= new Amount();
         $document->legalMonetaryTotal->taxInclusiveAmount->amount = $taxInclusiveAmount;
-        $document->legalMonetaryTotal->payableAmount ??= new PayableAmount();
+        $document->legalMonetaryTotal->payableAmount ??= new Amount();
         $document->legalMonetaryTotal->payableAmount->amount ??= $taxInclusiveAmount - $prepaidAmount;
 
         if ($allowanceAmount) {
-            $document->legalMonetaryTotal->allowanceTotalAmount ??= new AllowanceTotalAmount();
+            $document->legalMonetaryTotal->allowanceTotalAmount ??= new Amount();
             $document->legalMonetaryTotal->allowanceTotalAmount->amount = $allowanceAmount;
         }
         if ($chargeAmount) {
-            $document->legalMonetaryTotal->chargeTotalAmount ??= new ChargeTotalAmount();
+            $document->legalMonetaryTotal->chargeTotalAmount ??= new Amount();
             $document->legalMonetaryTotal->chargeTotalAmount->amount = $chargeAmount;
         }
         if ($document->legalMonetaryTotal->payableAmount->amount != $taxInclusiveAmount - $prepaidAmount) {
-            $document->legalMonetaryTotal->payableRoundingAmount ??= new PayableRoundingAmount();
+            $document->legalMonetaryTotal->payableRoundingAmount ??= new Amount();
             $document->legalMonetaryTotal->payableRoundingAmount->amount =
                 round($document->legalMonetaryTotal->payableAmount->amount - $taxInclusiveAmount - $prepaidAmount, 2);
         }

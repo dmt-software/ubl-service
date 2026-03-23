@@ -4,7 +4,7 @@ namespace DMT\Test\Ubl\Service\Entity\Components;
 
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyIdentification;
-use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegal;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegalEntity;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyName;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PostalAddress;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\EndpointId;
@@ -86,7 +86,7 @@ class PartyTest extends TestCase
         $party->partyName->name = 'Holding BV';
         $party->postalAddress = new PostalAddress();
         $party->postalAddress->postalZone = '1234XX';
-        $party->partyLegalEntity = new PartyLegal();
+        $party->partyLegalEntity = new PartyLegalEntity();
         $party->partyLegalEntity->registrationName = 'Holding BV';
 
         return $party;

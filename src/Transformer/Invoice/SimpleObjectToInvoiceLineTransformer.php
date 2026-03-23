@@ -8,11 +8,9 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\Item;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Price;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\SellersItemIdentification;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\StandardItemIdentification;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\BaseQuantity;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\Id;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\InvoicedQuantity;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PriceAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Quantity;
 use DMT\Ubl\Service\Entity\Entity;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\ElectronicAddressHelper;
@@ -35,14 +33,14 @@ class SimpleObjectToInvoiceLineTransformer implements ObjectToEntityTransformer
 
         $invoiceLine = new InvoiceLine();
         $invoiceLine->id = $object->lineNumber;
-        $invoiceLine->invoicedQuantity = QuantityHelper::fetchFromValue($object->amount, InvoicedQuantity::class);
-        $invoiceLine->lineExtensionAmount = AmountHelper::fetchFromValue($object->price * $object->amount, LineExtensionAmount::class);
+        $invoiceLine->invoicedQuantity = QuantityHelper::fetchFromValue($object->amount, Quantity::class);
+        $invoiceLine->lineExtensionAmount = AmountHelper::fetchFromValue($object->price * $object->amount, Amount::class);
         $invoiceLine->item = new Item();
         $invoiceLine->item->classifiedTaxCategory = new ClassifiedTaxCategory();
         $invoiceLine->item->classifiedTaxCategory->percent = $object->vatPercentage;
         $invoiceLine->price = new Price();
-        $invoiceLine->price->priceAmount = AmountHelper::fetchFromValue($object->price, PriceAmount::class);
-        $invoiceLine->price->baseQuantity = QuantityHelper::fetchFromValue(1, BaseQuantity::class);
+        $invoiceLine->price->priceAmount = AmountHelper::fetchFromValue($object->price, Amount::class);
+        $invoiceLine->price->baseQuantity = QuantityHelper::fetchFromValue(1, Quantity::class);
 
         if ($object->sku) {
             $invoiceLine->item->name = $object->product;

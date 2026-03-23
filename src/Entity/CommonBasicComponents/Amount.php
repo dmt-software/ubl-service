@@ -5,14 +5,9 @@ namespace DMT\Ubl\Service\Entity\CommonBasicComponents;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\XmlAttribute;
-use JMS\Serializer\Annotation\XmlRoot;
 use JMS\Serializer\Annotation\XmlValue;
 use Stringable;
 
-#[XmlRoot(
-    name: "Amount",
-    namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
-)]
 class Amount implements CommonBasicComponent, Stringable, AmountType
 {
     #[Type(name: "float<2>")]

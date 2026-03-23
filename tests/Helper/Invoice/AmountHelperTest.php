@@ -2,9 +2,8 @@
 
 namespace DMT\Test\Ubl\Service\Helper\Invoice;
 
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\AmountType;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PriceAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -19,18 +18,18 @@ class AmountHelperTest extends TestCase
 
     public static function provideAmount(): iterable
     {
-        $priceAmount = new PriceAmount();
+        $priceAmount = new Amount();
         $priceAmount->amount = 4.335;
 
-        yield 'from scalar value' => [PriceAmount::class, 4.335, $priceAmount];
+        yield 'from scalar value' => [Amount::class, 4.335, $priceAmount];
 
-        $taxAmount = new TaxAmount();
+        $taxAmount = new Amount();
         $taxAmount->amount = 100.00;
         $taxAmount->currencyId = 'EUR';
 
-        yield 'from object' => [TaxAmount::class, (object)['amount' => 100.00, 'currencyId' => 'EUR'], $taxAmount];
-        yield 'not set from array' => [PriceAmount::class, ['amount' => 123], null];
-        yield 'set from self' => [PriceAmount::class, $priceAmount, $priceAmount];
-        yield 'not set when null' => [TaxAmount::class, null, null];
+        yield 'from object' => [Amount::class, (object)['amount' => 100.00, 'currencyId' => 'EUR'], $taxAmount];
+        yield 'not set from array' => [Amount::class, ['amount' => 123], null];
+        yield 'set from self' => [Amount::class, $priceAmount, $priceAmount];
+        yield 'not set when null' => [Amount::class, null, null];
     }
 }

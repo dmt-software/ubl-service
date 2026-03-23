@@ -10,7 +10,7 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\Contact;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Country;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Delivery;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\DeliveryLocation;
-use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoicePeriod;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Period;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\LegalMonetaryTotal;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party;
@@ -19,17 +19,8 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyLegalEntity;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PartyName;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PostalAddress;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\AllowanceTotalAmount;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\ChargeTotalAmount;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\CompanyId;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableRoundingAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PrepaidAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxExclusiveAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxInclusiveAmount;
 use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\DateTypeHelper;
@@ -73,13 +64,13 @@ class IdenticalPropertiesInvoiceTransformer implements ObjectToDocumentTransform
         return $invoice;
     }
 
-    private function renderInvoicePeriod(null|object $object): ?InvoicePeriod
+    private function renderInvoicePeriod(null|object $object): ?Period
     {
         if ($object === null) {
             return null;
         }
 
-        $period = new InvoicePeriod();
+        $period = new Period();
         $period->startDate = DateTypeHelper::fetchFromValue($object->startDate ?? null);
         $period->endDate = DateTypeHelper::fetchFromValue($object->endDate ?? null);
 
@@ -245,7 +236,7 @@ class IdenticalPropertiesInvoiceTransformer implements ObjectToDocumentTransform
         }
 
         $taxTotal = new TaxTotal();
-        $taxTotal->taxAmount = AmountHelper::fetchFromValue($object->taxAmount ?? null, TaxAmount::class);
+        $taxTotal->taxAmount = AmountHelper::fetchFromValue($object->taxAmount ?? null, Amount::class);
 
         return $taxTotal;
     }
@@ -257,14 +248,14 @@ class IdenticalPropertiesInvoiceTransformer implements ObjectToDocumentTransform
         }
 
         $legalMonetaryTotal = new LegalMonetaryTotal();
-        $legalMonetaryTotal->lineExtensionAmount = AmountHelper::fetchFromValue($object->lineExtensionAmount ?? null, LineExtensionAmount::class);
-        $legalMonetaryTotal->taxExclusiveAmount = AmountHelper::fetchFromValue($object->taxExclusiveAmount ?? null, TaxExclusiveAmount::class);
-        $legalMonetaryTotal->taxInclusiveAmount = AmountHelper::fetchFromValue($object->taxInclusiveAmount ?? null, TaxInclusiveAmount::class);
-        $legalMonetaryTotal->allowanceTotalAmount = AmountHelper::fetchFromValue($object->allowanceTotalAmount ?? null, AllowanceTotalAmount::class);
-        $legalMonetaryTotal->chargeTotalAmount = AmountHelper::fetchFromValue($object->chargeTotalAmount ?? null, ChargeTotalAmount::class);
-        $legalMonetaryTotal->prepaidAmount = AmountHelper::fetchFromValue($object->prepaidAmount ?? null, PrepaidAmount::class);
-        $legalMonetaryTotal->payableAmount = AmountHelper::fetchFromValue($object->payableAmount ?? null, PayableAmount::class);
-        $legalMonetaryTotal->payableRoundingAmount = AmountHelper::fetchFromValue($object->payableRoundingAmount ?? null, PayableRoundingAmount::class);
+        $legalMonetaryTotal->lineExtensionAmount = AmountHelper::fetchFromValue($object->lineExtensionAmount ?? null, Amount::class);
+        $legalMonetaryTotal->taxExclusiveAmount = AmountHelper::fetchFromValue($object->taxExclusiveAmount ?? null, Amount::class);
+        $legalMonetaryTotal->taxInclusiveAmount = AmountHelper::fetchFromValue($object->taxInclusiveAmount ?? null, Amount::class);
+        $legalMonetaryTotal->allowanceTotalAmount = AmountHelper::fetchFromValue($object->allowanceTotalAmount ?? null, Amount::class);
+        $legalMonetaryTotal->chargeTotalAmount = AmountHelper::fetchFromValue($object->chargeTotalAmount ?? null, Amount::class);
+        $legalMonetaryTotal->prepaidAmount = AmountHelper::fetchFromValue($object->prepaidAmount ?? null, Amount::class);
+        $legalMonetaryTotal->payableAmount = AmountHelper::fetchFromValue($object->payableAmount ?? null, Amount::class);
+        $legalMonetaryTotal->payableRoundingAmount = AmountHelper::fetchFromValue($object->payableRoundingAmount ?? null, Amount::class);
 
         return $legalMonetaryTotal;
     }

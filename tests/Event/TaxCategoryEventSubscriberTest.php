@@ -7,9 +7,8 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoiceLine;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Item;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxScheme;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\Id;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
 use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\TaxCategoryEventSubscriber;
@@ -47,9 +46,9 @@ class TaxCategoryEventSubscriberTest extends TestCase
     {
         $invoice = new Invoice();
         $invoice->invoiceLine = [0 => new InvoiceLine()];
-        $invoice->invoiceLine[0]->lineExtensionAmount = AmountHelper::fetchFromValue(100.00, LineExtensionAmount::class);
+        $invoice->invoiceLine[0]->lineExtensionAmount = AmountHelper::fetchFromValue(100.00, Amount::class);
         $invoice->invoiceLine[0]->taxTotal = new TaxTotal();
-        $invoice->invoiceLine[0]->taxTotal->taxAmount = AmountHelper::fetchFromValue(6.00, TaxAmount::class);
+        $invoice->invoiceLine[0]->taxTotal->taxAmount = AmountHelper::fetchFromValue(6.00, Amount::class);
 
         $event = new PreSerializeEvent(
             SerializationContext::create()->setVersion(Versions::VERSION_1_0),
@@ -69,7 +68,7 @@ class TaxCategoryEventSubscriberTest extends TestCase
     {
         $invoice = new Invoice();
         $invoice->invoiceLine = [0 => new InvoiceLine(), 1 => new InvoiceLine(), 2 => new InvoiceLine()];
-        $invoice->invoiceLine[0]->lineExtensionAmount = AmountHelper::fetchFromValue(45.00, LineExtensionAmount::class);
+        $invoice->invoiceLine[0]->lineExtensionAmount = AmountHelper::fetchFromValue(45.00, Amount::class);
         $invoice->invoiceLine[0]->item = new Item();
         $invoice->invoiceLine[0]->item->classifiedTaxCategory = new ClassifiedTaxCategory();
         $invoice->invoiceLine[0]->item->classifiedTaxCategory->id =
@@ -79,7 +78,7 @@ class TaxCategoryEventSubscriberTest extends TestCase
             ElectronicAddressHelper::fetchFromValue('VAT', Id::class);
         $invoice->invoiceLine[0]->item->classifiedTaxCategory->percent = 21;
 
-        $invoice->invoiceLine[1]->lineExtensionAmount = AmountHelper::fetchFromValue(6.00, LineExtensionAmount::class);
+        $invoice->invoiceLine[1]->lineExtensionAmount = AmountHelper::fetchFromValue(6.00, Amount::class);
         $invoice->invoiceLine[1]->item = new Item();
         $invoice->invoiceLine[1]->item->classifiedTaxCategory = new ClassifiedTaxCategory();
         $invoice->invoiceLine[1]->item->classifiedTaxCategory->id =
@@ -89,7 +88,7 @@ class TaxCategoryEventSubscriberTest extends TestCase
             ElectronicAddressHelper::fetchFromValue('VAT', Id::class);
         $invoice->invoiceLine[1]->item->classifiedTaxCategory->percent = 6;
 
-        $invoice->invoiceLine[2]->lineExtensionAmount = AmountHelper::fetchFromValue(10.00, LineExtensionAmount::class);
+        $invoice->invoiceLine[2]->lineExtensionAmount = AmountHelper::fetchFromValue(10.00, Amount::class);
         $invoice->invoiceLine[2]->item = new Item();
         $invoice->invoiceLine[2]->item->classifiedTaxCategory = new ClassifiedTaxCategory();
         $invoice->invoiceLine[2]->item->classifiedTaxCategory->id =

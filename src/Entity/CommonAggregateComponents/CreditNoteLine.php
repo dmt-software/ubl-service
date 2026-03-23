@@ -2,7 +2,7 @@
 
 namespace DMT\Ubl\Service\Entity\CommonAggregateComponents;
 
-use DMT\Ubl\Service\Entity\CommonBasicComponents\CreditedQuantity;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Quantity;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\XmlElement;
@@ -18,7 +18,7 @@ class CreditNoteLine implements CommonAggregateComponent
     use SharedLineCACTrait;
 
     #[SerializedName(name: "CreditedQuantity")]
-    #[Type(name: CreditedQuantity::class)]
+    #[Type(name: Quantity::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|int|CreditedQuantity $creditedQuantity = null;
+    public null|int|Quantity $creditedQuantity = null;
 }

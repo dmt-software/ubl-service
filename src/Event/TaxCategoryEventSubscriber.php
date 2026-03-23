@@ -10,9 +10,8 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxCategory;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxScheme;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxSubtotal;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxTotal;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\Id;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxableAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
 use DMT\Ubl\Service\Entity\CreditNote;
 use DMT\Ubl\Service\Entity\Document;
 use DMT\Ubl\Service\Entity\Invoice;
@@ -90,7 +89,7 @@ final readonly class TaxCategoryEventSubscriber implements EventSubscriberInterf
 
                 $taxSubtotal = new TaxSubtotal();
                 $taxSubtotal->taxCategory = $taxCategory;
-                $taxSubtotal->taxableAmount = new TaxableAmount();
+                $taxSubtotal->taxableAmount = new Amount();
                 $taxSubtotal->taxableAmount->amount = 0.0;
 
                 $taxTotal->taxSubtotal[] = $taxSubtotal;
@@ -103,11 +102,11 @@ final readonly class TaxCategoryEventSubscriber implements EventSubscriberInterf
             $taxSubtotal->taxableAmount->amount += round($line->lineExtensionAmount->amount, 2);
         }
 
-        $taxTotal->taxAmount = new TaxAmount();
+        $taxTotal->taxAmount = new Amount();
         $taxTotal->taxAmount->amount = 0.0;
         if (version_compare($event->getContext()->getAttribute('version'), "2.0", '>=')) {
             foreach ($taxTotal->taxSubtotal as $taxSubtotal) {
-                $taxSubtotal->taxAmount = new TaxAmount();
+                $taxSubtotal->taxAmount = new Amount();
                 $taxSubtotal->taxAmount->amount = round(($taxSubtotal->taxableAmount->amount / 100) * $taxSubtotal->taxCategory->percent, 2);
 
                 $taxTotal->taxAmount->amount += $taxSubtotal->taxAmount->amount;
@@ -146,7 +145,7 @@ final readonly class TaxCategoryEventSubscriber implements EventSubscriberInterf
         $classifiedTaxCategory->taxScheme->id->id = 'VAT';
 
         $line->taxTotal ??= new TaxTotal();
-        $line->taxTotal->taxAmount ??= new TaxAmount();
+        $line->taxTotal->taxAmount ??= new Amount();
         $line->taxTotal->taxAmount->amount ??= round($line->lineExtensionAmount->amount * $percentage / 100, 2);
 
         $line->item->classifiedTaxCategory = $classifiedTaxCategory;

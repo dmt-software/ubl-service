@@ -2,7 +2,8 @@
 
 namespace DMT\Ubl\Service\Entity\CommonAggregateComponents;
 
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
+use DMT\Ubl\Service\Entity\Namespaces;
 use DMT\Ubl\Service\Entity\Versions;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Since;
@@ -13,21 +14,21 @@ use JMS\Serializer\Annotation\XmlRoot;
 
 #[XmlRoot(
     name: "TaxTotal",
-    namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    namespace: Namespaces::CAC
 )]
 class TaxTotal implements CommonAggregateComponent
 {
     #[SerializedName(name: "TaxAmount")]
-    #[Type(name: TaxAmount::class)]
-    #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|float|TaxAmount $taxAmount = null;
+    #[Type(name: Amount::class)]
+    #[XmlElement(cdata: false, namespace: Namespaces::CBC)]
+    public null|float|Amount $taxAmount = null;
 
     #[Type(name: 'array<' . TaxSubtotal::class . '>')]
     #[Since(version: Versions::VERSION_2_0)]
     #[XmlList(
         entry: "TaxSubtotal",
         inline: true,
-        namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+        namespace: Namespaces::CAC
     )]
     /** @var array<TaxSubtotal> $invoiceLine */
     public null|array $taxSubtotal = null;

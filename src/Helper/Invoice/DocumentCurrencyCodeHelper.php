@@ -2,11 +2,11 @@
 
 namespace DMT\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\CommonBasicComponents\DocumentCurrencyCode;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\CurrencyCode;
 
 final class DocumentCurrencyCodeHelper
 {
-    public static function fetchFromValue(null|string|object $value): null|DocumentCurrencyCode
+    public static function fetchFromValue(null|string|object $value): null|CurrencyCode
     {
         if (!is_object($value)) {
             $value = (object)['code' => $value];
@@ -16,7 +16,7 @@ final class DocumentCurrencyCodeHelper
             return null;
         }
 
-        $currencyCode = new DocumentCurrencyCode();
+        $currencyCode = new CurrencyCode();
         $currencyCode->code = $value->code;
 
         if (isset($value->listId)) {

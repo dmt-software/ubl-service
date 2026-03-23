@@ -3,7 +3,7 @@
 namespace DMT\Test\Ubl\Service\Event;
 
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Price;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\BaseQuantity;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Quantity;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\QuantityType;
 use DMT\Ubl\Service\Event\QuantityUnitEventSubscriber;
 use JMS\Serializer\Builder\DefaultDriverFactory;
@@ -35,7 +35,7 @@ class QuantityUnitEventSubscriberTest extends TestCase
     {
         $subscriber = new QuantityUnitEventSubscriber();
 
-        $baseQuantity = new BaseQuantity();
+        $baseQuantity = new Quantity();
         $baseQuantity->quantity = 3;
 
         $this->assertNull($baseQuantity->unitCode);
@@ -51,7 +51,7 @@ class QuantityUnitEventSubscriberTest extends TestCase
     {
         $subscriber = new QuantityUnitEventSubscriber();
 
-        $baseQuantity = new BaseQuantity();
+        $baseQuantity = new Quantity();
         $baseQuantity->quantity = 3;
         $baseQuantity->unitCode = 'ST';
 

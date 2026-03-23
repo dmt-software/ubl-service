@@ -11,7 +11,7 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\Contact;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Country;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Delivery;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\DeliveryLocation;
-use DMT\Ubl\Service\Entity\CommonAggregateComponents\InvoicePeriod;
+use DMT\Ubl\Service\Entity\CommonAggregateComponents\Period;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\LegalMonetaryTotal;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\OrderReference;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\Party;
@@ -23,11 +23,11 @@ use DMT\Ubl\Service\Entity\CommonAggregateComponents\PaymentMeans;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PaymentTerms;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\PostalAddress;
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\TaxScheme;
-use DMT\Ubl\Service\Entity\Invoice;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\CompanyId;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\Id;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableAmount;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\PaymentMeansCode;
+use DMT\Ubl\Service\Entity\Invoice;
 use DMT\Ubl\Service\Helper\Invoice\AmountHelper;
 use DMT\Ubl\Service\Helper\Invoice\ElectronicAddressHelper;
 use DMT\Ubl\Service\Helper\Invoice\IdentificationCodeHelper;
@@ -37,7 +37,6 @@ use DMT\Ubl\Service\Objects\Address as AddressDTO;
 use DMT\Ubl\Service\Objects\Invoice as InvoiceDTO;
 use DMT\Ubl\Service\Objects\Party as PartyDTO;
 use DMT\Ubl\Service\Transformer\ObjectToDocumentTransformer;
-use DMT\Ubl\Service\Transformer\ObjectToEntityTransformer;
 use InvalidArgumentException;
 
 class SimpleObjectToInvoiceTransformer implements ObjectToDocumentTransformer
@@ -66,10 +65,10 @@ class SimpleObjectToInvoiceTransformer implements ObjectToDocumentTransformer
         $invoice->orderReference->id = $object->orderReference;
         $invoice->orderReference->salesOrderId = $object->salesOrderReference;
         $invoice->legalMonetaryTotal = new LegalMonetaryTotal();
-        $invoice->legalMonetaryTotal->payableAmount = AmountHelper::fetchFromValue($object->total, PayableAmount::class);
+        $invoice->legalMonetaryTotal->payableAmount = AmountHelper::fetchFromValue($object->total, Amount::class);
 
         if ($object->invoicePeriod) {
-            $invoice->invoicePeriod = new InvoicePeriod();
+            $invoice->invoicePeriod = new Period();
             $invoice->invoicePeriod->startDate = min($object->invoicePeriod);
             $invoice->invoicePeriod->endDate = max($object->invoicePeriod);
         }

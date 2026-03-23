@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Entity\Components\Type;
 
-use DMT\Ubl\Service\Entity\CommonBasicComponents\DocumentCurrencyCode;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\CurrencyCode;
 use DMT\Ubl\Service\Entity\Versions;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -15,7 +15,7 @@ class DocumentCurrencyCodeTest extends TestCase
     {
         $context = SerializationContext::create()->setVersion(Versions::VERSION_NLCIUS);
 
-        $documentCurrencyCode = new DocumentCurrencyCode();
+        $documentCurrencyCode = new CurrencyCode();
         $documentCurrencyCode->code = 'EUR';
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($documentCurrencyCode, 'xml', $context));
@@ -34,7 +34,7 @@ class DocumentCurrencyCodeTest extends TestCase
     {
         $context = SerializationContext::create()->setVersion(Versions::VERSION_1_2);
 
-        $documentCurrencyCode = new DocumentCurrencyCode();
+        $documentCurrencyCode = new CurrencyCode();
         $documentCurrencyCode->code = 'EUR';
 
         $xml = simplexml_load_string($this->getSerializer()->serialize($documentCurrencyCode, 'xml', $context));

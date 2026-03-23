@@ -2,8 +2,7 @@
 
 namespace DMT\Test\Ubl\Service\Helper\Invoice;
 
-use DMT\Ubl\Service\Entity\CommonBasicComponents\BaseQuantity;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\InvoicedQuantity;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Quantity;
 use DMT\Ubl\Service\Entity\CommonBasicComponents\QuantityType;
 use DMT\Ubl\Service\Helper\Invoice\QuantityHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -19,20 +18,20 @@ class QuantityHelperTest extends TestCase
 
     public static function provideQuantity(): iterable
     {
-        $baseQuantity = new BaseQuantity();
+        $baseQuantity = new Quantity();
         $baseQuantity->quantity = 1;
 
-        yield 'from int' => [BaseQuantity::class, 1, $baseQuantity];
-        yield 'from object' => [BaseQuantity::class, (object)['quantity' => 1], $baseQuantity];
-        yield 'set from self' => [BaseQuantity::class, $baseQuantity, $baseQuantity];
-        yield 'not set when null' => [BaseQuantity::class, null, null];
+        yield 'from int' => [Quantity::class, 1, $baseQuantity];
+        yield 'from object' => [Quantity::class, (object)['quantity' => 1], $baseQuantity];
+        yield 'set from self' => [Quantity::class, $baseQuantity, $baseQuantity];
+        yield 'not set when null' => [Quantity::class, null, null];
 
-        $invoicedQuantity = new InvoicedQuantity();
+        $invoicedQuantity = new Quantity();
         $invoicedQuantity->quantity = 15;
         $invoicedQuantity->unitCode = 'UA';
 
         yield 'set with unit' => [
-            InvoicedQuantity::class,
+            Quantity::class,
             (object)['quantity' => 15, 'unitCode' => 'UA'],
             $invoicedQuantity
         ];

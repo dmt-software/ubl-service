@@ -3,7 +3,7 @@
 namespace DMT\Test\Ubl\Service\Event;
 
 use DMT\Ubl\Service\Entity\CommonAggregateComponents\LegalMonetaryTotal;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\AllowanceTotalAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
 use DMT\Ubl\Service\Event\SkipWhenEmptyEventSubscriber;
 use JMS\Serializer\Builder\DefaultDriverFactory;
 use JMS\Serializer\EventDispatcher\PreSerializeEvent;
@@ -17,8 +17,8 @@ class SkipWhenEmptyEventSubscriberTest extends TestCase
 {
     public function testEmptyElements(): void
     {
-        $allowanceTotalAmount = new AllowanceTotalAmount();
-        $allowanceTotalAmount->setCurrency('EUR');
+        $amount = new Amount();
+        $amount->setCurrency('EUR');
 
         $factory = new DefaultDriverFactory(
             new SerializedNameAnnotationStrategy(
@@ -37,19 +37,18 @@ class SkipWhenEmptyEventSubscriberTest extends TestCase
 
         $event = new PreSerializeEvent(
             $context,
-            $allowanceTotalAmount,
-            ['name' => AllowanceTotalAmount::class]
+            $amount,
+            ['name' => Amount::class]
         );
 
         $subscriber = new SkipWhenEmptyEventSubscriber();
         $subscriber->emptyElements($event);
 
-        $this->assertNull($allowanceTotalAmount->amount);
-        $this->assertNull($allowanceTotalAmount->currencyId);
-
+        $this->assertNull($amount->amount);
+        $this->assertNull($amount->currencyId);
 
         $legalMonetaryTotal = new LegalMonetaryTotal();
-        $legalMonetaryTotal->allowanceTotalAmount = new AllowanceTotalAmount();
+        $legalMonetaryTotal->allowanceTotalAmount = new Amount();
 
         $event = new PreSerializeEvent(
             clone($context),
@@ -59,6 +58,8 @@ class SkipWhenEmptyEventSubscriberTest extends TestCase
 
         $subscriber = new SkipWhenEmptyEventSubscriber();
         $subscriber->emptyElements($event);
+
+        $this->assertNull($legalMonetaryTotal->allowanceTotalAmount);
     }
 }
 

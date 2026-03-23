@@ -2,14 +2,7 @@
 
 namespace DMT\Ubl\Service\Entity\CommonAggregateComponents;
 
-use DMT\Ubl\Service\Entity\CommonBasicComponents\AllowanceTotalAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\ChargeTotalAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\LineExtensionAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PayableRoundingAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\PrepaidAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxExclusiveAmount;
-use DMT\Ubl\Service\Entity\CommonBasicComponents\TaxInclusiveAmount;
+use DMT\Ubl\Service\Entity\CommonBasicComponents\Amount;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\SkipWhenEmpty;
 use JMS\Serializer\Annotation\Type;
@@ -23,46 +16,46 @@ use JMS\Serializer\Annotation\XmlRoot;
 class LegalMonetaryTotal implements CommonAggregateComponent
 {
     #[SerializedName(name: "LineExtensionAmount")]
-    #[Type(name: LineExtensionAmount::class)]
+    #[Type(name: Amount::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|float|LineExtensionAmount $lineExtensionAmount = null;
+    public null|float|Amount $lineExtensionAmount = null;
 
     #[SerializedName(name: "TaxExclusiveAmount")]
-    #[Type(name: TaxExclusiveAmount::class)]
+    #[Type(name: Amount::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|float|TaxExclusiveAmount $taxExclusiveAmount = null;
+    public null|float|Amount $taxExclusiveAmount = null;
 
     #[SerializedName(name: "TaxInclusiveAmount")]
-    #[Type(name: TaxInclusiveAmount::class)]
+    #[Type(name: Amount::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|float|TaxInclusiveAmount $taxInclusiveAmount = null;
+    public null|float|Amount $taxInclusiveAmount = null;
 
     #[SerializedName(name: "AllowanceTotalAmount")]
     #[SkipWhenEmpty]
-    #[Type(name: AllowanceTotalAmount::class)]
+    #[Type(name: Amount::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|float|AllowanceTotalAmount $allowanceTotalAmount = null;
+    public null|float|Amount $allowanceTotalAmount = null;
 
     #[SerializedName(name: "ChargeTotalAmount")]
     #[SkipWhenEmpty]
-    #[Type(name: ChargeTotalAmount::class)]
+    #[Type(name: Amount::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|float|ChargeTotalAmount $chargeTotalAmount = null;
+    public null|float|Amount $chargeTotalAmount = null;
 
     #[SerializedName(name: "PrepaidAmount")]
     #[SkipWhenEmpty]
-    #[Type(name: PrepaidAmount::class)]
+    #[Type(name: Amount::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|float|PrepaidAmount $prepaidAmount = null;
+    public null|float|Amount $prepaidAmount = null;
 
     #[SerializedName(name: "PayableRoundingAmount")]
     #[SkipWhenEmpty]
-    #[Type(name: PayableRoundingAmount::class)]
+    #[Type(name: Amount::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|float|PayableRoundingAmount $payableRoundingAmount = null;
+    public null|float|Amount $payableRoundingAmount = null;
 
     #[SerializedName(name: "PayableAmount")]
-    #[Type(name: PayableAmount::class)]
+    #[Type(name: Amount::class)]
     #[XmlElement(cdata: false, namespace: "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2")]
-    public null|float|PayableAmount $payableAmount = null;
+    public null|float|Amount $payableAmount = null;
 }

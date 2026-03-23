@@ -6,6 +6,7 @@ use DMT\Ubl\Service\Entity\CreditNote;
 use DMT\Ubl\Service\Entity\Document;
 use DMT\Ubl\Service\Entity\Entity;
 use DMT\Ubl\Service\Entity\Invoice;
+use DMT\Ubl\Service\Entity\OrderResponse;
 use DMT\Ubl\Service\Entity\Versions;
 use DMT\Ubl\Service\Event\AmountCurrencyEventSubscriber;
 use DMT\Ubl\Service\Event\ElectronicAddressSchemeEventSubscriber;
@@ -57,6 +58,7 @@ class UblService
         return match ($doc->getName()) {
             'Invoice' => Invoice::class,
             'CreditNote' => CreditNote::class,
+            'OrderResponse' => OrderResponse::class,
         };
     }
 
@@ -82,6 +84,18 @@ class UblService
     public function fromCreditNote(CreditNote $creditNote, DocumentToObjectTransformer $transformer): object
     {
         return $this->fromDocument($creditNote, $transformer);
+    }
+
+    /**
+     * Transform an UBL order-response document into a custom order-response object.
+     *
+     * @param OrderResponse $orderResponse An UBL-OrderResponse object
+     * @param DocumentToObjectTransformer $transformer The transformer to use
+     * @return object
+     */
+    public function fromOrderResponse(OrderResponse $orderResponse, DocumentToObjectTransformer $transformer): object
+    {
+        return $this->fromDocument($orderResponse, $transformer);
     }
 
     /**
@@ -178,6 +192,17 @@ class UblService
 
         if (!$entity instanceof Invoice) {
             throw new InvalidArgumentException("transformer failed to produce an Invoice");
+        }
+
+        return $entity;
+    }
+
+    public function toOrderResponse(object $object, ObjectToDocumentTransformer $transformer): OrderResponse
+    {
+        $entity = $this->toDocument($object, $transformer);
+
+        if (!$entity instanceof OrderResponse) {
+            throw new InvalidArgumentException("transformer failed to produce an OrderResponse");
         }
 
         return $entity;
