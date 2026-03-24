@@ -7,12 +7,15 @@ use SimpleXMLElement;
 
 final readonly class Schema
 {
-    public ?string $version;
     public string $namespace;
+    public ?string $version;
+
     /** @var array<string,string>  */
     public array $namespaces;
-    /** @var array<string> */
+    /** @var array<string,Schema> */
     public array $imports;
+    /** @var array<string,Schema> */
+    public array $includes;
     /** @var array<string,Element> */
     public array $elements;
     /** @var array<string,ComplexType> */
@@ -26,12 +29,25 @@ final readonly class Schema
         $this->xml = simplexml_load_file($this->path);
         $this->xml->registerXPathNamespace('xsd', 'http://www.w3.org/2001/XMLSchema');
         $this->namespace = $this->xml->attributes()->targetNamespace;
-        $this->namespaces = iterator_to_array($this->generateNamespaces());
         $this->version = $this->xml->attributes()->version ?? null;
+    }
 
-        $this->imports = iterator_to_array($this->generateImports());
+    public function init(Environment $environment): void
+    {
+        $this->imports = iterator_to_array($this->generateImports($environment));
+        $this->includes = iterator_to_array($this->generateIncludes($environment));
+        $this->namespaces = iterator_to_array($this->generateNamespaces());
         $this->elements = iterator_to_array($this->generateElements());
         $this->types = iterator_to_array($this->generateTypes());
+    }
+
+    public function __debugInfo(): array
+    {
+        return [
+            'path' => $this->path,
+            'namespace' => $this->namespace,
+            'version' => $this->version,
+        ];
     }
 
     /**
@@ -52,10 +68,40 @@ final readonly class Schema
     /**
      * @return Generator<string>
      */
-    private function generateImports(): Generator
+    private function generateIncludes(Environment $environment): Generator
     {
-        foreach($this->xml->xpath('xsd:import') as $import) {
-            yield realpath(dirname($this->path) . '/' . $import->attributes()->schemaLocation);
+        foreach($this->xml->xpath('*[local-name()="include"]') as $include) {
+            $schemaLocation = $include->attributes()->schemaLocation ?? null;
+
+            if (!$schemaLocation) {
+                continue;
+            }
+
+            $path = realpath(dirname($this->path) . '/' . $schemaLocation);
+
+            $include = $environment->loadSchema($path);
+
+            yield $include->namespace => $include;
+        }
+    }
+
+    /**
+     * @return Generator<string>
+     */
+    private function generateImports(Environment $environment): Generator
+    {
+        foreach($this->xml->xpath('*[local-name()="import"]') as $import) {
+            $schemaLocation = $import->attributes()->schemaLocation ?? null;
+
+            if (!$schemaLocation) {
+                continue;
+            }
+
+            $path = realpath(dirname($this->path) . '/' . $schemaLocation);
+
+            $import = $environment->loadSchema($path);
+
+            yield $import->namespace => $import;
         }
     }
 
@@ -64,20 +110,28 @@ final readonly class Schema
      */
     private function generateElements(): Generator
     {
-        foreach($this->xml->xpath('xsd:element') as $element) {
-            $element = new Element($element);
+        foreach($this->includes as $include) {
+            yield from $include->generateElements();
+        }
+
+        foreach($this->xml->xpath('*[local-name()="element"]') as $element) {
+            $element = new Element($this, $element);
 
             yield $element->ref ?? $element->name => $element;
         }
     }
 
     /**
-     * @return Generator<string,ComplexType>
+     * @return Generator<string,ComplexType|SimpleType>
      */
     private function generateTypes(): Generator
     {
-        foreach($this->xml->xpath('xsd:complexType') as $type) {
-            $type = new ComplexType($type);
+        foreach($this->includes as $include) {
+            yield from $include->generateTypes();
+        }
+
+        foreach($this->xml->xpath('*[local-name()="simpleType" or local-name()="complexType"]') as $type) {
+            $type = new ComplexType($this, $type);
 
             yield $type->name => $type;
         }

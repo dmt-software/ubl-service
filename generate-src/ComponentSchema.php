@@ -26,13 +26,6 @@ class ComponentSchema
         'ProfileExecutionID',
     ];
 
-    private array $propertyNameReplace = [
-        '~^ubl~i' => 'ubl',
-        '~id$~i' => 'Id',
-        '~^uuid$~i' => 'uuid',
-        '~^Id$~' => 'id',
-    ];
-
     private array $jmsTypeMap = [
         'Date' => 'DateTime<\'Y-m-d\'>',
         'Time' => 'DateTime<\'H:i:s\'>',
@@ -221,55 +214,5 @@ class ComponentSchema
 //        public array \$$propertyName = [];
 //
 //        END;
-    }
-
-    private function getUnionType(BuildContext $ctx, bool $nullable): UnionType
-    {
-        $type = $this->getType();
-
-        $types = [];
-
-        if ($nullable) {
-            $types[] = new Identifier('null');
-        }
-
-        if (isset($this->phpSimpleTypeMap[$type])) {
-            foreach($this->phpSimpleTypeMap[$type] as $simpleType) {
-                $types[] = new Identifier($simpleType);
-            }
-        }
-
-        if (isset($this->phpTypeMap[$type])) {
-            $ctx->uses[$this->phpTypeMap[$type]] = true;
-            $types[] = new Name($this->phpTypeMap[$type]);
-        } else {
-            $ctx->uses[$ctx->namespaces[$this->ns] . $type] = true;
-            $types[] = new Name($type);
-        }
-
-        return new UnionType($types);
-    }
-
-    public function getJMSType(bool $array): string|Concat|ClassConstFetch
-    {
-        $type = $this->getType();
-
-        if (isset($this->jmsTypeMap[$type])) {
-            return $this->jmsTypeMap[$type];
-        }
-
-        $classConst = new ClassConstFetch(new Name($type), 'class');
-
-        if (!$array) {
-            return $classConst;
-        }
-
-        return new Concat(
-            new Concat(
-                new String_('array<'),
-                $classConst
-            ),
-            new String_('>')
-        );
     }
 }
