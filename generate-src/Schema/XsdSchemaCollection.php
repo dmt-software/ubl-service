@@ -259,6 +259,20 @@ final class XsdSchemaCollection
         throw new InvalidArgumentException("cannot find element $id in $namespace");
     }
 
+    public function getAttributeType(XsdAttribute $attribute): XsdComplexType|XsdSimpleType
+    {
+        $ns = $attribute->namespace;
+        $id = $attribute->type;
+
+        if (str_contains($id, ':')) {
+            [$ns, $id] = explode(':', $id);
+        }
+
+        $ns = $element->namespaces[$ns] ?? $ns;
+
+        return $this->getType($ns, $id);
+    }
+
     public function getElementType(XsdElement $element): XsdComplexType|XsdSimpleType
     {
         $ns = $element->namespace;
@@ -285,6 +299,39 @@ final class XsdSchemaCollection
             $element = $this->getElement($ns, $id);
 
             return $this->getElementType($element);
+        }
+    }
+
+    public function getExtensionType(XsdExtension $extension): XsdComplexType|XsdSimpleType
+    {
+        $ns = $extension->namespace;
+        $id = $extension->base;
+        if (str_contains($id, ':')) {
+            [$ns, $id] = explode(':', $id);
+        }
+        $ns = $extension->namespaces[$ns] ?? $ns;
+
+        return $this->getType($ns, $id);
+    }
+
+    public function getRestrictionType(XsdRestriction $restriction): XsdComplexType|XsdSimpleType
+    {
+        $ns = $restriction->namespace;
+        $id = $restriction->base;
+        if (str_contains($id, ':')) {
+            [$ns, $id] = explode(':', $id);
+        }
+        $ns = $restriction->namespaces[$ns] ?? $ns;
+
+        return $this->getType($ns, $id);
+    }
+
+    public function getSimpleContentType(XsdSimpleContent $simpleContent): XsdComplexType|XsdSimpleType
+    {
+        if ($simpleContent->extension) {
+            return $this->getExtensionType($simpleContent->extension);
+        } else {
+            return $this->getRestrictionType($simpleContent->restriction);
         }
     }
 }
