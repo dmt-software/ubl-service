@@ -273,9 +273,9 @@ final readonly class ClassBuilder
             ->setType(new Identifier('array'))
             ->setDefault([]);
 
+        $prop->setDocComment($this->createArrayPropertyDocComment($element, $uses));
         $prop->addAttribute($this->createJMSArrayTypeAttribute($element, $uses));
         $prop->addAttribute($this->createJMSXmlListAttribute($element, $uses));
-        $prop->setDocComment($this->createArrayPropertyDocComment($element, $uses));
 
         return $prop;
     }
@@ -301,9 +301,18 @@ final readonly class ClassBuilder
 
     public function createArrayPropertyDocComment(XsdElement $element, array &$uses): string
     {
+        $type = $this->schemaCollection->getElementType($element);
+        $phpTypes = $this->getPhpTypes($type);
+        $phpType = end($phpTypes);
+
+        if (!in_array($phpType, ClassBuilder::SCALAR, true)) {
+            $uses[$phpType] = true;
+            $phpType = $this->classBaseName($phpType);
+        }
+
         return sprintf(
             '/** @var array<%s> $%s */',
-            (new Standard())->prettyPrint([$this->getElementUnionType($element, $uses)]),
+            $phpType,
             $this->getElementPropertyName($element)
         );
     }
@@ -320,13 +329,17 @@ final readonly class ClassBuilder
         $class->addAttribute($this->createJMSXmlRootAttribute($type, $uses));
 
         foreach ($type->namespaces as $prefix => $namespace) {
+            if ($this->isNamespaceBlacklisted($namespace)) {
+                continue;
+            }
+
             $class->addAttribute($this->createJMSXmlNamespaceAttribute($prefix, $namespace, $uses));
         }
 
         $properties = [];
 
         $simpleContent = $type->simpleContent;
-        if ($simpleContent) {
+        if ($simpleContent && !$this->isNamespaceBlacklisted($simpleContent->namespace)) {
             $properties[] = $this->createSimpleContentProperty($className, $simpleContent, $uses);
 
             if ($simpleContent->extension) {
@@ -341,6 +354,10 @@ final readonly class ClassBuilder
         }
 
         foreach ($this->schemaCollection->getTypeElements($type) as $element) {
+            if ($this->isNamespaceBlacklisted($element->namespace)) {
+                continue;
+            }
+
             $properties[] = $this->createElementProperty($element, $uses);
         }
 
@@ -511,5 +528,10 @@ final readonly class ClassBuilder
         $subPath = str_replace('\\','/', ltrim($subNamespace, '\\'));
 
         return $this->config->path . '/' . $subPath . '.php';
+    }
+
+    public function isNamespaceBlacklisted(string $namespace): bool
+    {
+        return in_array($namespace, $this->config->namespaceBlacklist);
     }
 }

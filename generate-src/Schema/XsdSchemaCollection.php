@@ -17,11 +17,13 @@ final class XsdSchemaCollection
     {
     }
 
-    public function loadSchema(string $path): XsdSchema
+    public function loadSchema(string $path, ?string $fromPath = '?'): XsdSchema
     {
         $path = realpath($path);
 
         if (!isset($this->paths[$path])) {
+            echo basename($fromPath) .' needs ' . basename($path) . PHP_EOL;
+
             $this->paths[$path] = new XsdSchema($path);
             $this->paths[$path]->init($this);
         }

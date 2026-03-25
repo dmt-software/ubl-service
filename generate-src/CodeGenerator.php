@@ -21,15 +21,17 @@ class CodeGenerator
 
         $schemaCollection = new XsdSchemaCollection();
         $schemaCollection->loadSchemaDir(realpath($schemaDir) . '/xsd/maindoc/');
+        $builderConfig = new BuilderConfig(realpath($outputDir));
 
-        $builder = new ClassBuilder(
-            $schemaCollection,
-            new BuilderConfig(realpath($outputDir)),
-        );
+        print_r($schemaCollection->getNamespaces());
 
-        $printer = new Standard();
+        $builder = new ClassBuilder($schemaCollection, $builderConfig);
 
         foreach($schemaCollection->getNamespaces() as $namespace) {
+            if ($builder->isNamespaceBlacklisted($namespace)) {
+                continue;
+            }
+
             foreach($schemaCollection->getTypes($namespace) as $type) {
                 if ($type instanceof XsdComplexType) {
                     $builder->saveClass($type);

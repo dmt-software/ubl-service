@@ -16,16 +16,12 @@ final class BuilderConfig
             '~^Id$~' => 'id',
         ],
         public array $phpNamespaces = [
-            'http://uri.etsi.org/01903/v1.3.2#' => 'DMT\\Ubl\\Generated\\XAdESDigitalSignaturesV1d3d2',
-            'http://uri.etsi.org/01903/v1.4.1#' =>'DMT\\Ubl\\Generated\\XAdESDigitalSignaturesV1d4d1',
-            'http://www.w3.org/2000/09/xmldsig#' => 'DMT\\Ubl\\Generated\\W3SignaturesSyntaxAndProcessingV0d1',
-            'http://www.w3.org/2009/xmldsig11#' => 'DMT\\Ubl\\Generated\\W3SignaturesSyntaxAndProcessingV1d1',
             'urn:oasis:names:specification:bdndr:schema:xsd:UnqualifiedDataTypes-1' => 'DMT\\Ubl\\Generated\\UnqualifiedDataTypesV1',
             'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2' => 'DMT\\Ubl\\Generated\\CommonAggregateComponentsV2',
             'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2' => 'DMT\\Ubl\\Generated\\CommonBasicComponentsV2',
-            'urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2' => 'DMT\\Ubl\\Generated\\CommonExtensionComponentsV2',
-            'urn:oasis:names:specification:ubl:schema:xsd:CommonSignatureComponents-2' =>'DMT\\Ubl\\Generated\\CommonSignatureComponentsV2',
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonSignatureComponents-2' => 'DMT\\Ubl\\Generated\\CommonSignatureComponentsV2',
             'urn:oasis:names:specification:ubl:schema:xsd:QualifiedDataTypes-2' => 'DMT\\Ubl\\Generated\\QualifiedDataTypesV2',
+            'urn:oasis:names:specification:ubl:schema:xsd:SignatureAggregateComponents-2' => 'DMT\\Ubl\\Generated\\SignatureAggregateComponentsV2',
             'urn:oasis:names:specification:ubl:schema:xsd:SignatureBasicComponents-2' => 'DMT\\Ubl\\Generated\\SignatureBasicComponentsV2',
             'urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2' => 'DMT\\Ubl\\Generated\\UnqualifiedDataTypesV2',
             'urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2' => 'DMT\\Ubl\\Generated\\CoreComponentTypeSchemaModuleV2',
@@ -56,6 +52,14 @@ final class BuilderConfig
                 'time' => "DateTime<'H:i:s'>",
                 'dateTime' => "DateTime<'Y-m-d H:i:s'>",
             ],
+        ],
+        public array $namespaceBlacklist = [
+            'http://uri.etsi.org/01903/v1.3.2#',
+            'http://uri.etsi.org/01903/v1.4.1#',
+            'http://www.w3.org/2000/09/xmldsig#',
+            'http://www.w3.org/2009/xmldsig11#',
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2',
+            'urn:un:unece:uncefact:documentation:2',
         ]
     ) {
     }
