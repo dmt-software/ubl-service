@@ -5,23 +5,23 @@ namespace DMT\Ubl\Generate\Schema;
 use Generator;
 use SimpleXMLElement;
 
-final readonly class Schema
+final readonly class XsdSchema
 {
     public string $namespace;
     public ?string $version;
 
     /** @var array<string,string>  */
     public array $namespaces;
-    /** @var array<string,Schema> */
+    /** @var array<string,XsdSchema> */
     public array $imports;
-    /** @var array<string,Schema> */
+    /** @var array<string,XsdSchema> */
     public array $includes;
-    /** @var array<string,Element> */
+    /** @var array<string,XsdElement> */
     public array $elements;
-    /** @var array<string,ComplexType> */
+    /** @var array<string,XsdComplexType> */
     public array $types;
 
-    private SimpleXMLElement $xml;
+    public SimpleXMLElement $xml;
 
     public function __construct(
         public string $path,
@@ -32,22 +32,27 @@ final readonly class Schema
         $this->version = $this->xml->attributes()->version ?? null;
     }
 
-    public function init(Environment $environment): void
-    {
-        $this->imports = iterator_to_array($this->generateImports($environment));
-        $this->includes = iterator_to_array($this->generateIncludes($environment));
-        $this->namespaces = iterator_to_array($this->generateNamespaces());
-        $this->elements = iterator_to_array($this->generateElements());
-        $this->types = iterator_to_array($this->generateTypes());
-    }
-
-    public function __debugInfo(): array
+   public function __debugInfo(): array
     {
         return [
             'path' => $this->path,
             'namespace' => $this->namespace,
+            'namespaces' => $this->namespaces,
             'version' => $this->version,
+            'includes' => array_keys($this->includes),
+            'imports' => array_keys($this->imports),
+            'elements' => array_keys($this->elements),
+            'types' => array_keys($this->types),
         ];
+    }
+
+    public function init(XsdSchemaCollection $schemaCollection): void
+    {
+        $this->includes = iterator_to_array($this->generateIncludes($schemaCollection));
+        $this->imports = iterator_to_array($this->generateImports($schemaCollection));
+        $this->namespaces = iterator_to_array($this->generateNamespaces());
+        $this->elements = iterator_to_array($this->generateElements());
+        $this->types = iterator_to_array($this->generateTypes());
     }
 
     /**
@@ -68,72 +73,76 @@ final readonly class Schema
     /**
      * @return Generator<string>
      */
-    private function generateIncludes(Environment $environment): Generator
+    private function generateIncludes(XsdSchemaCollection $schemaCollection): Generator
     {
         foreach($this->xml->xpath('*[local-name()="include"]') as $include) {
             $schemaLocation = $include->attributes()->schemaLocation ?? null;
 
             if (!$schemaLocation) {
+                echo "no schema location for " . $include->attributes()->namespace . "\n";
                 continue;
             }
 
             $path = realpath(dirname($this->path) . '/' . $schemaLocation);
 
-            $include = $environment->loadSchema($path);
+            $include = $schemaCollection->loadSchema($path);
 
-            yield $include->namespace => $include;
+            yield $include->path => $include;
         }
     }
 
     /**
      * @return Generator<string>
      */
-    private function generateImports(Environment $environment): Generator
+    private function generateImports(XsdSchemaCollection $schemaCollection): Generator
     {
         foreach($this->xml->xpath('*[local-name()="import"]') as $import) {
             $schemaLocation = $import->attributes()->schemaLocation ?? null;
 
             if (!$schemaLocation) {
+                echo "no schema location for " . $import->attributes()->namespace . "\n";
                 continue;
             }
 
             $path = realpath(dirname($this->path) . '/' . $schemaLocation);
 
-            $import = $environment->loadSchema($path);
+            $import = $schemaCollection->loadSchema($path);
 
-            yield $import->namespace => $import;
+            yield $import->path => $import;
         }
     }
 
     /**
-     * @return Generator<string,Element>
+     * @return Generator<string,XsdElement>
      */
     private function generateElements(): Generator
     {
-        foreach($this->includes as $include) {
-            yield from $include->generateElements();
-        }
-
         foreach($this->xml->xpath('*[local-name()="element"]') as $element) {
-            $element = new Element($this, $element);
+            $element = new XsdElement(
+                $this->namespace,
+                $this->namespaces,
+                $this->version,
+                $element
+            );
 
-            yield $element->ref ?? $element->name => $element;
+            yield $element->id => $element;
         }
     }
 
     /**
-     * @return Generator<string,ComplexType|SimpleType>
+     * @return Generator<string,XsdComplexType|XsdSimpleType>
      */
     private function generateTypes(): Generator
     {
-        foreach($this->includes as $include) {
-            yield from $include->generateTypes();
-        }
-
         foreach($this->xml->xpath('*[local-name()="simpleType" or local-name()="complexType"]') as $type) {
-            $type = new ComplexType($this, $type);
+            $type = new XsdComplexType(
+                $this->namespace,
+                $this->namespaces,
+                $this->version,
+                $type
+            );
 
-            yield $type->name => $type;
+            yield $type->id => $type;
         }
     }
 }

@@ -2,22 +2,25 @@
 
 namespace DMT\Ubl\Generate;
 
-use DMT\Ubl\Generate\Build\ClassBuilder;
-use DMT\Ubl\Generate\Schema\Environment;
+use DMT\Ubl\Generate\Schema\XsdSchemaCollection;
 use PhpParser\PrettyPrinter\Standard;
 
 class CodeGenerator
 {
     public function generate(string $schemaDir, string $outputDir): void
     {
-        $environment = new Environment($schemaDir);
+        $schemaCollection = new XsdSchemaCollection();
+        $schemaCollection->loadSchemaDir($schemaDir . '/extra/');
+        $schemaCollection->loadSchemaDir($schemaDir . '/xsd/maindoc/');
+
+        $builder = new ClassBuilder($schemaCollection);
         $printer = new Standard();
 
-        foreach($environment->getNamespaces() as $namespace) {
-            foreach($environment->getTypes($namespace) as $type) {
-                $builder = new ClassBuilder($environment, $type);
+        foreach($schemaCollection->getNamespaces() as $namespace) {
+            foreach($schemaCollection->getTypes($namespace) as $type) {
+                $stmt = $builder->createClass($type);
 
-                echo $printer->prettyPrint([$builder->build()]);
+                echo $printer->prettyPrint([$stmt]);
             }
         }
     }
