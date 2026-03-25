@@ -349,6 +349,11 @@ final readonly class ClassBuilder
         ksort($uses);
 
         foreach (array_keys($uses) as $use) {
+            if ($classNamespace == $this->classNamespace($use)) {
+                // no need to import things in the same namespace
+                continue;
+            }
+
             $namespaceNode->stmts[] = $this->factory->use($use)->getNode();
         }
 

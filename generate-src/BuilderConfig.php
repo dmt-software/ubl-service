@@ -24,6 +24,7 @@ final class BuilderConfig
             'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2' => 'DMT\\Ubl\\Generated\\CommonAggregateComponentsV2',
             'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2' => 'DMT\\Ubl\\Generated\\CommonBasicComponentsV2',
             'urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2' => 'DMT\\Ubl\\Generated\\CommonExtensionComponentsV2',
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonSignatureComponents-2' =>'DMT\\Ubl\\Generated\\CommonSignatureComponentsV2',
             'urn:oasis:names:specification:ubl:schema:xsd:QualifiedDataTypes-2' => 'DMT\\Ubl\\Generated\\QualifiedDataTypesV2',
             'urn:oasis:names:specification:ubl:schema:xsd:SignatureBasicComponents-2' => 'DMT\\Ubl\\Generated\\SignatureBasicComponentsV2',
             'urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2' => 'DMT\\Ubl\\Generated\\UnqualifiedDataTypesV2',
