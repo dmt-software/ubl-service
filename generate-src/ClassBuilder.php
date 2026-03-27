@@ -5,9 +5,9 @@ namespace DMT\Ubl\Generate;
 use DMT\Ubl\Generate\Schema\XsdAttribute;
 use DMT\Ubl\Generate\Schema\XsdComplexType;
 use DMT\Ubl\Generate\Schema\XsdElement;
-use DMT\Ubl\Generate\Schema\XsdSchemaCollection;
 use DMT\Ubl\Generate\Schema\XsdSimpleContent;
 use DMT\Ubl\Generate\Schema\XsdSimpleType;
+use DOMElement;
 use InvalidArgumentException;
 use Jawira\CaseConverter\Convert;
 use JMS\Serializer\Annotation\SerializedName;
@@ -38,10 +38,7 @@ final readonly class ClassBuilder
 
     private BuilderFactory $factory;
 
-    public function __construct(
-        private XsdSchemaCollection $schemaCollection,
-        private BuilderConfig $config,
-    ) {
+    public function __construct(private BuilderConfig $config) {
         $this->factory = new BuilderFactory();
     }
 
@@ -63,7 +60,15 @@ final readonly class ClassBuilder
     {
         $classBaseName = preg_replace('~Type$~', '', $type->name);
 
-        $classNamespace = $this->config->phpNamespaces[$type->namespace] ?? $this->config->namespace;
+        $classNamespace = $this->config->namespace;
+
+        if ($type->schema->version) {
+            $classNamespace .= '\\V' . preg_replace('~[^0-9]+~', '', $type->schema->version);
+        }
+
+        if (isset($this->config->phpNamespaces[$type->namespace])) {
+            $classNamespace .= '\\' . $this->config->phpNamespaces[$type->namespace];
+        }
 
         return "$classNamespace\\$classBaseName";
     }
@@ -130,7 +135,7 @@ final readonly class ClassBuilder
     public function getAttributeUnionType(XsdAttribute $attribute, array &$uses): UnionType
     {
         return $this->getUnionType(
-            $this->schemaCollection->getAttributeType($attribute),
+            $attribute->getType(),
             $this->getAttributeNullable($attribute),
             $uses
         );
@@ -139,7 +144,7 @@ final readonly class ClassBuilder
     public function getElementUnionType(XsdElement $element, array &$uses): UnionType
     {
         return $this->getUnionType(
-            $this->schemaCollection->getElementType($element),
+            $element->getType(),
             $this->getElementNullable($element),
             $uses
         );
@@ -147,6 +152,10 @@ final readonly class ClassBuilder
 
     public function getJMSSingleType(XsdComplexType|XsdSimpleType $type, array &$uses): Expr
     {
+        if ($this->isNamespaceRawXml($type->namespace)) {
+            return new String_('RawXml');
+        }
+
         if (isset($this->config->jmsTypeMap[$type->namespace][$type->name])) {
             return new String_($this->config->jmsTypeMap[$type->namespace][$type->name]);
         }
@@ -174,6 +183,10 @@ final readonly class ClassBuilder
             return $this->config->phpTypeMap[$type->namespace][$type->name];
         }
 
+        if ($this->isNamespaceRawXml($type->namespace)) {
+            return [DOMElement::class];
+        }
+
         if ($type instanceof XsdSimpleType) {
             print_r($type);
 
@@ -185,7 +198,7 @@ final readonly class ClassBuilder
 
     public function createJMSArrayTypeAttribute(XsdElement $element, array &$uses): Attribute
     {
-        $type = $this->schemaCollection->getElementType($element);
+        $type = $element->getType();
 
         $jmsSingleType = $this->getJMSSingleType($type, $uses);
 
@@ -207,15 +220,14 @@ final readonly class ClassBuilder
         );
     }
 
-    public function createJMSSingleXmlElementAttribute(XsdElement $element, array &$uses): Attribute
+    public function createJMSSingleXmlElementAttribute(XsdComplexType|XsdSimpleType $type, array &$uses): Attribute
     {
         $uses[XmlElement::class] = true;
-
         return $this->factory->attribute(
             'XmlElement',
             [
                 'cdata' => false,
-                'namespace' => $element->namespace,
+                'namespace' => $type->namespace,
             ]
         );
     }
@@ -247,7 +259,7 @@ final readonly class ClassBuilder
 
     public function createSingleElementProperty(XsdElement $element, array &$uses): Property
     {
-        $type = $this->schemaCollection->getElementType($element);
+        $type = $element->getType();
 
         $prop = $this->factory
             ->property($this->getElementPropertyName($element))
@@ -260,7 +272,7 @@ final readonly class ClassBuilder
 
         $prop->addAttribute($this->createJMSSerializedNameAttribute($element, $uses));
         $prop->addAttribute($this->createJMSSingleTypeAttribute($type, $uses));
-        $prop->addAttribute($this->createJMSSingleXmlElementAttribute($element, $uses));
+        $prop->addAttribute($this->createJMSSingleXmlElementAttribute($type, $uses));
 
         return $prop;
     }
@@ -287,6 +299,8 @@ final readonly class ClassBuilder
             [$ns, $entry] = explode(':', $entry);
         }
 
+        $type = $element->getType();
+
         $uses[XmlList::class] = true;
 
         return $this->factory->attribute(
@@ -294,14 +308,14 @@ final readonly class ClassBuilder
             [
                 'entry' => $entry,
                 'inline' => true,
-                'namespace' => $element->namespace,
+                'namespace' => $type->namespace,
             ]
         );
     }
 
     public function createArrayPropertyDocComment(XsdElement $element, array &$uses): string
     {
-        $type = $this->schemaCollection->getElementType($element);
+        $type = $element->getType();
         $phpTypes = $this->getPhpTypes($type);
         $phpType = end($phpTypes);
 
@@ -328,18 +342,14 @@ final readonly class ClassBuilder
         $class->setDocComment($this->getClassDocComment($type));
         $class->addAttribute($this->createJMSXmlRootAttribute($type, $uses));
 
-        foreach ($type->namespaces as $prefix => $namespace) {
-            if ($this->isNamespaceBlacklisted($namespace)) {
-                continue;
-            }
-
+        foreach ($type->schema->namespaces as $prefix => $namespace) {
             $class->addAttribute($this->createJMSXmlNamespaceAttribute($prefix, $namespace, $uses));
         }
 
         $properties = [];
 
         $simpleContent = $type->simpleContent;
-        if ($simpleContent && !$this->isNamespaceBlacklisted($simpleContent->namespace)) {
+        if ($simpleContent) {
             $properties[] = $this->createSimpleContentProperty($className, $simpleContent, $uses);
 
             if ($simpleContent->extension) {
@@ -353,11 +363,7 @@ final readonly class ClassBuilder
             }
         }
 
-        foreach ($this->schemaCollection->getTypeElements($type) as $element) {
-            if ($this->isNamespaceBlacklisted($element->namespace)) {
-                continue;
-            }
-
+        foreach ($type->elements as $element) {
             $properties[] = $this->createElementProperty($element, $uses);
         }
 
@@ -393,7 +399,6 @@ final readonly class ClassBuilder
             /**
              * namespace: %s
              * version: %s
-             * id: %s
              * name: %s
              */
         COMMENT;
@@ -401,8 +406,7 @@ final readonly class ClassBuilder
         return sprintf(
             trim($comment),
             $type->namespace,
-            $type->version,
-            $type->id,
+            $type->schema->version,
             $type->name
         );
     }
@@ -412,10 +416,10 @@ final readonly class ClassBuilder
         XsdSimpleContent $simpleContent,
         array &$uses
     ): Property {
-        $type = $this->schemaCollection->getSimpleContentType($simpleContent);
+        $type = $simpleContent->getType();
 
         $prop = $this->factory
-            ->property(lcfirst($this->classBaseName($className)))
+            ->property('value')
             ->makePublic()
             ->setType($this->getUnionType($type, false, $uses));
 
@@ -436,7 +440,7 @@ final readonly class ClassBuilder
             $prop->setDefault(null);
         }
 
-        $type = $this->schemaCollection->getAttributeType($attribute);
+        $type = $attribute->getType();
 
         $prop->addAttribute($this->createJMSXmlAttributeAttribute($attribute, $uses));
         $prop->addAttribute($this->createJMSSingleTypeAttribute($type, $uses));
@@ -528,6 +532,11 @@ final readonly class ClassBuilder
         $subPath = str_replace('\\','/', ltrim($subNamespace, '\\'));
 
         return $this->config->path . '/' . $subPath . '.php';
+    }
+
+    public function isNamespaceRawXml(string $namespace): bool
+    {
+        return in_array($namespace, $this->config->rawXmlNamespaces);
     }
 
     public function isNamespaceBlacklisted(string $namespace): bool

@@ -11,9 +11,7 @@ final readonly class XsdAttribute
     public ?string $use;
 
     public function __construct(
-        public string $namespace,
-        public array $namespaces,
-        public ?string $version,
+        public XsdSchema $schema,
         public SimpleXMLElement $xml
     ) {
         $this->name = $this->xml->attributes()->name;
@@ -24,11 +22,16 @@ final readonly class XsdAttribute
     public function __debugInfo(): array
     {
         return [
-            'namespace' => $this->namespace,
-            'version' => $this->version,
+            'namespace' => $this->schema->namespace,
+            'version' => $this->schema->version,
             'name' => $this->name,
             'type' => $this->type,
             'use' => $this->use,
         ];
+    }
+
+    public function getType(): XsdComplexType|XsdSimpleType
+    {
+        return $this->schema->getTypeByName($this->type);
     }
 }

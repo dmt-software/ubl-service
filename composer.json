@@ -24,7 +24,8 @@
     "phpunit/phpunit": "^12.0",
     "jawira/case-converter": "^3.6",
     "ext-zip": "*",
-    "nikic/php-parser": "^5.7"
+    "nikic/php-parser": "^5.7",
+    "ext-dom": "*"
   },
   "autoload-dev": {
     "psr-4": {

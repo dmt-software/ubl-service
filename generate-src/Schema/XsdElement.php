@@ -6,8 +6,6 @@ use SimpleXMLElement;
 
 final readonly class XsdElement
 {
-    public string $id;
-
     public ?string $ref;
     public ?string $name;
     public ?string $type;
@@ -15,16 +13,13 @@ final readonly class XsdElement
     public ?string $maxOccurs;
 
     public function __construct(
-        public string $namespace,
-        public array $namespaces,
-        public ?string $version,
+        public XsdSchema $schema,
         public SimpleXMLElement $xml,
     ) {
         $this->xml->registerXPathNamespace('xsd', 'http://www.w3.org/2001/XMLSchema');
 
         $this->name = $this->xml->attributes()->name ?? null;
         $this->ref = $this->xml->attributes()->ref ?? null;
-        $this->id = $this->ref ?? $this->name;
         $this->type = $this->xml->attributes()->type ?? null;
 
         $this->minOccurs = $this->xml->attributes()->minOccurs ?? null;
@@ -34,12 +29,20 @@ final readonly class XsdElement
     public function __debugInfo(): array
     {
         return [
-            'namespace' => $this->namespace,
-            'version' => $this->version,
-            'id' => $this->id,
+            'namespace' => $this->schema->namespace,
+            'version' => $this->schema->version,
             'name' => $this->name,
             'ref' => $this->ref,
             'type' => $this->type,
         ];
+    }
+
+    public function getType(): XsdComplexType|XsdSimpleType
+    {
+        if (!is_null($this->ref)) {
+            return $this->schema->getTypeByRef($this->ref);
+        }
+
+        return $this->schema->getTypeByName($this->type);
     }
 }

@@ -12,9 +12,7 @@ final readonly class XsdRestriction
     public array $attributes;
 
     public function __construct(
-        public string $namespace,
-        public array $namespaces,
-        public ?string $version,
+        public XsdSchema $schema,
         public SimpleXMLElement $xml
     ) {
         $this->base = $this->xml->attributes()->base;
@@ -24,8 +22,8 @@ final readonly class XsdRestriction
     public function __debugInfo(): array
     {
         return [
-            'namespace' => $this->namespace,
-            'version' => $this->version,
+            'namespace' => $this->schema->namespace,
+            'version' => $this->schema->version,
             'base' => $this->base,
         ];
     }
@@ -37,13 +35,16 @@ final readonly class XsdRestriction
     {
         foreach ($this->xml->xpath('*[local-name()="attribute"]') as $attribute) {
             $attribute = new XsdAttribute(
-                $this->namespace,
-                $this->namespaces,
-                $this->version,
+                $this->schema,
                 $attribute
             );
 
             yield $attribute->name => $attribute;
         }
+    }
+
+    public function getType(): XsdComplexType|XsdSimpleType
+    {
+        return $this->schema->getTypeByName($this->base);
     }
 }

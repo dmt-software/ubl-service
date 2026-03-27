@@ -17,6 +17,7 @@ use DMT\Ubl\Service\Event\NormalizeAddressEventSubscriber;
 use DMT\Ubl\Service\Event\QuantityUnitEventSubscriber;
 use DMT\Ubl\Service\Event\SkipWhenEmptyEventSubscriber;
 use DMT\Ubl\Service\Event\TaxCategoryEventSubscriber;
+use DMT\Ubl\Service\Handler\RawXmlHandler;
 use DMT\Ubl\Service\Handler\UnionHandler;
 use DMT\Ubl\Service\List\ElectronicAddressScheme;
 use DMT\Ubl\Service\Transformer\DocumentToObjectTransformer;
@@ -242,6 +243,7 @@ class UblService
             ->addDefaultHandlers()
             ->configureHandlers(function (HandlerRegistry $registry) {
                 $registry->registerSubscribingHandler(new UnionHandler());
+                $registry->registerSubscribingHandler(new RawXmlHandler());
             })
             ->build();
     }

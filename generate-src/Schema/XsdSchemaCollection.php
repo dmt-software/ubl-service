@@ -13,18 +13,38 @@ final class XsdSchemaCollection
     /** @var array<string, XsdSchema> */
     public array $paths = [];
 
+    public XsdSchema $xsdSchema;
+
+
     public function __construct()
     {
+        $xsdXml = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.w3.org/2001/XMLSchema">
+</schema>
+XML;
+
+        $this->xsdSchema = new XsdSchema(simplexml_load_string($xsdXml), null);
     }
 
-    public function loadSchema(string $path, ?string $fromPath = '?'): XsdSchema
+    public function loadSchema(?string $path, ?string $namespace): XsdSchema
     {
+        if (is_null($path)) {
+            trigger_error("null path for $namespace");
+            foreach ($this->paths as $path => $schema) {
+                if ($schema->namespace == $namespace) {
+                    trigger_error("but found at $path");
+                    return $schema;
+                }
+            }
+            throw new InvalidArgumentException("cannot load namespace $namespace");
+        }
+
         $path = realpath($path);
 
         if (!isset($this->paths[$path])) {
-            echo basename($fromPath) .' needs ' . basename($path) . PHP_EOL;
-
-            $this->paths[$path] = new XsdSchema($path);
+            $xml = simplexml_load_file($path);
+            $this->paths[$path] = new XsdSchema($xml, $path);
             $this->paths[$path]->init($this);
         }
 
@@ -34,7 +54,7 @@ final class XsdSchemaCollection
     public function loadSchemaDir(string $dir): void
     {
         foreach ($this->generatePaths($dir) as $path) {
-            $this->loadSchema($path);
+            $this->loadSchema($path, null);
         }
     }
 
@@ -78,47 +98,6 @@ final class XsdSchemaCollection
         return array_keys($namespaces);
     }
 
-    public function getSchema(string $namespace, string $version = 'latest'): XsdSchema
-    {
-        $foundSchema = null;
-
-        foreach ($this->paths as $schema) {
-            if ($schema->namespace !== $namespace) {
-                continue;
-            } else {
-                if (is_null($schema->version)) {
-                    return $schema;
-                } else {
-                    if ($schema->version == $version) {
-                        return $schema;
-                    } else {
-                        if (is_null($foundSchema)) {
-                            $foundSchema = $schema;
-                        } else {
-                            if ($version == 'latest' && version_compare($schema->version, $foundSchema->version, '>')) {
-                                $foundSchema = $schema;
-                            } else {
-                                if ($version == 'earliest' && version_compare(
-                                        $schema->version,
-                                        $foundSchema->version,
-                                        '<'
-                                    )) {
-                                    $foundSchema = $schema;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if (is_null($foundSchema)) {
-            throw new InvalidArgumentException("Schema with namespace $namespace @ $version not found");
-        }
-
-        return $foundSchema;
-    }
-
     /**
      * @param string $namespace
      * @return array<XsdSchema>
@@ -131,209 +110,5 @@ final class XsdSchemaCollection
                 fn(XsdSchema $schema) => $schema->namespace === $namespace
             )
         );
-    }
-
-    /**
-     * @param string $namespace
-     * @param bool $reverse
-     * @return array<string>
-     */
-    public function getSchemaVersions(string $namespace, bool $reverse = false): array
-    {
-        $versions = [];
-
-        foreach ($this->paths as $schema) {
-            if ($schema->namespace !== $namespace) {
-                continue;
-            }
-
-            $versions[] = $schema->version;
-        }
-
-        $versions = array_unique($versions);
-
-        usort($versions, 'version_compare');
-
-        if ($reverse) {
-            $versions = array_reverse($versions);
-        }
-
-        return $versions;
-    }
-
-    /**
-     * @return array<string,XsdComplexType|XsdSimpleType>
-     */
-    public function getTypes(string $namespace, string $operator = '>'): array
-    {
-        $found = [];
-
-        foreach ($this->getSchemas($namespace) as $schema) {
-            foreach ($schema->types as $id => $type) {
-                if (!isset($found[$id]) || version_compare($type->version, $found[$id]->version, $operator)) {
-                    $found[$id] = $type;
-                }
-            }
-        }
-
-        return $found;
-    }
-
-    public function getType(string $namespace, string $id, string $operator = '>'): XsdComplexType|XsdSimpleType
-    {
-        if ($namespace == 'http://www.w3.org/2001/XMLSchema') {
-            return new XsdSimpleType(
-                $namespace,
-                ['xsd' => $namespace],
-                null,
-                $id
-            );
-        }
-
-        $found = null;
-        $schemas = $this->getSchemas($namespace);
-
-        foreach ($schemas as $schema) {
-            if (!isset($schema->types[$id])) {
-                continue;
-            }
-
-            $type = $schema->types[$id];
-
-            if (!$found || version_compare($type->version, $found->version, $operator)) {
-                $found = $type;
-            }
-        }
-
-        if ($found) {
-            return $found;
-        }
-
-        return $this->getType('http://www.w3.org/2001/XMLSchema', $id);
-    }
-
-    /**
-     * @return array<string,XsdElement>
-     */
-    public function getTypeElements(XsdComplexType $type, string $operator = '>'): array
-    {
-        // @todo: try to maintain element ordering across versions here
-
-        $found = [];
-
-        foreach ($this->getSchemas($type->namespace) as $schema) {
-            if (!isset($schema->types[$type->id])) {
-                continue;
-            }
-
-            $elements = $schema->types[$type->id]->elements;
-
-            foreach ($elements as $id => $element) {
-                if (!isset($found[$id]) || version_compare($element->version, $found[$id]->version, $operator)) {
-                    $found[$id] = $element;
-                }
-            }
-        }
-
-        return $found;
-    }
-
-    public function getElement(string $namespace, string $id, string $operator = '>'): XsdElement
-    {
-        $found = null;
-
-        foreach($this->getSchemas($namespace) as $schema) {
-            if (!isset($schema->elements[$id])) {
-                continue;
-            }
-
-            $element = $schema->elements[$id];
-
-            if (!$found || version_compare($element->version, $found->version, $operator)) {
-                $found = $element;
-            }
-        }
-
-        if ($found) {
-            return $found;
-        }
-
-        throw new InvalidArgumentException("cannot find element $id in $namespace");
-    }
-
-    public function getAttributeType(XsdAttribute $attribute): XsdComplexType|XsdSimpleType
-    {
-        $ns = $attribute->namespace;
-        $id = $attribute->type;
-
-        if (str_contains($id, ':')) {
-            [$ns, $id] = explode(':', $id);
-        }
-
-        $ns = $element->namespaces[$ns] ?? $ns;
-
-        return $this->getType($ns, $id);
-    }
-
-    public function getElementType(XsdElement $element): XsdComplexType|XsdSimpleType
-    {
-        $ns = $element->namespace;
-
-        if (!is_null($element->type)) {
-            $id = $element->type;
-
-            if (str_contains($id, ':')) {
-                [$ns, $id] = explode(':', $id);
-            }
-
-            $ns = $element->namespaces[$ns] ?? $ns;
-
-            return $this->getType($ns, $id);
-        } else {
-            $id = $element->ref;
-
-            if (str_contains($id, ':')) {
-                [$ns, $id] = explode(':', $id);
-            }
-
-            $ns = $element->namespaces[$ns] ?? $ns;
-
-            $element = $this->getElement($ns, $id);
-
-            return $this->getElementType($element);
-        }
-    }
-
-    public function getExtensionType(XsdExtension $extension): XsdComplexType|XsdSimpleType
-    {
-        $ns = $extension->namespace;
-        $id = $extension->base;
-        if (str_contains($id, ':')) {
-            [$ns, $id] = explode(':', $id);
-        }
-        $ns = $extension->namespaces[$ns] ?? $ns;
-
-        return $this->getType($ns, $id);
-    }
-
-    public function getRestrictionType(XsdRestriction $restriction): XsdComplexType|XsdSimpleType
-    {
-        $ns = $restriction->namespace;
-        $id = $restriction->base;
-        if (str_contains($id, ':')) {
-            [$ns, $id] = explode(':', $id);
-        }
-        $ns = $restriction->namespaces[$ns] ?? $ns;
-
-        return $this->getType($ns, $id);
-    }
-
-    public function getSimpleContentType(XsdSimpleContent $simpleContent): XsdComplexType|XsdSimpleType
-    {
-        if ($simpleContent->extension) {
-            return $this->getExtensionType($simpleContent->extension);
-        } else {
-            return $this->getRestrictionType($simpleContent->restriction);
-        }
     }
 }

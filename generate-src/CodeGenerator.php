@@ -23,18 +23,18 @@ class CodeGenerator
         $schemaCollection->loadSchemaDir(realpath($schemaDir) . '/xsd/maindoc/');
         $builderConfig = new BuilderConfig(realpath($outputDir));
 
-        print_r($schemaCollection->getNamespaces());
-
-        $builder = new ClassBuilder($schemaCollection, $builderConfig);
+        $builder = new ClassBuilder($builderConfig);
 
         foreach($schemaCollection->getNamespaces() as $namespace) {
             if ($builder->isNamespaceBlacklisted($namespace)) {
                 continue;
             }
 
-            foreach($schemaCollection->getTypes($namespace) as $type) {
-                if ($type instanceof XsdComplexType) {
-                    $builder->saveClass($type);
+            foreach($schemaCollection->getSchemas($namespace) as $schema) {
+                foreach($schema->types as $type) {
+                    if ($type instanceof XsdComplexType) {
+                        $builder->saveClass($type);
+                    }
                 }
             }
         }
