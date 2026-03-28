@@ -10,6 +10,7 @@ final readonly class XsdRestriction
     public string $base;
     /** @var array<string,XsdAttribute> */
     public array $attributes;
+    public bool $changesBase;
 
     public function __construct(
         public XsdSchema $schema,
@@ -17,6 +18,7 @@ final readonly class XsdRestriction
     ) {
         $this->base = $this->xml->attributes()->base;
         $this->attributes = iterator_to_array($this->generateAttributes());
+        $this->changesBase = count($this->xml->xpath('*[local-name()="attribute"]')) > 0;
     }
 
     public function __debugInfo(): array
@@ -33,6 +35,12 @@ final readonly class XsdRestriction
      */
     private function generateAttributes(): Generator
     {
+        $baseType = $this->getType();
+
+        if ($baseType instanceof XsdComplexType) {
+            yield from $baseType->attributes;
+        }
+
         foreach ($this->xml->xpath('*[local-name()="attribute"]') as $attribute) {
             $attribute = new XsdAttribute(
                 $this->schema,

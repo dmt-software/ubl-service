@@ -32,9 +32,15 @@ class CodeGenerator
 
             foreach($schemaCollection->getSchemas($namespace) as $schema) {
                 foreach($schema->types as $type) {
-                    if ($type instanceof XsdComplexType) {
-                        $builder->saveClass($type);
+                    if (!$type instanceof XsdComplexType) {
+                        continue;
                     }
+
+                    if (!$type->changesBase) {
+                        continue;
+                    }
+
+                    $builder->saveClass($type);
                 }
             }
         }

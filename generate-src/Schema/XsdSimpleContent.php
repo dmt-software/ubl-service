@@ -2,12 +2,19 @@
 
 namespace DMT\Ubl\Generate\Schema;
 
+use Generator;
 use SimpleXMLElement;
 
 final readonly class XsdSimpleContent
 {
     public ?XsdRestriction $restriction;
     public ?XsdExtension $extension;
+    public bool $changesBase;
+
+    /**
+     * @var array<string,XsdAttribute>
+     */
+    public array $attributes;
 
     public function __construct(
         public XsdSchema $schema,
@@ -16,21 +23,10 @@ final readonly class XsdSimpleContent
         public ?string $version,
         public SimpleXMLElement $xml
     ) {
-        $extension = $xml->xpath('*[local-name()="extension"]')[0] ?? null;
-
-        if (!is_null($extension)) {
-            $this->restriction = null;
-            $this->extension = new XsdExtension(
-                $this->schema,
-                $extension
-            );
-        } else {
-            $this->extension = null;
-            $this->restriction = new XsdRestriction(
-                $this->schema,
-                $xml->xpath('*[local-name()="restriction"]')[0]
-            );
-        }
+        $this->extension = $this->generateExtension();
+        $this->restriction = $this->generateRestriction();
+        $this->attributes = iterator_to_array($this->generateAttributes());
+        $this->changesBase = $this->extension ? $this->extension->changesBase : $this->restriction->changesBase;
     }
 
     public function __debugInfo(): array
@@ -42,12 +38,46 @@ final readonly class XsdSimpleContent
         ];
     }
 
-    public function getType(): XsdComplexType|XsdSimpleType
+    private function generateExtension(): ?XsdExtension
     {
-        if (!is_null($this->extension)) {
-            return $this->extension->getType();
+        $extension = $this->xml->xpath('*[local-name()="extension"]')[0] ?? null;
+
+        if (is_null($extension)) {
+            return null;
         }
 
-        return $this->restriction->getType();
+        return new XsdExtension($this->schema, $extension);
+    }
+
+    private function generateRestriction(): ?XsdRestriction
+    {
+        $restriction = $this->xml->xpath('*[local-name()="restriction"]')[0] ?? null;
+
+        if (is_null($restriction)) {
+            return null;
+        }
+
+        return new XsdRestriction($this->schema, $restriction);
+    }
+
+    public function getType(): XsdComplexType|XsdSimpleType
+    {
+        if($this->extension) {
+            return $this->extension->getType();
+        } else {
+            return $this->restriction->getType();
+        }
+    }
+
+    /**
+     * @return Generator<string,XsdAttribute>
+     */
+    private function generateAttributes(): Generator
+    {
+        if($this->extension) {
+            yield from $this->extension->attributes;
+        } else {
+            yield from $this->restriction->attributes;
+        }
     }
 }

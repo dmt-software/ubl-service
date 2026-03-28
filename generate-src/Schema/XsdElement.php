@@ -9,8 +9,8 @@ final readonly class XsdElement
     public ?string $ref;
     public ?string $name;
     public ?string $type;
-    public ?string $minOccurs;
-    public ?string $maxOccurs;
+    public string $minOccurs;
+    public string $maxOccurs;
 
     public function __construct(
         public XsdSchema $schema,
@@ -22,8 +22,8 @@ final readonly class XsdElement
         $this->ref = $this->xml->attributes()->ref ?? null;
         $this->type = $this->xml->attributes()->type ?? null;
 
-        $this->minOccurs = $this->xml->attributes()->minOccurs ?? null;
-        $this->maxOccurs = $this->xml->attributes()->maxOccurs ?? null;
+        $this->minOccurs = $this->xml->attributes()->minOccurs ?? '1';
+        $this->maxOccurs = $this->xml->attributes()->maxOccurs ?? '1';
     }
 
     public function __debugInfo(): array
