@@ -9,12 +9,14 @@ final readonly class XsdSimpleContent
 {
     public ?XsdRestriction $restriction;
     public ?XsdExtension $extension;
-    public bool $changesBase;
-
     /**
      * @var array<string,XsdAttribute>
      */
     public array $attributes;
+    /**
+     * @var array<string,XsdAttribute>
+     */
+    public array $ownAttributes;
 
     public function __construct(
         public XsdSchema $schema,
@@ -25,8 +27,8 @@ final readonly class XsdSimpleContent
     ) {
         $this->extension = $this->generateExtension();
         $this->restriction = $this->generateRestriction();
+        $this->ownAttributes = iterator_to_array($this->generateOwnAttributes());
         $this->attributes = iterator_to_array($this->generateAttributes());
-        $this->changesBase = $this->extension ? $this->extension->changesBase : $this->restriction->changesBase;
     }
 
     public function __debugInfo(): array
@@ -60,12 +62,12 @@ final readonly class XsdSimpleContent
         return new XsdRestriction($this->schema, $restriction);
     }
 
-    public function getType(): XsdComplexType|XsdSimpleType
+    public function getBaseType(): XsdComplexType|XsdSimpleType
     {
         if($this->extension) {
-            return $this->extension->getType();
+            return $this->extension->getBaseType();
         } else {
-            return $this->restriction->getType();
+            return $this->restriction->getBaseType();
         }
     }
 
@@ -78,6 +80,18 @@ final readonly class XsdSimpleContent
             yield from $this->extension->attributes;
         } else {
             yield from $this->restriction->attributes;
+        }
+    }
+
+    /**
+     * @return Generator<string,XsdAttribute>
+     */
+    private function generateOwnAttributes(): Generator
+    {
+        if($this->extension) {
+            yield from $this->extension->ownAttributes;
+        } else {
+            yield from $this->restriction->ownAttributes;
         }
     }
 }

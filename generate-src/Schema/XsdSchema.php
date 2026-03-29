@@ -24,11 +24,16 @@ final readonly class XsdSchema
 
     public function __construct(
         public SimpleXMLElement $xml,
-        public ?string $path
+        public ?string $path,
     ) {
         $this->xml->registerXPathNamespace('xsd', 'http://www.w3.org/2001/XMLSchema');
         $this->namespace = $this->xml->attributes()->targetNamespace;
-        $this->version = $this->xml->attributes()->version ?? null;
+
+        if (preg_match('~(?<version>\d+\.\d+).xsd$~', $this->path, $m)) {
+            $this->version = $m['version'];
+        } else {
+            $this->version = $this->xml->attributes()->version ?? null;
+        }
     }
 
     public function __debugInfo(): array
@@ -50,13 +55,8 @@ final readonly class XsdSchema
         $this->includes = iterator_to_array($this->generateIncludes($schemaCollection));
         $this->imports = iterator_to_array($this->generateImports($schemaCollection));
         $this->namespaces = iterator_to_array($this->generateNamespaces());
-        $elements = iterator_to_array($this->generateElements());
-        ksort($elements);
-        $this->elements = $elements;
-
-        $types = iterator_to_array($this->generateTypes());
-        ksort($types);
-        $this->types = $types;
+        $this->elements = iterator_to_array($this->generateElements());
+        $this->types = iterator_to_array($this->generateTypes());
     }
 
     /**

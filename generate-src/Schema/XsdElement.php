@@ -12,6 +12,8 @@ final readonly class XsdElement
     public string $minOccurs;
     public string $maxOccurs;
 
+    public ?XsdDocumentation $documentation;
+
     public function __construct(
         public XsdSchema $schema,
         public SimpleXMLElement $xml,
@@ -24,6 +26,8 @@ final readonly class XsdElement
 
         $this->minOccurs = $this->xml->attributes()->minOccurs ?? '1';
         $this->maxOccurs = $this->xml->attributes()->maxOccurs ?? '1';
+
+        $this->documentation = $this->generateDocumentation();
     }
 
     public function __debugInfo(): array
@@ -44,5 +48,22 @@ final readonly class XsdElement
         }
 
         return $this->schema->getTypeByName($this->type);
+    }
+
+    private function generateDocumentation(): ?XsdDocumentation
+    {
+        $component = $this->xml->xpath('*[local-name()="annotation"]/*[local-name()="documentation"]/*[local-name()="Component"]')[0] ?? null;
+
+        if (!is_null($component)) {
+            return new XsdDocumentation($this->schema, $component);
+        }
+
+        $documentation = $this->xml->xpath('*[local-name()="annotation"]/*[local-name()="documentation"]')[0] ?? null;
+
+        if (!is_null($documentation)) {
+            return new XsdDocumentation($this->schema, $documentation);
+        }
+
+        return null;
     }
 }

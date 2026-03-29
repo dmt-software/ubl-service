@@ -2,12 +2,11 @@
 
 namespace DMT\Ubl\Generate;
 
+use DMT\Ubl\Generate\Schema\XsdDocumentation;
 use DMT\Ubl\Generate\Schema\XsdAttribute;
 use DMT\Ubl\Generate\Schema\XsdComplexType;
 use DMT\Ubl\Generate\Schema\XsdElement;
-use DMT\Ubl\Generate\Schema\XsdSimpleContent;
 use DMT\Ubl\Generate\Schema\XsdSimpleType;
-use DOMElement;
 use InvalidArgumentException;
 use Jawira\CaseConverter\Convert;
 use JMS\Serializer\Annotation\SerializedName;
@@ -34,11 +33,12 @@ use PhpParser\PrettyPrinter\Standard;
 
 final readonly class ClassBuilder
 {
-    public const array SCALAR = ['int', 'float', 'boolean', 'string'];
+    public const array SCALAR = ['int', 'float', 'bool', 'string'];
 
     private BuilderFactory $factory;
 
-    public function __construct(private BuilderConfig $config) {
+    public function __construct(private BuilderConfig $config)
+    {
         $this->factory = new BuilderFactory();
     }
 
@@ -58,16 +58,20 @@ final readonly class ClassBuilder
 
     public function getClassName(XsdComplexType $type): string
     {
-        $classBaseName = preg_replace('~Type$~', '', $type->name);
-
         $classNamespace = $this->config->namespace;
-
-        if ($type->schema->version) {
-            $classNamespace .= '\\V' . preg_replace('~[^0-9]+~', '', $type->schema->version);
-        }
 
         if (isset($this->config->phpNamespaces[$type->namespace])) {
             $classNamespace .= '\\' . $this->config->phpNamespaces[$type->namespace];
+        }
+
+        $classBaseName = preg_replace('~Type$~', '', $type->name);
+
+        if(!in_array($type->namespace, $this->config->versionlessNamespaces)) {
+            $version = $type->documentation->versionID ?? $type->schema->version ?? null;
+
+            if ($version) {
+                $classBaseName .= 'V' . preg_replace('~[^0-9]+~', '', $version);
+            }
         }
 
         return "$classNamespace\\$classBaseName";
@@ -109,8 +113,6 @@ final readonly class ClassBuilder
 
     public function getUnionType(XsdComplexType|XsdSimpleType $type, bool $nullable, array &$uses): UnionType
     {
-        $type = $this->resolveBaseType($type);
-
         $unionTypes = [];
 
         if ($nullable) {
@@ -134,32 +136,8 @@ final readonly class ClassBuilder
         return new UnionType($unionTypes);
     }
 
-    public function getAttributeUnionType(XsdAttribute $attribute, array &$uses): UnionType
-    {
-        return $this->getUnionType(
-            $attribute->getType(),
-            $this->getAttributeNullable($attribute),
-            $uses
-        );
-    }
-
-    public function getElementUnionType(XsdElement $element, array &$uses): UnionType
-    {
-        return $this->getUnionType(
-            $element->getType(),
-            $this->getElementNullable($element),
-            $uses
-        );
-    }
-
     public function getJMSSingleType(XsdComplexType|XsdSimpleType $type, array &$uses): Expr
     {
-        $type = $this->resolveBaseType($type);
-
-        if ($this->isNamespaceRawXml($type->namespace)) {
-            return new String_('RawXml');
-        }
-
         if (isset($this->config->jmsTypeMap[$type->namespace][$type->name])) {
             return new String_($this->config->jmsTypeMap[$type->namespace][$type->name]);
         }
@@ -183,14 +161,8 @@ final readonly class ClassBuilder
      */
     public function getPhpTypes(XsdComplexType|XsdSimpleType $type): array
     {
-        $type = $this->resolveBaseType($type);
-
         if (isset($this->config->phpTypeMap[$type->namespace][$type->name])) {
             return $this->config->phpTypeMap[$type->namespace][$type->name];
-        }
-
-        if ($this->isNamespaceRawXml($type->namespace)) {
-            return [DOMElement::class];
         }
 
         if ($type instanceof XsdSimpleType) {
@@ -202,10 +174,8 @@ final readonly class ClassBuilder
         return [$this->getClassName($type)];
     }
 
-    public function createJMSArrayTypeAttribute(XsdElement $element, array &$uses): Attribute
+    public function createJMSArrayTypeAttribute(XsdComplexType|XsdSimpleType $type, array &$uses): Attribute
     {
-        $type = $this->resolveBaseType($element->getType());
-
         $jmsSingleType = $this->getJMSSingleType($type, $uses);
 
         $stmt = new Concat(new Concat(new String_('array<'), $jmsSingleType), new String_('>'));
@@ -217,8 +187,6 @@ final readonly class ClassBuilder
 
     public function createJMSSingleTypeAttribute(XsdComplexType|XsdSimpleType $type, array &$uses): Attribute
     {
-        $type = $this->resolveBaseType($type);
-
         $jmsSingleType = $this->getJMSSingleType($type, $uses);
 
         $uses[Type::class] = true;
@@ -240,13 +208,8 @@ final readonly class ClassBuilder
         );
     }
 
-    public function createJMSSerializedNameAttribute(XsdElement $element, array &$uses): Attribute
+    public function createJMSSerializedNameAttribute($name, array &$uses): Attribute
     {
-        $name = $element->name ?? $element->ref;
-        if (str_contains($name, ':')) {
-            [$ns, $name] = explode(':', $name);
-        }
-
         $uses[SerializedName::class] = true;
         return $this->factory->attribute(
             'SerializedName',
@@ -267,48 +230,85 @@ final readonly class ClassBuilder
 
     public function createSingleElementProperty(XsdElement $element, array &$uses): Property
     {
-        $prop = $this->factory
-            ->property($this->getElementPropertyName($element))
-            ->makePublic()
-            ->setType($this->getElementUnionType($element, $uses));
+        $propertyName = $this->getElementPropertyName($element);
+        $type = $element->getType();
+        $baseType = $this->resolveBaseType($type);
+        $nullable = $this->getElementNullable($element);
 
-        if ($this->getElementNullable($element)) {
+        $name = $element->name ?? $element->ref;
+        if (str_contains($name, ':')) {
+            [$ns, $name] = explode(':', $name);
+        }
+
+        $prop = $this->factory
+            ->property($propertyName)
+            ->makePublic()
+            ->setType($this->getUnionType($baseType, $nullable, $uses));
+
+        if ($nullable) {
             $prop->setDefault(null);
         }
 
-        $type = $element->getType();
-
-        $prop->addAttribute($this->createJMSSerializedNameAttribute($element, $uses));
-        $prop->addAttribute($this->createJMSSingleTypeAttribute($type, $uses));
+        $prop->addAttribute($this->createJMSSerializedNameAttribute($name, $uses));
+        $prop->addAttribute($this->createJMSSingleTypeAttribute($baseType, $uses));
         $prop->addAttribute($this->createJMSSingleXmlElementAttribute($type, $uses));
+
+        $documentation = $element->documentation;
+        if (!is_null($documentation)) {
+            $comment = "/**\n";
+            foreach(XsdDocumentation::FIELDS as $field => $property) {
+                if (!is_null($documentation->{$property})) {
+                    $comment .= sprintf(" * %s: %s\n", $field, $documentation->{$property});
+                }
+            }
+
+            $comment .= " */";
+
+            $prop->setDocComment($comment);
+        }
 
         return $prop;
     }
 
     public function createArrayElementProperty(XsdElement $element, array &$uses): Property
     {
-        $prop = $this->factory
-            ->property($this->getElementPropertyName($element))
-            ->makePublic()
-            ->setType(new Identifier('array'))
-            ->setDefault([]);
-
-        $prop->setDocComment($this->createArrayPropertyDocComment($element, $uses));
-        $prop->addAttribute($this->createJMSArrayTypeAttribute($element, $uses));
-        $prop->addAttribute($this->createJMSXmlListAttribute($element, $uses));
-
-        return $prop;
-    }
-
-    public function createJMSXmlListAttribute(XsdElement $element, array &$uses): Attribute
-    {
+        $propertyName = $this->getElementPropertyName($element);
+        $type = $element->getType();
+        $baseType = $this->resolveBaseType($type);
         $entry = $element->ref ?? $element->name;
         if (str_contains($entry, ':')) {
             [$ns, $entry] = explode(':', $entry);
         }
 
-        $type = $element->getType();
+        $prop = $this->factory
+            ->property($propertyName)
+            ->makePublic()
+            ->setType(new Identifier('array'))
+            ->setDefault([]);
 
+        $comment = "/**\n";
+
+        $documentation = $element->documentation;
+        if (!is_null($documentation)) {
+            foreach(XsdDocumentation::FIELDS as $field => $property) {
+                if (!is_null($documentation->{$property})) {
+                    $comment .= sprintf(" * %s: %s\n", $field, $documentation->{$property});
+                }
+            }
+        }
+        $comment .= sprintf(" * %s\n", $this->createArrayPropertyDocComment($propertyName, $baseType, $uses));
+        $comment .= " */";
+
+        $prop->setDocComment($comment);
+
+        $prop->addAttribute($this->createJMSArrayTypeAttribute($baseType, $uses));
+        $prop->addAttribute($this->createJMSXmlListAttribute($entry, $type, $uses));
+
+        return $prop;
+    }
+
+    public function createJMSXmlListAttribute(string $entry, XsdComplexType|XsdSimpleType $type, array &$uses): Attribute
+    {
         $uses[XmlList::class] = true;
 
         return $this->factory->attribute(
@@ -321,9 +321,8 @@ final readonly class ClassBuilder
         );
     }
 
-    public function createArrayPropertyDocComment(XsdElement $element, array &$uses): string
+    public function createArrayPropertyDocComment(string $propertyName, XsdComplexType|XsdSimpleType $type, array &$uses): string
     {
-        $type = $this->resolveBaseType($element->getType());
         $phpTypes = $this->getPhpTypes($type);
         $phpType = end($phpTypes);
 
@@ -333,15 +332,14 @@ final readonly class ClassBuilder
         }
 
         return sprintf(
-            '/** @var array<%s> $%s */',
+            '@var array<%s> $%s',
             $phpType,
-            $this->getElementPropertyName($element)
+            $propertyName
         );
     }
 
     public function createClass(XsdComplexType $type): Node
     {
-        // todo: refuse to build if !changesBase
         $uses = [];
         $className = $this->getClassName($type);
         $classBaseName = $this->classBaseName($className);
@@ -349,16 +347,46 @@ final readonly class ClassBuilder
 
         $class = $this->factory->class($classBaseName);
         $class->setDocComment($this->getClassDocComment($type));
-        $class->addAttribute($this->createJMSXmlRootAttribute($type, $uses));
 
-        foreach ($type->schema->namespaces as $prefix => $namespace) {
-            $class->addAttribute($this->createJMSXmlNamespaceAttribute($prefix, $namespace, $uses));
+        $element = $type->getElement();
+
+        if ($element->documentation->rootElement ?? false) {
+            $class->addAttribute($this->createJMSXmlRootAttribute($type, $uses));
+
+            foreach ($type->schema->namespaces as $prefix => $namespace) {
+                $class->addAttribute($this->createJMSXmlNamespaceAttribute($prefix, $namespace, $uses));
+            }
         }
 
         $properties = [];
 
-        foreach ($type->attributes as $attribute) {
-            $properties[] = $this->createAttributeProperty($attribute, $uses);
+        $simpleContent = $type->simpleContent ?? null;
+
+        if (!is_null($simpleContent)) {
+            $parentType = $simpleContent->getBaseType();
+            $baseType = $this->resolveBaseType($parentType);
+
+            $extend = (
+                isset($simpleContent->extension) &&
+                count($simpleContent->ownAttributes) > 0 &&
+                !$baseType instanceof XsdSimpleType
+            );
+
+            if ($extend) {
+                $baseClassName = $this->getClassName($baseType);
+                $uses[$baseClassName] = 'Base';
+                $class->extend(new Name('Base'));
+
+                foreach ($simpleContent->ownAttributes as $attribute) {
+                    $properties[] = $this->createAttributeProperty($attribute, $uses);
+                }
+            } else {
+                $rootType = $this->resolveRootType($parentType);
+                $properties[] = $this->createValueProperty($rootType, $uses);
+                foreach ($simpleContent->attributes as $attribute) {
+                    $properties[] = $this->createAttributeProperty($attribute, $uses);
+                }
+            }
         }
 
         foreach ($type->elements as $element) {
@@ -369,14 +397,22 @@ final readonly class ClassBuilder
         $namespaceNode = $namespace->getNode();
         ksort($uses);
 
-        foreach (array_keys($uses) as $use) {
+        foreach ($uses as $use => $alias) {
             if ($classNamespace == $this->classNamespace($use)) {
                 // no need to import things in the same namespace
                 continue;
             }
 
-            $namespaceNode->stmts[] = $this->factory->use($use)->getNode();
+            $useStmt = $this->factory->use($use);
+
+            if (is_string($alias)) {
+                $useStmt = $useStmt->as($alias);
+            }
+
+            $namespaceNode->stmts[] = $useStmt->getNode();
         }
+
+        $namespaceNode->stmts[] = new Nop();
 
         $classNode = $class->getNode();
 
@@ -393,55 +429,71 @@ final readonly class ClassBuilder
 
     public function getClassDocComment(XsdComplexType $type): string
     {
-        $comment = <<<COMMENT
-            /**
-             * namespace: %s
-             * version: %s
-             * name: %s
-             */
-        COMMENT;
+        $comment = "/**\n";
+        $comment .= sprintf(" * namespace: %s\n", $type->namespace);
+        $comment .= sprintf(" * version: %s\n", $type->schema->version);
+        $comment .= sprintf(" * name: %s\n", $type->name);
+        $comment .= sprintf(" * path: %s\n", basename($type->schema->path));
 
-        return sprintf(
-            trim($comment),
-            $type->namespace,
-            $type->schema->version,
-            $type->name
-        );
+        $documentation = $type->documentation;
+        if (!is_null($documentation)) {
+            foreach(XsdDocumentation::FIELDS as $field => $property) {
+                if (!is_null($documentation->{$property})) {
+                    $comment .= sprintf(" * %s: %s\n", $field, $documentation->{$property});
+                }
+            }
+        }
+
+        $comment .= " */";
+
+        return $comment;
     }
 
-    private function createSimpleContentProperty(
-        string $className,
-        XsdSimpleContent $simpleContent,
-        array &$uses
-    ): Property {
-        $type = $this->resolveBaseType($simpleContent->getType());
-
+    private function createValueProperty(XsdComplexType|XsdSimpleType $type, array &$uses): Property {
         $prop = $this->factory
             ->property('value')
             ->makePublic()
             ->setType($this->getUnionType($type, false, $uses));
 
         $prop->addAttribute($this->createJMSSingleTypeAttribute($type, $uses));
-        $prop->addAttribute($this->createJMSXmlValueAttribute($simpleContent, $uses));
+        $prop->addAttribute($this->createJMSXmlValueAttribute($uses));
 
         return $prop;
     }
 
     private function createAttributeProperty(XsdAttribute $attribute, array &$uses): Property
     {
-        $type = $this->resolveBaseType($attribute->getType());
+        $type = $attribute->getType();
+        $baseType = $this->resolveBaseType($type);
+
+        $nullable = $this->getAttributeNullable($attribute);
+        $propertyName = $this->getAttributePropertyName($attribute);
 
         $prop = $this->factory
-            ->property($this->getAttributePropertyName($attribute))
+            ->property($propertyName)
             ->makePublic()
-            ->setType($this->getAttributeUnionType($attribute, $uses));
+            ->setType($this->getUnionType($baseType, $nullable, $uses));
 
-        if ($this->getAttributeNullable($attribute)) {
+        if ($nullable) {
             $prop->setDefault(null);
         }
 
-        $prop->addAttribute($this->createJMSXmlAttributeAttribute($attribute, $uses));
-        $prop->addAttribute($this->createJMSSingleTypeAttribute($type, $uses));
+        $documentation = $attribute->documentation;
+        if (!is_null($documentation)) {
+            $comment = "/**\n";
+            foreach(XsdDocumentation::FIELDS as $field => $property) {
+                if (!is_null($documentation->{$property})) {
+                    $comment .= sprintf(" * %s: %s\n", $field, $documentation->{$property});
+                }
+            }
+
+            $comment .= " */";
+
+            $prop->setDocComment($comment);
+        }
+
+        $prop->addAttribute($this->createJMSXmlAttributeAttribute($uses));
+        $prop->addAttribute($this->createJMSSingleTypeAttribute($baseType, $uses));
 
         return $prop;
     }
@@ -456,14 +508,14 @@ final readonly class ClassBuilder
         return $element->minOccurs == '0';
     }
 
-    public function createJMSXmlAttributeAttribute(XsdAttribute $attribute, array &$uses): Attribute
+    public function createJMSXmlAttributeAttribute(array &$uses): Attribute
     {
         $uses[XmlAttribute::class] = true;
 
         return $this->factory->attribute('XmlAttribute');
     }
 
-    public function createJMSXmlValueAttribute(XsdSimpleContent $simpleContent, array &$uses): Attribute
+    public function createJMSXmlValueAttribute(array &$uses): Attribute
     {
         $uses[XmlValue::class] = true;
 
@@ -472,8 +524,6 @@ final readonly class ClassBuilder
 
     private function createJMSXmlRootAttribute(XsdComplexType $type, array &$uses): Attribute
     {
-        $type = $this->resolveBaseType($type);
-
         $uses[XmlRoot::class] = true;
 
         $name = $type->name;
@@ -529,14 +579,9 @@ final readonly class ClassBuilder
         }
 
         $subNamespace = substr($className, strlen($this->config->namespace));
-        $subPath = str_replace('\\','/', ltrim($subNamespace, '\\'));
+        $subPath = str_replace('\\', '/', ltrim($subNamespace, '\\'));
 
         return $this->config->path . '/' . $subPath . '.php';
-    }
-
-    public function isNamespaceRawXml(string $namespace): bool
-    {
-        return in_array($namespace, $this->config->rawXmlNamespaces);
     }
 
     public function isNamespaceBlacklisted(string $namespace): bool
@@ -550,14 +595,68 @@ final readonly class ClassBuilder
             return $type;
         }
 
-        if ($type->changesBase) {
+        if (count($type->elements) > 0) {
             return $type;
         }
 
-        if ($type->simpleContent) {
-            return $this->resolveBaseType($type->simpleContent->getType());
+        $baseType = $type->getBaseType();
+
+        if (!in_array($baseType->namespace, $this->config->namespaceBlacklist)) {
+            if ($baseType !== $type) {
+                return $this->resolveBaseType($baseType);
+            }
+
+            return $baseType;
         }
 
         return $type;
+    }
+
+    public function resolveRootType(XsdComplexType|XsdSimpleType $type): XsdComplexType|XsdSimpleType
+    {
+        if ($type instanceof XsdSimpleType) {
+            return $type;
+        }
+
+        if (count($type->elements) > 0) {
+            return $type;
+        }
+
+        return $type->getBaseType();
+    }
+
+    public function shouldBuild(XsdComplexType|XsdSimpleType $type): bool
+    {
+        if ($type instanceof XsdSimpleType) {
+            return false;
+        }
+
+        if (isset($this->config->phpTypeMap[$type->namespace][$type->name])) {
+            return false;
+        }
+
+        if (in_array($type->namespace, $this->config->namespaceBlacklist)) {
+            return false;
+        }
+
+        if (count($type->elements) > 0) {
+            return true;
+        }
+
+        if (count($type->ownAttributes) > 0) {
+            return true;
+        }
+
+        $baseType = $type->getBaseType();
+
+        if ($baseType instanceof XsdSimpleType) {
+            return true;
+        }
+
+        if (in_array($baseType->namespace, $this->config->namespaceBlacklist)) {
+            return true;
+        }
+
+        return false;
     }
 }

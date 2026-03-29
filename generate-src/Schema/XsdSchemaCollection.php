@@ -27,7 +27,7 @@ XML;
         $this->xsdSchema = new XsdSchema(simplexml_load_string($xsdXml), null);
     }
 
-    public function loadSchema(?string $path, ?string $namespace): XsdSchema
+    public function loadSchema(?string $path, ?string $namespace = null): XsdSchema
     {
         if (is_null($path)) {
             trigger_error("null path for $namespace");

@@ -3,6 +3,7 @@
 namespace DMT\Ubl\Generate;
 
 use DateTime;
+use DOMElement;
 
 final class BuilderConfig
 {
@@ -16,16 +17,15 @@ final class BuilderConfig
             '~^Id$~' => 'id',
         ],
         public array $phpNamespaces = [
-            'urn:oasis:names:specification:bdndr:schema:xsd:UnqualifiedDataTypes-1' => 'UnqualifiedDataTypes',
+            'urn:oasis:names:specification:bdndr:schema:xsd:UnqualifiedDataTypes-1' => 'Types',
             'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2' => 'CommonAggregateComponents',
             'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2' => 'CommonBasicComponents',
             'urn:oasis:names:specification:ubl:schema:xsd:CommonSignatureComponents-2' => 'CommonSignatureComponents',
             'urn:oasis:names:specification:ubl:schema:xsd:QualifiedDataTypes-2' => 'QualifiedDataTypes',
             'urn:oasis:names:specification:ubl:schema:xsd:SignatureAggregateComponents-2' => 'SignatureAggregateComponents',
             'urn:oasis:names:specification:ubl:schema:xsd:SignatureBasicComponents-2' => 'SignatureBasicComponents',
-            'urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2' => 'UnqualifiedDataTypes',
+            'urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2' => 'Types',
             'urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2' => 'CommonExtensionComponents',
-            'urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2' => 'CoreComponentTypeSchemaModule',
             'http://uri.etsi.org/01903/v1.3.2#' => 'Etsi13',
             'http://uri.etsi.org/01903/v1.4.1#' => 'Etsi14',
             'http://www.w3.org/2000/09/xmldsig#'=> 'Dsigxx',
@@ -50,6 +50,24 @@ final class BuilderConfig
                 'string' => ['string'],
                 'time' => [DateTime::class],
             ],
+            'urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2' => [
+                'IndicatorType' => ['bool'],
+                'DateType' => [DateTime::class],
+                'DateTimeType' => [DateTime::class],
+                'TimeType' => [DateTime::class],
+            ],
+            'urn:oasis:names:specification:bdndr:schema:xsd:UnqualifiedDataTypes-1' => [
+                'IndicatorType' => ['bool'],
+                'DateType' => [DateTime::class],
+                'DateTimeType' => [DateTime::class],
+                'TimeType' => [DateTime::class],
+            ],
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2' => [
+                'ExtensionContentType' => [DOMElement::class],
+            ],
+            'http://www.w3.org/2000/09/xmldsig#' => [
+                'SignatureType' => [DOMElement::class],
+            ],
         ],
         public array $jmsTypeMap = [
             'http://www.w3.org/2001/XMLSchema' => [
@@ -69,13 +87,25 @@ final class BuilderConfig
                 'string' => 'string',
                 'time' => "DateTime<'H:i:s'>",
             ],
-        ],
-        public array $rawXmlNamespaces = [
-            // 'urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2',
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2' => [
+                'ExtensionContentType' => 'RawXml',
+            ],
+            'http://www.w3.org/2000/09/xmldsig#' => [
+                'SignatureType' => 'RawXml',
+            ],
         ],
         public array $namespaceBlacklist = [
+            'http://uri.etsi.org/01903/v1.3.2#',
+            'http://uri.etsi.org/01903/v1.4.1#',
+            'http://www.w3.org/2000/09/xmldsig#',
+            'http://www.w3.org/2009/xmldsig11#',
             'urn:un:unece:uncefact:documentation:2',
-        ]
+            'urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2',
+        ],
+        public array $versionlessNamespaces = [
+            'urn:oasis:names:specification:bdndr:schema:xsd:UnqualifiedDataTypes-1',
+            'urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2',
+        ],
     ) {
     }
 }

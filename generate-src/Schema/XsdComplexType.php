@@ -14,7 +14,10 @@ final readonly class XsdComplexType
     public array $elements;
     /** @var array<string,XsdAttribute> */
     public array $attributes;
-    public bool $changesBase;
+    /** @var array<string,XsdAttribute> */
+    public array $ownAttributes;
+
+    public ?XsdDocumentation $documentation;
 
     public function __construct(
         public XsdSchema $schema,
@@ -27,8 +30,9 @@ final readonly class XsdComplexType
         $this->name = $this->xml->attributes()->name;
         $this->elements = iterator_to_array($this->generateElements());
         $this->simpleContent = $this->generateSimpleContent();
+        $this->ownAttributes = iterator_to_array($this->generateOwnAttributes());
         $this->attributes = iterator_to_array($this->generateAttributes());
-        $this->changesBase = $this->simpleContent ? $this->simpleContent->changesBase : true;
+        $this->documentation = $this->generateDocumentation();
     }
 
     public function __debugInfo(): array
@@ -72,5 +76,49 @@ final readonly class XsdComplexType
         if ($this->simpleContent) {
             yield from $this->simpleContent->attributes;
         }
+    }
+
+    private function generateOwnAttributes(): Generator
+    {
+        if ($this->simpleContent) {
+            yield from $this->simpleContent->ownAttributes;
+        }
+    }
+
+    private function generateDocumentation(): ?XsdDocumentation
+    {
+        $component = $this->xml->xpath('*[local-name()="annotation"]/*[local-name()="documentation"]/*[local-name()="Component"]')[0] ?? null;
+
+        if (!is_null($component)) {
+            return new XsdDocumentation($this->schema, $component);
+        }
+
+        $documentation = $this->xml->xpath('*[local-name()="annotation"]/*[local-name()="documentation"]')[0] ?? null;
+
+        if (!is_null($documentation)) {
+            return new XsdDocumentation($this->schema, $documentation);
+        }
+
+        return null;
+    }
+
+    public function getElement(): ?XsdElement
+    {
+        foreach($this->schema->elements as $element) {
+            if ($element->type == $this->name) {
+                return $element;
+            }
+        }
+
+        return null;
+    }
+
+    public function getBaseType(): XsdComplexType|XsdSimpleType
+    {
+        if ($this->simpleContent) {
+            return $this->simpleContent->getBaseType();
+        }
+
+        return $this;
     }
 }

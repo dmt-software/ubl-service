@@ -30,7 +30,8 @@
   "autoload-dev": {
     "psr-4": {
       "DMT\\Test\\Ubl\\Service\\": "tests/",
-      "DMT\\Ubl\\Generate\\": "generate-src/"
+      "DMT\\Ubl\\Generate\\": "generate-src/",
+      "DMT\\Ubl\\Generated\\": "dist/"
     }
   },
   "scripts": {
