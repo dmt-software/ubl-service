@@ -218,13 +218,33 @@ final class XsdSchema
 
     public function clone(): XsdSchema
     {
-        return clone $this;
+        $schema = clone $this;
+        $schema->includes = [];
+        $imports = [];
+
+        foreach ($this->imports as $import) {
+            $imports[$import->namespace] = $schema->schemaCollection->merged[$import->namespace];
+        }
+
+        $schema->imports = array_values($imports);
+
+        $schema->types = array_map(
+            fn($type) => $type->clone($schema),
+            $schema->types
+        );
+
+        $schema->elements = array_map(
+            fn($element) => $element->clone($schema),
+            $schema->elements
+        );
+
+        return $schema;
     }
 
     public function merge(XsdSchema $other): XsdSchema
     {
         if ($this->version == $other->version) {
-            return clone $this;
+            return $this->clone();
         }
 
         if (version_compare($this->version, $other->version, '<')) {

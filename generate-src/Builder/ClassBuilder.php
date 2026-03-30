@@ -447,7 +447,9 @@ final readonly class ClassBuilder
     {
         $comment = "/**\n";
         $comment .= sprintf(" * namespace: %s\n", $type->namespace);
-        $comment .= sprintf(" * version: %s\n", $type->schema->version);
+        $comment .= sprintf(" * version: %s\n", $type->version);
+        $comment .= sprintf(" * since: %s\n", $type->since);
+        $comment .= sprintf(" * until: %s\n", $type->until);
         $comment .= sprintf(" * name: %s\n", $type->name);
         $comment .= sprintf(" * path: %s\n", basename($type->schema->path));
 

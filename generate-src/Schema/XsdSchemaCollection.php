@@ -41,7 +41,7 @@ final class XsdSchemaCollection
 
             $existing = $this->merged[$schema->namespace] ?? null;
             if (is_null($existing)) {
-                $this->merged[$schema->namespace] = $schema;
+                $this->merged[$schema->namespace] = $schema->clone();
             } else {
                 $this->merged[$schema->namespace] = $existing->merge($schema);
             }
