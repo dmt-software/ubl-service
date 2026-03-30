@@ -10,7 +10,9 @@ use DMT\Ubl\Generate\Schema\XsdSimpleType;
 use InvalidArgumentException;
 use Jawira\CaseConverter\Convert;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Since;
 use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\Until;
 use JMS\Serializer\Annotation\XmlAttribute;
 use JMS\Serializer\Annotation\XmlElement;
 use JMS\Serializer\Annotation\XmlList;
@@ -242,10 +244,20 @@ final readonly class ClassBuilder
         $prop->addAttribute($this->createJMSSerializedNameAttribute($name, $uses));
         $prop->addAttribute($this->createJMSSingleTypeAttribute($baseType, $uses));
         $prop->addAttribute($this->createJMSSingleXmlElementAttribute($type, $uses));
+        if ($element->since) {
+            $uses[Since::class] = true;
+            $prop->addAttribute($this->factory->attribute('Since', ['version' => $element->since]));
+        }
+        if ($element->until) {
+            $uses[Until::class] = true;
+            $prop->addAttribute($this->factory->attribute('Until', ['version' => $element->until]));
+        }
 
         $documentation = $element->documentation;
         if (!is_null($documentation)) {
             $comment = "/**\n";
+
+
             foreach(XsdDocumentation::FIELDS as $field => $property) {
                 if (!is_null($documentation->{$property})) {
                     $comment .= sprintf(" * %s: %s\n", $field, $documentation->{$property});
@@ -293,6 +305,15 @@ final readonly class ClassBuilder
 
         $prop->addAttribute($this->createJMSArrayTypeAttribute($baseType, $uses));
         $prop->addAttribute($this->createJMSXmlListAttribute($entry, $type, $uses));
+
+        if ($element->since) {
+            $uses[Since::class] = true;
+            $prop->addAttribute($this->factory->attribute('Since', ['version' => $element->since]));
+        }
+        if ($element->until) {
+            $uses[Until::class] = true;
+            $prop->addAttribute($this->factory->attribute('Until', ['version' => $element->until]));
+        }
 
         return $prop;
     }

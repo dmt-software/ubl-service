@@ -8,7 +8,7 @@ final class XsdAttribute
 {
     public string $name;
     public string $type;
-    public ?string $use;
+    public string $use;
     public ?string $version;
     public ?string $since;
     public ?string $until;
@@ -24,10 +24,10 @@ final class XsdAttribute
 
         $instance->name = $xml->attributes()->name;
         $instance->type = $xml->attributes()->type;
-        $instance->use = $xml->attributes()->use;
+        $instance->use = $xml->attributes()->use ?? 'optional';
         $instance->version = $schema->version;
-        $instance->since = null;
-        $instance->until = null;
+        $instance->since = $schema->version;
+        $instance->until = $schema->version;
         $instance->documentation = XsdAttribute::generateDocumentation($schema, $xml);
 
         return $instance;
@@ -66,5 +66,40 @@ final class XsdAttribute
         }
 
         return null;
+    }
+
+    public function clone(XsdSchema $schema): XsdAttribute
+    {
+        $attribute = clone $this;
+        $attribute->schema = $schema;
+
+        return $attribute;
+    }
+
+    public function merge(XsdSchema $schema, XsdAttribute $other): XsdAttribute
+    {
+        if ($this->version == $other->version) {
+            return $this->clone($schema);
+        }
+
+        if (version_compare($this->version, $other->version, '<')) {
+            $earlier = $this;
+            $later = $other;
+        } else {
+            $earlier = $other;
+            $later = $this;
+        }
+
+        $attribute = $earlier->clone($schema);
+        $attribute->schema = $schema;
+        $attribute->version = $later->version;
+        $attribute->since = $earlier->since ?? $earlier->version;
+        $attribute->until = $later->until ?? $later->version;
+
+        if ($earlier->use == 'optional' || $later->use == 'optional') {
+            $attribute->use = 'optional';
+        }
+
+        return $attribute;
     }
 }

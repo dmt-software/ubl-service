@@ -13,21 +13,11 @@ final class XsdSchemaCollection
     /** @var array<string, XsdSchema> */
     public array $paths = [];
 
-    public XsdSchema $xsdSchema;
+    /** @var array<string, XsdSchema> */
+    public array $merged = [];
 
     public function __construct()
     {
-        $xsdXml = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://www.w3.org/2001/XMLSchema">
-</schema>
-XML;
-
-        $this->xsdSchema = new XsdSchema(
-            $this,
-            simplexml_load_string($xsdXml),
-            null
-        );
     }
 
     public function loadSchema(?string $path, ?string $namespace = null): XsdSchema
@@ -47,8 +37,14 @@ XML;
 
         if (!isset($this->paths[$path])) {
             $xml = simplexml_load_file($path);
-            $this->paths[$path] = new XsdSchema($this, $xml, $path);
-            $this->paths[$path]->init();
+            $schema = XsdSchema::fromXml($this, $path, $xml);
+
+            $existing = $this->merged[$schema->namespace] ?? null;
+            if (is_null($existing)) {
+                $this->merged[$schema->namespace] = $schema;
+            } else {
+                $this->merged[$schema->namespace] = $existing->merge($schema);
+            }
         }
 
         return $this->paths[$path];
@@ -135,15 +131,5 @@ XML;
                 fn(XsdSchema $schema) => $schema->namespace === $namespace
             )
         );
-    }
-
-    public function mergeNamespaces(): void
-    {
-
-    }
-
-    private function mergeNamespace(string $namespace): void
-    {
-
     }
 }

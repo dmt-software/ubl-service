@@ -30,6 +30,10 @@ final class XsdDocumentation
         'VersionID' => 'versionID',
     ];
 
+    public ?string $version;
+    public ?string $since;
+    public ?string $until;
+
     public bool $rootElement;
 
     public ?string $alternativeBusinessTerms;
@@ -61,6 +65,10 @@ final class XsdDocumentation
     public static function fromXml(XsdSchema $schema, SimpleXMLElement $xml): XsdDocumentation
     {
         $instance = new XsdDocumentation($schema);
+        $instance->version = $schema->version;
+        $instance->since = $schema->version;
+        $instance->until = $schema->version;
+
         foreach (XsdDocumentation::FIELDS as $field => $property) {
             $value = $xml->xpath("*[local-name()='{$field}']")[0] ?? null;
             $instance->{lcFirst($field)} = $value;

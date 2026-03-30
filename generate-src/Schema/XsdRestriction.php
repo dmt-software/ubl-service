@@ -24,9 +24,9 @@ final class XsdRestriction
     {
         $instance = new XsdRestriction($schema);
         $instance->base = $xml->attributes()->base;
-        $instance->version = $xml->attributes()->version;
-        $instance->since = null;
-        $instance->until = null;
+        $instance->version = $schema->version;
+        $instance->since = $schema->version;
+        $instance->until = $schema->version;
         $instance->attributes = iterator_to_array(XsdRestriction::generateAttributes($schema, $xml));
         $instance->ownAttributes = iterator_to_array(XsdRestriction::generateOwnAttributes($schema, $xml));
 
@@ -37,8 +37,11 @@ final class XsdRestriction
     {
         return [
             'namespace' => $this->schema->namespace,
-            'version' => $this->schema->version,
+            'version' => $this->version,
+            'since' => $this->since,
+            'until' => $this->until,
             'base' => $this->base,
+            'attributes' => $this->attributes,
         ];
     }
 
@@ -77,5 +80,50 @@ final class XsdRestriction
     public function getBaseType(): XsdComplexType|XsdSimpleType
     {
         return $this->schema->getTypeByName($this->base);
+    }
+
+    public function clone(XsdSchema $schema): XsdRestriction
+    {
+        $restriction = clone $this;
+        $restriction->schema = $schema;
+
+        return $restriction;
+    }
+
+    public function merge(XsdSchema $schema, XsdRestriction $other): XsdRestriction
+    {
+        if ($this->version == $other->version) {
+            return $this->clone($schema);
+        }
+
+        if (version_compare($this->version, $other->version, '<')) {
+            $earlier = $this;
+            $later = $other;
+        } else {
+            $earlier = $other;
+            $later = $this;
+        }
+
+        $restriction = $earlier->clone($schema);
+        $restriction->schema = $schema;
+        $restriction->version = $later->version;
+        $restriction->since = $earlier->since ?? $earlier->version;
+        $restriction->until = $later->until ?? $later->version;
+
+        $attributeNames = array_unique(array_keys(array_merge($earlier->attributes, $later->attributes)));
+
+        foreach($attributeNames as $attributeName) {
+            if(isset($earlier->attributes[$attributeName])) {
+                if (isset($later->attributes[$attributeName])) {
+                    $restriction->attributes[$attributeName] = $earlier->attributes[$attributeName]->merge($schema, $later->attributes[$attributeName]);
+                } else {
+                    $restriction->attributes[$attributeName] = $earlier->attributes[$attributeName]->clone($schema);
+                }
+            } else {
+                $restriction->attributes[$attributeName] = $later->attributes[$attributeName]->clone($schema);
+            }
+        }
+
+        return $restriction;
     }
 }

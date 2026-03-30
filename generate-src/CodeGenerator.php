@@ -25,45 +25,28 @@ class CodeGenerator
 //        $schemaCollection->loadSchema(realpath($schemaDir) . '/xsd/maindoc/UBL-CreditNote-2.2.xsd');
 //        $schemaCollection->loadSchema(realpath($schemaDir) . '/xsd/maindoc/UBL-CreditNote-2.3.xsd');
 //        $schemaCollection->loadSchema(realpath($schemaDir) . '/xsd/maindoc/UBL-CreditNote-2.4.xsd');
+
         $builderConfig = new BuilderConfig(realpath($outputDir));
 
         $builder = new ClassBuilder($builderConfig);
 
-        foreach($schemaCollection->getNamespaces() as $namespace) {
+        foreach($schemaCollection->merged as $namespace => $schema) {
             if ($builder->isNamespaceBlacklisted($namespace)) {
                 continue;
             }
 
             echo "building $namespace\n";
 
-            foreach ($schemaCollection->getSchemas($namespace) as $schema) {
-                foreach ($schema->types as $type) {
-                    if (!$builder->shouldBuild($type)) {
-                        echo "skip $namespace.$type->name\n";
-                        continue;
-                    }
-
-                    echo "building $namespace.$type->name\n";
-
-                    $builder->saveClass($type);
+            foreach ($schema->types as $type) {
+                if (!$builder->shouldBuild($type)) {
+                    echo "skip $namespace.$type->name\n";
+                    continue;
                 }
 
-            }
+                echo "building $namespace.$type->name\n";
 
-            // foreach($schemaCollection->getSchemas($namespace) as $schema) {
-            //     echo "building schema $schema->path ($schema->version)\n";
-            //
-            //     foreach($schema->types as $type) {
-            //         if (!$builder->shouldBuild($type)) {
-            //             // echo "skip building type $typeName\n";
-            //             continue;
-            //         }
-            //
-            //         echo "building type $typeName\n";
-            //
-            //         $builder->saveClass($type);
-            //     }
-            // }
+                $builder->saveClass($type);
+            }
         }
     }
 }

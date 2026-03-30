@@ -7,14 +7,15 @@ use SimpleXMLElement;
 final class XsdElement
 {
     public string $id;
+    public ?string $version;
+    public ?string $since;
+    public ?string $until;
     public ?string $ref;
     public ?string $name;
     public ?string $type;
     public string $minOccurs;
     public string $maxOccurs;
-    public ?string $version;
-    public ?string $since;
-    public ?string $until;
+
     public ?XsdDocumentation $documentation;
 
     private function __construct(
@@ -35,8 +36,8 @@ final class XsdElement
         $instance->minOccurs = $xml->attributes()->minOccurs ?? '1';
         $instance->maxOccurs = $xml->attributes()->maxOccurs ?? '1';
         $instance->version = $schema->version;
-        $instance->since = null;
-        $instance->until = null;
+        $instance->since = $schema->version;
+        $instance->until = $schema->version;
 
         $instance->documentation = XsdElement::generateDocumentation($schema, $xml);
 
@@ -47,10 +48,15 @@ final class XsdElement
     {
         return [
             'namespace' => $this->schema->namespace,
-            'version' => $this->schema->version,
+            'id' => $this->id,
+            'version' => $this->version,
+            'since' => $this->since,
+            'until' => $this->until,
             'name' => $this->name,
             'ref' => $this->ref,
             'type' => $this->type,
+            'minOccurs' => $this->minOccurs,
+            'maxOccurs' => $this->maxOccurs,
         ];
     }
 
@@ -78,5 +84,44 @@ final class XsdElement
         }
 
         return null;
+    }
+
+    public function clone(XsdSchema $schema): XsdElement
+    {
+        $element = clone $this;
+        $element->schema = $schema;
+
+        return $element;
+    }
+
+    public function merge(XsdSchema $schema, XsdElement $other): XsdElement
+    {
+        if ($this->version == $other->version) {
+            return $this->clone($schema);
+        }
+
+        if (version_compare($this->version, $other->version, '<')) {
+            $earlier = $this;
+            $later = $other;
+        } else {
+            $earlier = $other;
+            $later = $this;
+        }
+
+        $merged = $earlier->clone($schema);
+        $merged->schema = $schema;
+        $merged->version = $later->version;
+        $merged->since = $earlier->since ?? $earlier->version;
+        $merged->until = $later->until ?? $later->version;
+
+        if ($earlier->minOccurs == '0' || $later->minOccurs == '0') {
+            $merged->minOccurs = '0';
+        }
+
+        if ($earlier->maxOccurs != '1' || $later->maxOccurs != '1') {
+            $merged->maxOccurs = 'unbounded';
+        }
+
+        return $merged;
     }
 }

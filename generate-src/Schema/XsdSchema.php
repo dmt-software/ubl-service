@@ -10,6 +10,8 @@ final class XsdSchema
 {
     public string $namespace;
     public ?string $version;
+    public ?string $since;
+    public ?string $until;
     /** @var array<XsdSchema> */
     public array $includes;
     /** @var array<XsdSchema> */
@@ -21,19 +23,40 @@ final class XsdSchema
     /** @var array<string,string> */
     public array $namespaces;
 
-    public function __construct(
+    private function __construct(
         public XsdSchemaCollection $schemaCollection,
-        public SimpleXMLElement $xml,
         public ?string $path,
     ) {
-        $this->xml->registerXPathNamespace('xsd', 'http://www.w3.org/2001/XMLSchema');
-        $this->namespace = $this->xml->attributes()->targetNamespace;
+    }
 
-        if (preg_match('~(?<version>\d+\.\d+).xsd$~', $this->path, $m)) {
-            $this->version = $m['version'];
-        } else {
-            $this->version = $this->xml->attributes()->version ?? null;
+    public static function fromXml(
+        XsdSchemaCollection $schemaCollection,
+        ?string $path,
+        SimpleXMLElement $xml,
+    ): XsdSchema {
+        $instance = new XsdSchema($schemaCollection, $path);
+        if ($path) {
+            $schemaCollection->paths[realpath($path)] = $instance;
         }
+
+        $xml->registerXPathNamespace('xsd', 'http://www.w3.org/2001/XMLSchema');
+        $instance->namespace = $xml->attributes()->targetNamespace;
+
+        if ($path && preg_match('~(?<version>\d+\.\d+).xsd$~', $path, $m)) {
+            $instance->version = $m['version'];
+        } else {
+            $instance->version = $xml->attributes()->version ?? null;
+        }
+        $instance->since = $instance->version;
+        $instance->until = $instance->version;
+
+        $instance->includes = iterator_to_array(XsdSchema::generateIncludes($instance, $xml));
+        $instance->imports = iterator_to_array(XsdSchema::generateImports($instance, $xml));
+        $instance->namespaces = iterator_to_array(XsdSchema::generateNamespaces($instance, $xml));
+        $instance->elements = iterator_to_array(XsdSchema::generateElements($instance, $xml));
+        $instance->types = iterator_to_array(XsdSchema::generateTypes($instance, $xml));
+
+        return $instance;
     }
 
     public function __debugInfo(): array
@@ -42,112 +65,70 @@ final class XsdSchema
             'path' => $this->path,
             'namespace' => $this->namespace,
             'version' => $this->version,
+            'since' => $this->since,
+            'until' => $this->until,
+            'elements' => $this->elements,
+            'types' => $this->types,
         ];
-    }
-
-    public function init(): void
-    {
-        $this->includes = iterator_to_array($this->generateIncludes());
-        $this->imports = iterator_to_array($this->generateImports());
-        $this->namespaces = iterator_to_array($this->generateNamespaces());
-        $this->elements = iterator_to_array($this->generateElements());
-        $this->types = iterator_to_array($this->generateTypes());
     }
 
     /**
      * @return Generator<string,string>
      */
-    private function generateNamespaces(array &$stack = []): Generator
+    private static function generateNamespaces(XsdSchema $schema, SimpleXMLElement $xml): Generator
     {
-        if (in_array($this, $stack, true)) {
-            return;
-        }
+        $namespaces = $xml->getDocNamespaces(true);
 
-        $stack[] = $this;
-
-        $namespaces = $this->xml->getDocNamespaces(true);
-
-        yield '' => $this->namespace;
+        yield '' => $schema->namespace;
 
         foreach ($namespaces as $prefix => $ns) {
             yield $prefix => $ns;
         }
-
-        foreach ($this->includes as $include) {
-            yield from $include->generateNamespaces($stack);
-        }
-    }
-
-    public function isNamespaceUsed(string $prefix, string $namespace): bool
-    {
-        $xpaths = [];
-        foreach (array_filter([$namespace, $prefix]) as $q) {
-            $xpaths[] = sprintf('//*[starts-with(name(), "%s:")]', $q);
-            $xpaths[] = sprintf('//*[@*[starts-with(., "%s:")]]', $q);
-        }
-
-        foreach ($xpaths as $xpath) {
-            if (count($this->xml->xpath($xpath)) > 0) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
      * @return Generator<XsdSchema>
      */
-    private function generateIncludes(): Generator
+    private static function generateIncludes(XsdSchema $schema, SimpleXMLElement $xml): Generator
     {
-        foreach ($this->xml->xpath('*[local-name()="include"]') as $include) {
+        foreach ($xml->xpath('*[local-name()="include"]') as $include) {
             $schemaLocation = $include->attributes()->schemaLocation ?? null;
             $namespace = $include->attributes()->namespace ?? null;
 
             $path = null;
-            if ($schemaLocation) {
-                $path = realpath(dirname($this->path) . '/' . $schemaLocation);
+            if ($schema->path && $schemaLocation) {
+                $path = realpath(dirname($schema->path) . '/' . $schemaLocation);
             }
 
-            yield $this->schemaCollection->loadSchema($path, $namespace);
+            yield $schema->schemaCollection->loadSchema($path, $namespace);
         }
     }
 
     /**
      * @return Generator<XsdSchema>
      */
-    private function generateImports(): Generator
+    private static function generateImports(XsdSchema $schema, SimpleXMLElement $xml): Generator
     {
-        foreach ($this->xml->xpath('*[local-name()="import"]') as $import) {
+        foreach ($xml->xpath('*[local-name()="import"]') as $import) {
             $schemaLocation = $import->attributes()->schemaLocation ?? null;
             $namespace = $import->attributes()->namespace ?? null;
 
             $path = null;
-            if ($schemaLocation) {
-                $path = realpath(dirname($this->path) . '/' . $schemaLocation);
+            if ($schema->path && $schemaLocation) {
+                $path = realpath(dirname($schema->path) . '/' . $schemaLocation);
             }
 
-            yield $this->schemaCollection->loadSchema($path, $namespace);
+            yield $schema->schemaCollection->loadSchema($path, $namespace);
         }
     }
 
     /**
      * @return Generator<string,XsdElement>
      */
-    private function generateElements(array &$stack = []): Generator
+    private static function generateElements(XsdSchema $schema, SimpleXMLElement $xml): Generator
     {
-        if (in_array($this, $stack, true)) {
-            return;
-        }
-
-        $stack[] = $this;
-
-        foreach ($this->includes as $include) {
-            yield from $include->generateElements($stack);
-        }
-
-        foreach ($this->xml->xpath('*[local-name()="element"]') as $element) {
-            $element = XsdElement::fromXml($this, $element);
+        foreach ($xml->xpath('*[local-name()="element"]') as $element) {
+            $element = XsdElement::fromXml($schema, $element);
 
             yield $element->id => $element;
         }
@@ -156,26 +137,10 @@ final class XsdSchema
     /**
      * @return Generator<string,XsdComplexType|XsdSimpleType>
      */
-    public function generateTypes(array &$stack = []): Generator
+    private static function generateTypes(XsdSchema $schema, SimpleXMLElement $xml): Generator
     {
-        if (in_array($this, $stack, true)) {
-            return;
-        }
-
-        $stack[] = $this;
-
-        foreach ($this->includes as $include) {
-            yield from $include->generateTypes($stack);
-        }
-
-        foreach ($this->xml->xpath('*[local-name()="simpleType" or local-name()="complexType"]') as $type) {
-            $type = new XsdComplexType(
-                $this,
-                $type,
-                $this->version,
-                null,
-                null,
-            );
+        foreach ($xml->xpath('*[local-name()="simpleType" or local-name()="complexType"]') as $type) {
+            $type = XsdComplexType::fromXml($schema, $type);
 
             yield $type->name => $type;
         }
@@ -186,7 +151,7 @@ final class XsdSchema
      * @param array $stack
      * @return Generator<XsdSchema>
      */
-    public function generateSchemas(string $ns, array &$stack = []): Generator
+    private function generateSchemas(string $ns, array &$stack = []): Generator
     {
         if (in_array($this, $stack, true)) {
             return;
@@ -249,5 +214,62 @@ final class XsdSchema
         }
 
         throw new InvalidArgumentException("cannot find ref $searchRef ($ns : $name)");
+    }
+
+    public function clone(): XsdSchema
+    {
+        return clone $this;
+    }
+
+    public function merge(XsdSchema $other): XsdSchema
+    {
+        if ($this->version == $other->version) {
+            return clone $this;
+        }
+
+        if (version_compare($this->version, $other->version, '<')) {
+            $earlier = $this;
+            $later = $other;
+        } else {
+            $earlier = $other;
+            $later = $this;
+        }
+
+        $schema = $earlier->clone();
+        $schema->namespace = $later->namespace;
+        $schema->version = $later->version;
+        $schema->since = $earlier->since ?? $earlier->version;
+        $schema->until = $later->until ?? $later->version;
+        $schema->namespaces = array_merge($earlier->namespaces, $later->namespaces);
+        $schema->includes = [];
+
+        $imports = [];
+        foreach ($earlier->imports as $import) {
+            $imports[$import->namespace] = $schema->schemaCollection->merged[$import->namespace];
+        }
+
+        foreach ($later->imports as $import) {
+            $imports[$import->namespace] = $schema->schemaCollection->merged[$import->namespace];
+        }
+
+        $schema->imports = array_values($imports);
+
+        foreach ($later->types as $name => $type) {
+            if (isset($schema->types[$name])) {
+                $schema->types[$name] = $schema->types[$name]->merge($schema, $type);
+            } else {
+                $schema->types[$name] = $type->clone($schema);
+            }
+        }
+
+        foreach ($later->elements as $id => $element) {
+            if (isset($schema->elements[$id])) {
+                $schema->elements[$id] = $schema->elements[$id]->merge($schema, $element);
+            } else {
+                $schema->elements[$id] = $element->clone($schema);
+            }
+        }
+
+        return $schema;
     }
 }
