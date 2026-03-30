@@ -2,10 +2,10 @@
 
 namespace DMT\Ubl\Generate;
 
-use DMT\Ubl\Generate\Schema\XsdComplexType;
+use DMT\Ubl\Generate\Builder\BuilderConfig;
+use DMT\Ubl\Generate\Builder\ClassBuilder;
 use DMT\Ubl\Generate\Schema\XsdSchemaCollection;
 use InvalidArgumentException;
-use PhpParser\PrettyPrinter\Standard;
 
 class CodeGenerator
 {
@@ -34,22 +34,36 @@ class CodeGenerator
                 continue;
             }
 
-            echo "building namespace $namespace\n";
+            echo "building $namespace\n";
 
-            foreach($schemaCollection->getSchemas($namespace) as $schema) {
-                echo "building schema $schema->path ($schema->version)\n";
-
-                foreach($schema->types as $type) {
+            foreach ($schemaCollection->getSchemas($namespace) as $schema) {
+                foreach ($schema->types as $type) {
                     if (!$builder->shouldBuild($type)) {
-                        // echo "skip building type $type->name\n";
+                        echo "skip $namespace.$type->name\n";
                         continue;
                     }
 
-                    echo "building type $type->name\n";
+                    echo "building $namespace.$type->name\n";
 
                     $builder->saveClass($type);
                 }
+
             }
+
+            // foreach($schemaCollection->getSchemas($namespace) as $schema) {
+            //     echo "building schema $schema->path ($schema->version)\n";
+            //
+            //     foreach($schema->types as $type) {
+            //         if (!$builder->shouldBuild($type)) {
+            //             // echo "skip building type $typeName\n";
+            //             continue;
+            //         }
+            //
+            //         echo "building type $typeName\n";
+            //
+            //         $builder->saveClass($type);
+            //     }
+            // }
         }
     }
 }

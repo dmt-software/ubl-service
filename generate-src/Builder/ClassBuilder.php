@@ -1,10 +1,10 @@
 <?php
 
-namespace DMT\Ubl\Generate;
+namespace DMT\Ubl\Generate\Builder;
 
-use DMT\Ubl\Generate\Schema\XsdDocumentation;
 use DMT\Ubl\Generate\Schema\XsdAttribute;
 use DMT\Ubl\Generate\Schema\XsdComplexType;
+use DMT\Ubl\Generate\Schema\XsdDocumentation;
 use DMT\Ubl\Generate\Schema\XsdElement;
 use DMT\Ubl\Generate\Schema\XsdSimpleType;
 use InvalidArgumentException;
@@ -66,22 +66,12 @@ final readonly class ClassBuilder
 
         $classBaseName = preg_replace('~Type$~', '', $type->name);
 
-        if(!in_array($type->namespace, $this->config->versionlessNamespaces)) {
-            $version = $type->documentation->versionID ?? $type->schema->version ?? null;
-
-            if ($version) {
-                $classBaseName .= 'V' . preg_replace('~[^0-9]+~', '', $version);
-            }
-        }
-
         return "$classNamespace\\$classBaseName";
     }
 
     public function getAttributePropertyName(XsdAttribute $attribute): string
     {
-        $name = $attribute->name;
-
-        $name = (new Convert($name))->fromPascal()->toCamel();
+        $name = (new Convert($attribute->name))->fromPascal()->toCamel();
 
         return preg_replace(
             array_keys($this->config->propertyNameReplace),
@@ -348,9 +338,7 @@ final readonly class ClassBuilder
         $class = $this->factory->class($classBaseName);
         $class->setDocComment($this->getClassDocComment($type));
 
-        $element = $type->getElement();
-
-        if ($element->documentation->rootElement ?? false) {
+        if ($type->isRoot()) {
             $class->addAttribute($this->createJMSXmlRootAttribute($type, $uses));
 
             foreach ($type->schema->namespaces as $prefix => $namespace) {
@@ -368,7 +356,7 @@ final readonly class ClassBuilder
 
             $extend = (
                 isset($simpleContent->extension) &&
-                count($simpleContent->ownAttributes) > 0 &&
+                count($simpleContent->extension->ownAttributes) > 0 &&
                 !$baseType instanceof XsdSimpleType
             );
 
@@ -377,14 +365,21 @@ final readonly class ClassBuilder
                 $uses[$baseClassName] = 'Base';
                 $class->extend(new Name('Base'));
 
-                foreach ($simpleContent->ownAttributes as $attribute) {
+                foreach ($simpleContent->extension->ownAttributes as $attribute) {
                     $properties[] = $this->createAttributeProperty($attribute, $uses);
                 }
             } else {
                 $rootType = $this->resolveRootType($parentType);
                 $properties[] = $this->createValueProperty($rootType, $uses);
-                foreach ($simpleContent->attributes as $attribute) {
-                    $properties[] = $this->createAttributeProperty($attribute, $uses);
+
+                if (isset($simpleContent->extension)) {
+                    foreach ($simpleContent->extension->attributes as $attribute) {
+                        $properties[] = $this->createAttributeProperty($attribute, $uses);
+                    }
+                } else {
+                    foreach ($simpleContent->restriction->attributes as $attribute) {
+                        $properties[] = $this->createAttributeProperty($attribute, $uses);
+                    }
                 }
             }
         }
@@ -643,7 +638,7 @@ final readonly class ClassBuilder
             return true;
         }
 
-        if (count($type->ownAttributes) > 0) {
+        if (count($type->simpleContent->extension->ownAttributes ?? $type->simpleContent->restriction->ownAttributes ?? []) > 0) {
             return true;
         }
 

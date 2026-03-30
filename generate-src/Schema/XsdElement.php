@@ -4,30 +4,43 @@ namespace DMT\Ubl\Generate\Schema;
 
 use SimpleXMLElement;
 
-final readonly class XsdElement
+final class XsdElement
 {
+    public string $id;
     public ?string $ref;
     public ?string $name;
     public ?string $type;
     public string $minOccurs;
     public string $maxOccurs;
-
+    public ?string $version;
+    public ?string $since;
+    public ?string $until;
     public ?XsdDocumentation $documentation;
 
-    public function __construct(
+    private function __construct(
         public XsdSchema $schema,
-        public SimpleXMLElement $xml,
     ) {
-        $this->xml->registerXPathNamespace('xsd', 'http://www.w3.org/2001/XMLSchema');
+    }
 
-        $this->name = $this->xml->attributes()->name ?? null;
-        $this->ref = $this->xml->attributes()->ref ?? null;
-        $this->type = $this->xml->attributes()->type ?? null;
+    public static function fromXml(XsdSchema $schema, SimpleXMLElement $xml): XsdElement
+    {
+        $instance = new XsdElement($schema);
 
-        $this->minOccurs = $this->xml->attributes()->minOccurs ?? '1';
-        $this->maxOccurs = $this->xml->attributes()->maxOccurs ?? '1';
+        $xml->registerXPathNamespace('xsd', 'http://www.w3.org/2001/XMLSchema');
 
-        $this->documentation = $this->generateDocumentation();
+        $instance->name = $xml->attributes()->name ?? null;
+        $instance->ref = $xml->attributes()->ref ?? null;
+        $instance->type = $xml->attributes()->type ?? null;
+        $instance->id = $instance->ref ?? $instance->name;
+        $instance->minOccurs = $xml->attributes()->minOccurs ?? '1';
+        $instance->maxOccurs = $xml->attributes()->maxOccurs ?? '1';
+        $instance->version = $schema->version;
+        $instance->since = null;
+        $instance->until = null;
+
+        $instance->documentation = XsdElement::generateDocumentation($schema, $xml);
+
+        return $instance;
     }
 
     public function __debugInfo(): array
@@ -50,18 +63,18 @@ final readonly class XsdElement
         return $this->schema->getTypeByName($this->type);
     }
 
-    private function generateDocumentation(): ?XsdDocumentation
+    public static function generateDocumentation(XsdSchema $schema, SimpleXMLElement $xml): ?XsdDocumentation
     {
-        $component = $this->xml->xpath('*[local-name()="annotation"]/*[local-name()="documentation"]/*[local-name()="Component"]')[0] ?? null;
+        $component = $xml->xpath('*[local-name()="annotation"]/*[local-name()="documentation"]/*[local-name()="Component"]')[0] ?? null;
 
         if (!is_null($component)) {
-            return new XsdDocumentation($this->schema, $component);
+            return XsdDocumentation::fromXml($schema, $component);
         }
 
-        $documentation = $this->xml->xpath('*[local-name()="annotation"]/*[local-name()="documentation"]')[0] ?? null;
+        $documentation = $xml->xpath('*[local-name()="annotation"]/*[local-name()="documentation"]')[0] ?? null;
 
         if (!is_null($documentation)) {
-            return new XsdDocumentation($this->schema, $documentation);
+            return XsdDocumentation::fromXml($schema, $documentation);
         }
 
         return null;

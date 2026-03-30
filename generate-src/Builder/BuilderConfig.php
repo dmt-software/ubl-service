@@ -1,6 +1,6 @@
 <?php
 
-namespace DMT\Ubl\Generate;
+namespace DMT\Ubl\Generate\Builder;
 
 use DateTime;
 use DOMElement;

@@ -5,23 +5,22 @@ namespace DMT\Ubl\Generate\Schema;
 use Generator;
 use SimpleXMLElement;
 
-final readonly class XsdComplexType
+final class XsdComplexType
 {
     public string $namespace;
     public string $name;
     public ?XsdSimpleContent $simpleContent;
-    /** @var array<XsdElement> */
+    /** @var array<string,XsdElement> */
     public array $elements;
-    /** @var array<string,XsdAttribute> */
-    public array $attributes;
-    /** @var array<string,XsdAttribute> */
-    public array $ownAttributes;
 
     public ?XsdDocumentation $documentation;
 
     public function __construct(
         public XsdSchema $schema,
         public SimpleXMLElement $xml,
+        public ?string $version,
+        public ?string $since,
+        public ?string $until,
     )
     {
         $this->namespace = $schema->namespace;
@@ -30,8 +29,6 @@ final readonly class XsdComplexType
         $this->name = $this->xml->attributes()->name;
         $this->elements = iterator_to_array($this->generateElements());
         $this->simpleContent = $this->generateSimpleContent();
-        $this->ownAttributes = iterator_to_array($this->generateOwnAttributes());
-        $this->attributes = iterator_to_array($this->generateAttributes());
         $this->documentation = $this->generateDocumentation();
     }
 
@@ -50,7 +47,9 @@ final readonly class XsdComplexType
     private function generateElements(): Generator
     {
         foreach($this->xml->xpath('*[local-name()="sequence"]/*[local-name()="element"]') as $element) {
-            yield new XsdElement($this->schema, $element);
+            $element = XsdElement::fromXml($this->schema, $element);
+
+            yield $element->id => $element;
         }
     }
 
@@ -62,27 +61,7 @@ final readonly class XsdComplexType
             return null;
         }
 
-        return new XsdSimpleContent(
-            $this->schema,
-            $this->schema->namespace,
-            $this->schema->namespaces,
-            $this->schema->version,
-            $simpleContent,
-        );
-    }
-
-    private function generateAttributes(): Generator
-    {
-        if ($this->simpleContent) {
-            yield from $this->simpleContent->attributes;
-        }
-    }
-
-    private function generateOwnAttributes(): Generator
-    {
-        if ($this->simpleContent) {
-            yield from $this->simpleContent->ownAttributes;
-        }
+        return XsdSimpleContent::fromXml($this->schema, $simpleContent);
     }
 
     private function generateDocumentation(): ?XsdDocumentation
@@ -90,13 +69,13 @@ final readonly class XsdComplexType
         $component = $this->xml->xpath('*[local-name()="annotation"]/*[local-name()="documentation"]/*[local-name()="Component"]')[0] ?? null;
 
         if (!is_null($component)) {
-            return new XsdDocumentation($this->schema, $component);
+            return XsdDocumentation::fromXml($this->schema, $component);
         }
 
         $documentation = $this->xml->xpath('*[local-name()="annotation"]/*[local-name()="documentation"]')[0] ?? null;
 
         if (!is_null($documentation)) {
-            return new XsdDocumentation($this->schema, $documentation);
+            return XsdDocumentation::fromXml($this->schema, $documentation);
         }
 
         return null;
@@ -120,5 +99,24 @@ final readonly class XsdComplexType
         }
 
         return $this;
+    }
+
+    public function isRoot(): bool
+    {
+        // find the element that points to this type
+        /** @var XsdElement $rootElement */
+        $rootElement = null;
+        foreach($this->schema->elements as $element) {
+            if ($element->type == $this->name) {
+                $rootElement = $element;
+                break;
+            }
+        }
+
+        if (is_null($rootElement)) {
+            return false;
+        }
+
+        return $rootElement->documentation->rootElement ?? false;
     }
 }

@@ -5,66 +5,63 @@ namespace DMT\Ubl\Generate\Schema;
 use Generator;
 use SimpleXMLElement;
 
-final readonly class XsdSimpleContent
+final class XsdSimpleContent
 {
+    public ?string $version;
+    public ?string $since;
+    public ?string $until;
+
     public ?XsdRestriction $restriction;
     public ?XsdExtension $extension;
-    /**
-     * @var array<string,XsdAttribute>
-     */
-    public array $attributes;
-    /**
-     * @var array<string,XsdAttribute>
-     */
-    public array $ownAttributes;
 
-    public function __construct(
-        public XsdSchema $schema,
-        public string $namespace,
-        public array $namespaces,
-        public ?string $version,
-        public SimpleXMLElement $xml
-    ) {
-        $this->extension = $this->generateExtension();
-        $this->restriction = $this->generateRestriction();
-        $this->ownAttributes = iterator_to_array($this->generateOwnAttributes());
-        $this->attributes = iterator_to_array($this->generateAttributes());
+    private function __construct(public XsdSchema $schema)
+    {
+    }
+
+    public static function fromXml(XsdSchema $schema, SimpleXMLElement $xml): XsdSimpleContent
+    {
+        $instance = new XsdSimpleContent($schema);
+        $instance->version = $schema->version;
+        $instance->since = null;
+        $instance->until = null;
+        $instance->extension = XsdSimpleContent::generateExtension($schema, $xml);
+        $instance->restriction = XsdSimpleContent::generateRestriction($schema, $xml);
+
+        return $instance;
     }
 
     public function __debugInfo(): array
     {
         return [
-            'namespace' => $this->namespace,
-            'namespaces' => $this->namespaces,
             'version' => $this->version,
         ];
     }
 
-    private function generateExtension(): ?XsdExtension
+    public static function generateExtension(XsdSchema $schema, SimpleXMLElement $xml): ?XsdExtension
     {
-        $extension = $this->xml->xpath('*[local-name()="extension"]')[0] ?? null;
+        $extension = $xml->xpath('*[local-name()="extension"]')[0] ?? null;
 
         if (is_null($extension)) {
             return null;
         }
 
-        return new XsdExtension($this->schema, $extension);
+        return XsdExtension::fromXml($schema, $extension);
     }
 
-    private function generateRestriction(): ?XsdRestriction
+    public static function generateRestriction(XsdSchema $schema, SimpleXMLElement $xml): ?XsdRestriction
     {
-        $restriction = $this->xml->xpath('*[local-name()="restriction"]')[0] ?? null;
+        $restriction = $xml->xpath('*[local-name()="restriction"]')[0] ?? null;
 
         if (is_null($restriction)) {
             return null;
         }
 
-        return new XsdRestriction($this->schema, $restriction);
+        return XsdRestriction::fromXml($schema, $restriction);
     }
 
     public function getBaseType(): XsdComplexType|XsdSimpleType
     {
-        if($this->extension) {
+        if ($this->extension) {
             return $this->extension->getBaseType();
         } else {
             return $this->restriction->getBaseType();
@@ -76,7 +73,7 @@ final readonly class XsdSimpleContent
      */
     private function generateAttributes(): Generator
     {
-        if($this->extension) {
+        if ($this->extension) {
             yield from $this->extension->attributes;
         } else {
             yield from $this->restriction->attributes;
@@ -88,7 +85,7 @@ final readonly class XsdSimpleContent
      */
     private function generateOwnAttributes(): Generator
     {
-        if($this->extension) {
+        if ($this->extension) {
             yield from $this->extension->ownAttributes;
         } else {
             yield from $this->restriction->ownAttributes;

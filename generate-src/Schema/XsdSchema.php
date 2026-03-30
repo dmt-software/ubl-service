@@ -6,23 +6,23 @@ use Generator;
 use InvalidArgumentException;
 use SimpleXMLElement;
 
-final readonly class XsdSchema
+final class XsdSchema
 {
     public string $namespace;
     public ?string $version;
-
-    /** @var array<string,string> */
-    public array $namespaces;
-    /** @var array<XsdSchema> */
-    public array $imports;
     /** @var array<XsdSchema> */
     public array $includes;
+    /** @var array<XsdSchema> */
+    public array $imports;
     /** @var array<string,XsdElement> */
     public array $elements;
-    /** @var array<string,XsdComplexType> */
+    /** @var array<string,XsdComplexType|XsdSimpleType> */
     public array $types;
+    /** @var array<string,string> */
+    public array $namespaces;
 
     public function __construct(
+        public XsdSchemaCollection $schemaCollection,
         public SimpleXMLElement $xml,
         public ?string $path,
     ) {
@@ -41,19 +41,14 @@ final readonly class XsdSchema
         return [
             'path' => $this->path,
             'namespace' => $this->namespace,
-            'namespaces' => $this->namespaces,
             'version' => $this->version,
-            'elements' => array_keys($this->elements),
-            'types' => array_keys($this->types),
-            'includes' => $this->includes,
-            'imports' => $this->imports,
         ];
     }
 
-    public function init(XsdSchemaCollection $schemaCollection): void
+    public function init(): void
     {
-        $this->includes = iterator_to_array($this->generateIncludes($schemaCollection));
-        $this->imports = iterator_to_array($this->generateImports($schemaCollection));
+        $this->includes = iterator_to_array($this->generateIncludes());
+        $this->imports = iterator_to_array($this->generateImports());
         $this->namespaces = iterator_to_array($this->generateNamespaces());
         $this->elements = iterator_to_array($this->generateElements());
         $this->types = iterator_to_array($this->generateTypes());
@@ -62,27 +57,28 @@ final readonly class XsdSchema
     /**
      * @return Generator<string,string>
      */
-    private function generateNamespaces(array &$yielded = []): Generator
+    private function generateNamespaces(array &$stack = []): Generator
     {
+        if (in_array($this, $stack, true)) {
+            return;
+        }
+
+        $stack[] = $this;
+
         $namespaces = $this->xml->getDocNamespaces(true);
 
         yield '' => $this->namespace;
 
         foreach ($namespaces as $prefix => $ns) {
-            if (isset($yielded[$prefix])) {
-                continue;
-            }
-
             yield $prefix => $ns;
-            $yielded[$prefix] = true;
         }
 
         foreach ($this->includes as $include) {
-            yield from $include->generateNamespaces($yielded);
+            yield from $include->generateNamespaces($stack);
         }
     }
 
-    private function isNamespaceUsed(string $prefix, string $namespace): bool
+    public function isNamespaceUsed(string $prefix, string $namespace): bool
     {
         $xpaths = [];
         foreach (array_filter([$namespace, $prefix]) as $q) {
@@ -100,9 +96,9 @@ final readonly class XsdSchema
     }
 
     /**
-     * @return Generator<string>
+     * @return Generator<XsdSchema>
      */
-    private function generateIncludes(XsdSchemaCollection $schemaCollection): Generator
+    private function generateIncludes(): Generator
     {
         foreach ($this->xml->xpath('*[local-name()="include"]') as $include) {
             $schemaLocation = $include->attributes()->schemaLocation ?? null;
@@ -113,16 +109,14 @@ final readonly class XsdSchema
                 $path = realpath(dirname($this->path) . '/' . $schemaLocation);
             }
 
-            $schema = $schemaCollection->loadSchema($path, $namespace);
-
-            yield $schema;
+            yield $this->schemaCollection->loadSchema($path, $namespace);
         }
     }
 
     /**
-     * @return Generator<string>
+     * @return Generator<XsdSchema>
      */
-    private function generateImports(XsdSchemaCollection $schemaCollection): Generator
+    private function generateImports(): Generator
     {
         foreach ($this->xml->xpath('*[local-name()="import"]') as $import) {
             $schemaLocation = $import->attributes()->schemaLocation ?? null;
@@ -133,39 +127,55 @@ final readonly class XsdSchema
                 $path = realpath(dirname($this->path) . '/' . $schemaLocation);
             }
 
-            $schema = $schemaCollection->loadSchema($path, $namespace);
-
-            yield $schema;
+            yield $this->schemaCollection->loadSchema($path, $namespace);
         }
     }
 
     /**
      * @return Generator<string,XsdElement>
      */
-    private function generateElements(): Generator
+    private function generateElements(array &$stack = []): Generator
     {
+        if (in_array($this, $stack, true)) {
+            return;
+        }
+
+        $stack[] = $this;
+
         foreach ($this->includes as $include) {
-            yield from $include->generateElements();
+            yield from $include->generateElements($stack);
         }
 
         foreach ($this->xml->xpath('*[local-name()="element"]') as $element) {
-            $element = new XsdElement($this, $element);
+            $element = XsdElement::fromXml($this, $element);
 
-            yield $element->name => $element;
+            yield $element->id => $element;
         }
     }
 
     /**
      * @return Generator<string,XsdComplexType|XsdSimpleType>
      */
-    private function generateTypes(): Generator
+    public function generateTypes(array &$stack = []): Generator
     {
+        if (in_array($this, $stack, true)) {
+            return;
+        }
+
+        $stack[] = $this;
+
         foreach ($this->includes as $include) {
-            yield from $include->generateTypes();
+            yield from $include->generateTypes($stack);
         }
 
         foreach ($this->xml->xpath('*[local-name()="simpleType" or local-name()="complexType"]') as $type) {
-            $type = new XsdComplexType($this, $type);
+            $type = new XsdComplexType(
+                $this,
+                $type,
+                $this->version,
+                null,
+                null,
+            );
 
             yield $type->name => $type;
         }
@@ -173,15 +183,16 @@ final readonly class XsdSchema
 
     /**
      * @param string $ns
-     * @param array $yielded
+     * @param array $stack
      * @return Generator<XsdSchema>
      */
-    public function generateSchemas(string $ns, array &$yielded = []): Generator
+    public function generateSchemas(string $ns, array &$stack = []): Generator
     {
-        if (in_array($this, $yielded, true)) {
+        if (in_array($this, $stack, true)) {
             return;
         }
 
+        $stack[] = $this;
 
         $ns = $this->namespaces[$ns] ?? $ns;
 
@@ -189,22 +200,20 @@ final readonly class XsdSchema
             yield $this;
         }
 
-        $yielded[] = $this;
-
         foreach ($this->includes as $include) {
             if ($ns == $include->namespace) {
-                yield from $include->generateSchemas($ns, $yielded);
+                yield from $include->generateSchemas($ns, $stack);
             }
         }
 
         foreach ($this->imports as $import) {
             if ($ns == $import->namespace) {
-                yield from $import->generateSchemas($ns, $yielded);
+                yield from $import->generateSchemas($ns, $stack);
             }
         }
     }
 
-    public function getTypeByName(string $searchName, bool $debug = false): XsdComplexType|XsdSimpleType
+    public function getTypeByName(string $searchName): XsdComplexType|XsdSimpleType
     {
         $ns = '';
         $name = $searchName;
@@ -213,10 +222,6 @@ final readonly class XsdSchema
         }
 
         foreach ($this->generateSchemas($ns) as $schema) {
-            if ($debug) {
-                echo "check $schema->path\n";
-            }
-
             if (isset($schema->types[$name])) {
                 return $schema->types[$name];
             }
@@ -226,18 +231,10 @@ final readonly class XsdSchema
             return new XsdSimpleType('http://www.w3.org/2001/XMLSchema', null, $name);
         }
 
-        if ($debug) {
-            var_dump($this);
-        }
-
-        if (!$debug) {
-            return $this->getTypeByName($searchName, true);
-        }
-
         throw new InvalidArgumentException("cannot find type $searchName ($ns : $name)");
     }
 
-    public function getTypeByRef(string $searchRef, bool $debug = false): XsdComplexType|XsdSimpleType
+    public function getTypeByRef(string $searchRef): XsdComplexType|XsdSimpleType
     {
         $ns = '';
         $name = $searchRef;
@@ -246,21 +243,9 @@ final readonly class XsdSchema
         }
 
         foreach ($this->generateSchemas($ns) as $schema) {
-            if ($debug) {
-                echo "check $schema->path\n";
-            }
-
             if (isset($schema->elements[$name])) {
                 return $schema->getTypeByName($schema->elements[$name]->type);
             }
-        }
-
-        if ($debug) {
-            var_dump($this);
-        }
-
-        if (!$debug) {
-            return $this->getTypeByRef($searchRef, true);
         }
 
         throw new InvalidArgumentException("cannot find ref $searchRef ($ns : $name)");

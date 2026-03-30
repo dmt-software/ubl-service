@@ -4,7 +4,7 @@ namespace DMT\Ubl\Generate\Schema;
 
 use SimpleXMLElement;
 
-final readonly class XsdDocumentation
+final class XsdDocumentation
 {
     public const array FIELDS = [
         'AlternativeBusinessTerms' => 'alternativeBusinessTerms',
@@ -54,15 +54,20 @@ final readonly class XsdDocumentation
     public ?string $usageRule;
     public ?string $versionID;
 
-    public function __construct(
-        public XsdSchema $schema,
-        public SimpleXMLElement $xml
-    ) {
-        foreach(XsdDocumentation::FIELDS as $field => $property) {
-            $value = $this->xml->xpath("*[local-name()='{$field}']")[0] ?? null;
-            $this->{lcFirst($field)} = $value;
+    private function __construct(public XsdSchema $schema)
+    {
+    }
+
+    public static function fromXml(XsdSchema $schema, SimpleXMLElement $xml): XsdDocumentation
+    {
+        $instance = new XsdDocumentation($schema);
+        foreach (XsdDocumentation::FIELDS as $field => $property) {
+            $value = $xml->xpath("*[local-name()='{$field}']")[0] ?? null;
+            $instance->{lcFirst($field)} = $value;
         }
 
-        $this->rootElement = str_contains((string)$this->xml, 'root element');
+        $instance->rootElement = str_contains((string)$xml, 'root element');
+
+        return $instance;
     }
 }

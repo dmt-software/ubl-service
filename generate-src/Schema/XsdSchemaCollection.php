@@ -15,7 +15,6 @@ final class XsdSchemaCollection
 
     public XsdSchema $xsdSchema;
 
-
     public function __construct()
     {
         $xsdXml = <<<XML
@@ -24,7 +23,11 @@ final class XsdSchemaCollection
 </schema>
 XML;
 
-        $this->xsdSchema = new XsdSchema(simplexml_load_string($xsdXml), null);
+        $this->xsdSchema = new XsdSchema(
+            $this,
+            simplexml_load_string($xsdXml),
+            null
+        );
     }
 
     public function loadSchema(?string $path, ?string $namespace = null): XsdSchema
@@ -44,8 +47,8 @@ XML;
 
         if (!isset($this->paths[$path])) {
             $xml = simplexml_load_file($path);
-            $this->paths[$path] = new XsdSchema($xml, $path);
-            $this->paths[$path]->init($this);
+            $this->paths[$path] = new XsdSchema($this, $xml, $path);
+            $this->paths[$path]->init();
         }
 
         return $this->paths[$path];
@@ -99,6 +102,28 @@ XML;
     }
 
     /**
+     * @return array<string>
+     */
+    public function getTypeNames(string $namespace): array
+    {
+        $types = [];
+
+        foreach ($this->paths as $schema) {
+            if ($schema->namespace != $namespace) {
+                continue;
+            }
+
+            foreach($schema->types as $type) {
+                $types[$type->name] = true;
+            }
+        }
+
+        ksort($types);
+
+        return array_keys($types);
+    }
+
+    /**
      * @param string $namespace
      * @return array<XsdSchema>
      */
@@ -110,5 +135,15 @@ XML;
                 fn(XsdSchema $schema) => $schema->namespace === $namespace
             )
         );
+    }
+
+    public function mergeNamespaces(): void
+    {
+
+    }
+
+    private function mergeNamespace(string $namespace): void
+    {
+
     }
 }

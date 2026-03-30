@@ -4,21 +4,33 @@ namespace DMT\Ubl\Generate\Schema;
 
 use SimpleXMLElement;
 
-final readonly class XsdAttribute
+final class XsdAttribute
 {
     public string $name;
     public string $type;
     public ?string $use;
+    public ?string $version;
+    public ?string $since;
+    public ?string $until;
     public ?XsdDocumentation $documentation;
 
-    public function __construct(
-        public XsdSchema $schema,
-        public SimpleXMLElement $xml
-    ) {
-        $this->name = $this->xml->attributes()->name;
-        $this->type = $this->xml->attributes()->type;
-        $this->use = $this->xml->attributes()->use;
-        $this->documentation = $this->generateDocumentation();
+    private function __construct(public XsdSchema $schema)
+    {
+    }
+
+    public static function fromXml(XsdSchema $schema, SimpleXMLElement $xml): XsdAttribute
+    {
+        $instance = new XsdAttribute($schema);
+
+        $instance->name = $xml->attributes()->name;
+        $instance->type = $xml->attributes()->type;
+        $instance->use = $xml->attributes()->use;
+        $instance->version = $schema->version;
+        $instance->since = null;
+        $instance->until = null;
+        $instance->documentation = XsdAttribute::generateDocumentation($schema, $xml);
+
+        return $instance;
     }
 
     public function __debugInfo(): array
@@ -37,18 +49,20 @@ final readonly class XsdAttribute
         return $this->schema->getTypeByName($this->type);
     }
 
-    private function generateDocumentation(): ?XsdDocumentation
+    private static function generateDocumentation(XsdSchema $schema, SimpleXMLElement $xml): ?XsdDocumentation
     {
-        $component = $this->xml->xpath('*[local-name()="annotation"]/*[local-name()="documentation"]/*[local-name()="Component"]')[0] ?? null;
+        $component = $xml->xpath(
+            '*[local-name()="annotation"]/*[local-name()="documentation"]/*[local-name()="Component"]'
+        )[0] ?? null;
 
         if (!is_null($component)) {
-            return new XsdDocumentation($this->schema, $component);
+            return XsdDocumentation::fromXml($schema, $component);
         }
 
-        $documentation = $this->xml->xpath('*[local-name()="annotation"]/*[local-name()="documentation"]')[0] ?? null;
+        $documentation = $xml->xpath('*[local-name()="annotation"]/*[local-name()="documentation"]')[0] ?? null;
 
         if (!is_null($documentation)) {
-            return new XsdDocumentation($this->schema, $documentation);
+            return XsdDocumentation::fromXml($schema, $documentation);
         }
 
         return null;
