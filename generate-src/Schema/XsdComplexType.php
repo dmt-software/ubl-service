@@ -106,25 +106,6 @@ final class XsdComplexType
         return $this;
     }
 
-    public function isRoot(): bool
-    {
-        // find the element that points to this type
-        /** @var XsdElement $rootElement */
-        $rootElement = null;
-        foreach ($this->schema->elements as $element) {
-            if ($element->type == $this->name) {
-                $rootElement = $element;
-                break;
-            }
-        }
-
-        if (is_null($rootElement)) {
-            return false;
-        }
-
-        return $rootElement->documentation->rootElement ?? false;
-    }
-
     public function clone(XsdSchema $schema): XsdComplexType
     {
         $clone = clone $this;

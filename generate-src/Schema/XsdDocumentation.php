@@ -34,7 +34,7 @@ final class XsdDocumentation
     public ?string $since;
     public ?string $until;
 
-    public bool $rootElement;
+    public ?string $textContent;
 
     public ?string $alternativeBusinessTerms;
     public ?string $associatedObjectClass;
@@ -74,7 +74,7 @@ final class XsdDocumentation
             $instance->{lcFirst($field)} = $value;
         }
 
-        $instance->rootElement = str_contains((string)$xml, 'root element');
+        $instance->textContent = (string)$xml;
 
         return $instance;
     }

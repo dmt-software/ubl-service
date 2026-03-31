@@ -6,7 +6,9 @@ use DMT\Ubl\Generate\Schema\XsdAttribute;
 use DMT\Ubl\Generate\Schema\XsdComplexType;
 use DMT\Ubl\Generate\Schema\XsdDocumentation;
 use DMT\Ubl\Generate\Schema\XsdElement;
+use DMT\Ubl\Generate\Schema\XsdSimpleContent;
 use DMT\Ubl\Generate\Schema\XsdSimpleType;
+use Generator;
 use InvalidArgumentException;
 use Jawira\CaseConverter\Convert;
 use JMS\Serializer\Annotation\SerializedName;
@@ -359,7 +361,7 @@ final readonly class ClassBuilder
         $class = $this->factory->class($classBaseName);
         $class->setDocComment($this->getClassDocComment($type));
 
-        if ($type->isRoot()) {
+        if ($this->isRoot($type)) {
             $class->addAttribute($this->createJMSXmlRootAttribute($type, $uses));
 
             foreach ($type->schema->namespaces as $prefix => $namespace) {
@@ -369,39 +371,19 @@ final readonly class ClassBuilder
 
         $properties = [];
 
-        $simpleContent = $type->simpleContent ?? null;
-
-        if (!is_null($simpleContent)) {
-            $parentType = $simpleContent->getBaseType();
-            $baseType = $this->resolveBaseType($parentType);
-
-            $extend = (
-                isset($simpleContent->extension) &&
-                count($simpleContent->extension->ownAttributes) > 0 &&
-                !$baseType instanceof XsdSimpleType
-            );
-
-            if ($extend) {
+        if (!is_null($type->simpleContent)) {
+            if ($this->isExtend($type->simpleContent)) {
+                $baseType = $this->resolveBaseType($type->simpleContent);
                 $baseClassName = $this->getClassName($baseType);
                 $uses[$baseClassName] = 'Base';
                 $class->extend(new Name('Base'));
-
-                foreach ($simpleContent->extension->ownAttributes as $attribute) {
-                    $properties[] = $this->createAttributeProperty($attribute, $uses);
-                }
             } else {
-                $rootType = $this->resolveRootType($parentType);
+                $rootType = $this->resolveRootType($type->simpleContent->getBaseType());
                 $properties[] = $this->createValueProperty($rootType, $uses);
+            }
 
-                if (isset($simpleContent->extension)) {
-                    foreach ($simpleContent->extension->attributes as $attribute) {
-                        $properties[] = $this->createAttributeProperty($attribute, $uses);
-                    }
-                } else {
-                    foreach ($simpleContent->restriction->attributes as $attribute) {
-                        $properties[] = $this->createAttributeProperty($attribute, $uses);
-                    }
-                }
+            foreach($this->generateAttributes($type->simpleContent) as $attribute) {
+                $properties[] = $this->createAttributeProperty($attribute, $uses);
             }
         }
 
@@ -607,8 +589,12 @@ final readonly class ClassBuilder
         return in_array($namespace, $this->config->namespaceBlacklist);
     }
 
-    public function resolveBaseType(XsdComplexType|XsdSimpleType $type): XsdComplexType|XsdSimpleType
+    public function resolveBaseType(XsdComplexType|XsdSimpleType|XsdSimpleContent $type): XsdComplexType|XsdSimpleType
     {
+        if ($type instanceof XsdSimpleContent) {
+            return $this->resolveBaseType($type->getBaseType());
+        }
+
         if ($type instanceof XsdSimpleType) {
             return $type;
         }
@@ -630,13 +616,13 @@ final readonly class ClassBuilder
         return $type;
     }
 
-    public function resolveRootType(XsdComplexType|XsdSimpleType $type): XsdComplexType|XsdSimpleType
+    public function resolveRootType(XsdComplexType|XsdSimpleType|XsdSimpleContent $type): XsdComplexType|XsdSimpleType
     {
         if ($type instanceof XsdSimpleType) {
             return $type;
         }
 
-        if (count($type->elements) > 0) {
+        if ($type instanceof XsdComplexType && count($type->elements) > 0) {
             return $type;
         }
 
@@ -676,5 +662,49 @@ final readonly class ClassBuilder
         }
 
         return false;
+    }
+
+    private function isExtend(XsdSimpleContent $simpleContent): bool
+    {
+        $baseType = $simpleContent->getBaseType();
+
+        return (
+            isset($simpleContent->extension) &&
+            count($simpleContent->extension->ownAttributes) > 0 &&
+            !$baseType instanceof XsdSimpleType
+        );
+    }
+
+    private function generateAttributes(XsdSimpleContent $simpleContent): Generator
+    {
+        if ($this->isExtend($simpleContent)) {
+            yield from $simpleContent->extension->ownAttributes;
+        }
+
+
+        if (isset($simpleContent->extension)) {
+            yield from $simpleContent->extension->attributes;
+        } else {
+            yield from $simpleContent->restriction->attributes;
+        }
+    }
+
+    public function isRoot(XsdComplexType $type): bool
+    {
+        // find the element that points to this type
+        /** @var XsdElement $rootElement */
+        $rootElement = null;
+        foreach ($type->schema->elements as $element) {
+            if ($element->type == $type->name) {
+                $rootElement = $element;
+                break;
+            }
+        }
+
+        if (is_null($rootElement)) {
+            return false;
+        }
+
+        return str_contains($rootElement->documentation->textContent ?? '', 'root element');
     }
 }
