@@ -78,28 +78,22 @@ final class XsdAttribute
 
     public function merge(XsdSchema $schema, XsdAttribute $other): XsdAttribute
     {
-        if ($this->version == $other->version) {
-            return $this->clone($schema);
+        $versions = array_filter([
+            $this->since, $this->version, $this->until,
+            $other->since, $other->version, $other->until,
+        ]);
+        usort($versions, 'version_compare');
+
+        $clone = $this->clone($schema);
+        $clone->schema = $schema;
+        $clone->version = null;
+        $clone->since = reset($versions);
+        $clone->until = end($versions);
+
+        if ($clone->use == 'optional' || $other->use == 'optional') {
+            $clone->use = 'optional';
         }
 
-        if (version_compare($this->version, $other->version, '<')) {
-            $earlier = $this;
-            $later = $other;
-        } else {
-            $earlier = $other;
-            $later = $this;
-        }
-
-        $attribute = $earlier->clone($schema);
-        $attribute->schema = $schema;
-        $attribute->version = $later->version;
-        $attribute->since = $earlier->since ?? $earlier->version;
-        $attribute->until = $later->until ?? $later->version;
-
-        if ($earlier->use == 'optional' || $later->use == 'optional') {
-            $attribute->use = 'optional';
-        }
-
-        return $attribute;
+        return $clone;
     }
 }

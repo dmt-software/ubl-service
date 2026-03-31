@@ -88,40 +88,34 @@ final class XsdElement
 
     public function clone(XsdSchema $schema): XsdElement
     {
-        $element = clone $this;
-        $element->schema = $schema;
+        $clone = clone $this;
+        $clone->schema = $schema;
 
-        return $element;
+        return $clone;
     }
 
     public function merge(XsdSchema $schema, XsdElement $other): XsdElement
     {
-        if ($this->version == $other->version) {
-            return $this->clone($schema);
+        $versions = array_filter([
+            $this->since, $this->version, $this->until,
+            $other->since, $other->version, $other->until,
+        ]);
+        usort($versions, 'version_compare');
+
+        $clone = $this->clone($schema);
+        $clone->schema = $schema;
+        $clone->version = null;
+        $clone->since = reset($versions);
+        $clone->until = end($versions);
+
+        if ($clone->minOccurs == '0' || $other->minOccurs == '0') {
+            $clone->minOccurs = '0';
         }
 
-        if (version_compare($this->version, $other->version, '<')) {
-            $earlier = $this;
-            $later = $other;
-        } else {
-            $earlier = $other;
-            $later = $this;
+        if ($clone->maxOccurs != '1' || $other->maxOccurs != '1') {
+            $clone->maxOccurs = 'unbounded';
         }
 
-        $merged = $earlier->clone($schema);
-        $merged->schema = $schema;
-        $merged->version = $later->version;
-        $merged->since = $earlier->since ?? $earlier->version;
-        $merged->until = $later->until ?? $later->version;
-
-        if ($earlier->minOccurs == '0' || $later->minOccurs == '0') {
-            $merged->minOccurs = '0';
-        }
-
-        if ($earlier->maxOccurs != '1' || $later->maxOccurs != '1') {
-            $merged->maxOccurs = 'unbounded';
-        }
-
-        return $merged;
+        return $clone;
     }
 }

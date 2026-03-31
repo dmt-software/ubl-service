@@ -84,46 +84,40 @@ final class XsdRestriction
 
     public function clone(XsdSchema $schema): XsdRestriction
     {
-        $restriction = clone $this;
-        $restriction->schema = $schema;
+        $clone = clone $this;
+        $clone->schema = $schema;
 
-        return $restriction;
+        return $clone;
     }
 
     public function merge(XsdSchema $schema, XsdRestriction $other): XsdRestriction
     {
-        if ($this->version == $other->version) {
-            return $this->clone($schema);
-        }
+        $versions = array_filter([
+            $this->since, $this->version, $this->until,
+            $other->since, $other->version, $other->until,
+        ]);
+        usort($versions, 'version_compare');
 
-        if (version_compare($this->version, $other->version, '<')) {
-            $earlier = $this;
-            $later = $other;
-        } else {
-            $earlier = $other;
-            $later = $this;
-        }
+        $clone = $this->clone($schema);
+        $clone->schema = $schema;
+        $clone->version = null;
+        $clone->since = reset($versions);
+        $clone->until = end($versions);
 
-        $restriction = $earlier->clone($schema);
-        $restriction->schema = $schema;
-        $restriction->version = $later->version;
-        $restriction->since = $earlier->since ?? $earlier->version;
-        $restriction->until = $later->until ?? $later->version;
-
-        $attributeNames = array_unique(array_keys(array_merge($earlier->attributes, $later->attributes)));
+        $attributeNames = array_unique(array_keys(array_merge($clone->attributes, $other->attributes)));
 
         foreach($attributeNames as $attributeName) {
-            if(isset($earlier->attributes[$attributeName])) {
-                if (isset($later->attributes[$attributeName])) {
-                    $restriction->attributes[$attributeName] = $earlier->attributes[$attributeName]->merge($schema, $later->attributes[$attributeName]);
+            if(isset($clone->attributes[$attributeName])) {
+                if (isset($other->attributes[$attributeName])) {
+                    $clone->attributes[$attributeName] = $clone->attributes[$attributeName]->merge($schema, $other->attributes[$attributeName]);
                 } else {
-                    $restriction->attributes[$attributeName] = $earlier->attributes[$attributeName]->clone($schema);
+                    $clone->attributes[$attributeName] = $clone->attributes[$attributeName]->clone($schema);
                 }
             } else {
-                $restriction->attributes[$attributeName] = $later->attributes[$attributeName]->clone($schema);
+                $clone->attributes[$attributeName] = $other->attributes[$attributeName]->clone($schema);
             }
         }
 
-        return $restriction;
+        return $clone;
     }
 }

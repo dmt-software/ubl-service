@@ -218,78 +218,85 @@ final class XsdSchema
 
     public function clone(): XsdSchema
     {
-        $schema = clone $this;
-        $schema->includes = [];
+        $clone = clone $this;
+        $clone->includes = [];
         $imports = [];
 
         foreach ($this->imports as $import) {
-            $imports[$import->namespace] = $schema->schemaCollection->merged[$import->namespace];
+            $imports[$import->namespace] = $clone->schemaCollection->merged[$import->namespace];
         }
 
-        $schema->imports = array_values($imports);
+        $clone->imports = array_values($imports);
 
-        $schema->types = array_map(
-            fn($type) => $type->clone($schema),
-            $schema->types
+        $clone->types = array_map(
+            fn($type) => $type->clone($clone),
+            $clone->types
         );
 
-        $schema->elements = array_map(
-            fn($element) => $element->clone($schema),
-            $schema->elements
+        $clone->elements = array_map(
+            fn($element) => $element->clone($clone),
+            $clone->elements
         );
 
-        return $schema;
+        return $clone;
     }
 
     public function merge(XsdSchema $other): XsdSchema
     {
-        if ($this->version == $other->version) {
-            return $this->clone();
-        }
+        $versions = array_filter([
+            $this->since, $this->version, $this->until,
+            $other->since, $other->version, $other->until,
+        ]);
+        usort($versions, 'version_compare');
 
-        if (version_compare($this->version, $other->version, '<')) {
-            $earlier = $this;
-            $later = $other;
-        } else {
-            $earlier = $other;
-            $later = $this;
-        }
+        $clone = $this->clone();
+        $clone->version = null;
+        $clone->since = reset($versions);
+        $clone->until = end($versions);
 
-        $schema = $earlier->clone();
-        $schema->namespace = $later->namespace;
-        $schema->version = $later->version;
-        $schema->since = $earlier->since ?? $earlier->version;
-        $schema->until = $later->until ?? $later->version;
-        $schema->namespaces = array_merge($earlier->namespaces, $later->namespaces);
-        $schema->includes = [];
+        $clone->namespaces = array_merge($clone->namespaces, $other->namespaces);
+        $clone->includes = [];
 
         $imports = [];
-        foreach ($earlier->imports as $import) {
-            $imports[$import->namespace] = $schema->schemaCollection->merged[$import->namespace];
+        foreach ($clone->imports as $import) {
+            $imports[$import->namespace] = $clone->schemaCollection->merged[$import->namespace];
         }
 
-        foreach ($later->imports as $import) {
-            $imports[$import->namespace] = $schema->schemaCollection->merged[$import->namespace];
+        foreach ($other->imports as $import) {
+            $imports[$import->namespace] = $clone->schemaCollection->merged[$import->namespace];
         }
 
-        $schema->imports = array_values($imports);
+        $clone->imports = array_values($imports);
 
-        foreach ($later->types as $name => $type) {
-            if (isset($schema->types[$name])) {
-                $schema->types[$name] = $schema->types[$name]->merge($schema, $type);
+        $typeNames = array_unique(array_keys(array_merge($clone->types, $other->types)));
+
+        foreach ($typeNames as $name) {
+            if (isset($clone->types[$name])) {
+                if (isset($other->types[$name])) {
+                    $clone->types[$name] = $clone->types[$name]->merge($clone, $other->types[$name]);
+                } else {
+                    $clone->types[$name] = $clone->types[$name]->clone($clone);
+                }
             } else {
-                $schema->types[$name] = $type->clone($schema);
+                $clone->types[$name] = $other->types[$name]->clone($clone);
             }
         }
 
-        foreach ($later->elements as $id => $element) {
-            if (isset($schema->elements[$id])) {
-                $schema->elements[$id] = $schema->elements[$id]->merge($schema, $element);
+
+        $elementIds = array_unique(array_keys(array_merge($clone->elements, $other->elements)));
+
+        foreach ($elementIds as $id) {
+            if (isset($clone->elements[$id])) {
+                if (isset($other->elements[$id])) {
+                    $clone->elements[$id] = $clone->elements[$id]->merge($clone, $other->elements[$id]);
+                } else {
+                    $clone->elements[$id] = $clone->elements[$id]->clone($clone);
+                }
             } else {
-                $schema->elements[$id] = $element->clone($schema);
+                $clone->elements[$id] = $other->elements[$id]->clone($clone);
             }
         }
 
-        return $schema;
+        return $clone;
     }
 }

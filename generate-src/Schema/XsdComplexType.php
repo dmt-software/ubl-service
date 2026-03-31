@@ -127,61 +127,57 @@ final class XsdComplexType
 
     public function clone(XsdSchema $schema): XsdComplexType
     {
-        $type = clone $this;
-        $type->schema = $schema;
-        $type->namespace = $schema->namespace;
-        $type->version = $this->version;
+        $clone = clone $this;
+        $clone->schema = $schema;
+        $clone->namespace = $schema->namespace;
+        $clone->version = $this->version;
 
-        return $type;
+        return $clone;
     }
 
     public function merge(XsdSchema $schema, XsdComplexType $other): XsdComplexType
     {
-        if ($this->version == $other->version) {
-            return $this->clone($schema);
-        }
+        $versions = array_filter([
+            $this->since, $this->version, $this->until,
+            $other->since, $other->version, $other->until,
+        ]);
+        usort($versions, 'version_compare');
 
-        if (version_compare($this->version, $other->version, '<')) {
-            $earlier = $this;
-            $later = $other;
-        } else {
-            $earlier = $other;
-            $later = $this;
-        }
+        $clone = $this->clone($schema);
+        $clone->schema = $schema;
+        $clone->namespace = $schema->namespace;
+        $clone->version = null;
+        $clone->since = reset($versions);
+        $clone->until = end($versions);
 
-        $type = $earlier->clone($schema);
-        $type->schema = $schema;
-        $type->namespace = $schema->namespace;
-        $type->version = $later->version;
-        $type->since = $earlier->since ?? $earlier->version;
-        $type->until = $later->until ?? $later->version;
-
-        if ($type->simpleContent) {
-            $type->simpleContent = $type->simpleContent->merge($schema, $later->simpleContent);
+        if ($clone->simpleContent) {
+            $clone->simpleContent = $clone->simpleContent->merge($schema, $other->simpleContent);
         }
 
         $index = 0;
-        $combinedIds = array_keys($type->elements);
+        $elementIds = array_keys($clone->elements);
 
-        foreach(array_keys($later->elements) as $laterId) {
-            if (in_array($laterId, $combinedIds)) {
-                $index = array_search($laterId, $combinedIds);
+        foreach(array_keys($other->elements) as $otherId) {
+            if (in_array($otherId, $elementIds)) {
+                $index = array_search($otherId, $elementIds);
             } else {
-                $combinedIds = array_slice($combinedIds, 0, $index) + [$laterId] + array_slice($combinedIds, $index);
+                $elementIds = array_slice($elementIds, 0, $index) + [$otherId] + array_slice($elementIds, $index);
                 $index++;
             }
         }
 
-        foreach ($combinedIds as $id) {
-            if(isset($type->elements[$id])) {
-                if (isset($later->elements[$id])) {
-                    $type->elements[$id] = $type->elements[$id]->merge($schema, $later->elements[$id]);
+        foreach ($elementIds as $id) {
+            if(isset($clone->elements[$id])) {
+                if (isset($other->elements[$id])) {
+                    $clone->elements[$id] = $clone->elements[$id]->merge($schema, $other->elements[$id]);
+                } else {
+                    $clone->elements[$id] = $clone->elements[$id]->clone($schema);
                 }
             } else {
-                $type->elements[$id] = $later->elements[$id]->clone($schema);
+                $clone->elements[$id] = $other->elements[$id]->clone($schema);
             }
         }
 
-        return $type;
+        return $clone;
     }
 }

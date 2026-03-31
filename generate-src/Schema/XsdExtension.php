@@ -85,46 +85,40 @@ final class XsdExtension
 
     public function clone(XsdSchema $schema): XsdExtension
     {
-        $extension = clone $this;
-        $extension->schema = $schema;
+        $clone = clone $this;
+        $clone->schema = $schema;
 
-        return $extension;
+        return $clone;
     }
 
     public function merge(XsdSchema $schema, XsdExtension $other): XsdExtension
     {
-        if ($this->version == $other->version) {
-            return $this->clone($schema);
-        }
+        $versions = array_filter([
+            $this->since, $this->version, $this->until,
+            $other->since, $other->version, $other->until,
+        ]);
+        usort($versions, 'version_compare');
 
-        if (version_compare($this->version, $other->version, '<')) {
-            $earlier = $this;
-            $later = $other;
-        } else {
-            $earlier = $other;
-            $later = $this;
-        }
+        $clone = $this->clone($schema);
+        $clone->schema = $schema;
+        $clone->version = null;
+        $clone->since = reset($versions);
+        $clone->until = end($versions);
 
-        $extension = $earlier->clone($schema);
-        $extension->schema = $schema;
-        $extension->version = $later->version;
-        $extension->since = $earlier->since ?? $earlier->version;
-        $extension->until = $later->until ?? $later->version;
-
-        $attributeNames = array_unique(array_keys(array_merge($earlier->attributes, $later->attributes)));
+        $attributeNames = array_unique(array_keys(array_merge($clone->attributes, $other->attributes)));
 
         foreach($attributeNames as $attributeName) {
             if(isset($earlier->attributes[$attributeName])) {
-                if (isset($later->attributes[$attributeName])) {
-                    $extension->attributes[$attributeName] = $earlier->attributes[$attributeName]->merge($schema, $later->attributes[$attributeName]);
+                if (isset($other->attributes[$attributeName])) {
+                    $clone->attributes[$attributeName] = $earlier->attributes[$attributeName]->merge($schema, $other->attributes[$attributeName]);
                 } else {
-                    $extension->attributes[$attributeName] = $earlier->attributes[$attributeName]->clone($schema);
+                    $clone->attributes[$attributeName] = $earlier->attributes[$attributeName]->clone($schema);
                 }
             } else {
-                $extension->attributes[$attributeName] = $later->attributes[$attributeName]->clone($schema);
+                $clone->attributes[$attributeName] = $other->attributes[$attributeName]->clone($schema);
             }
         }
 
-        return $extension;
+        return $clone;
     }
 }
