@@ -165,7 +165,17 @@ final readonly class ClassBuilder
             throw new InvalidArgumentException("unmapped types found");
         }
 
-        return [$this->getClassName($type)];
+        $phpTypes = [];
+
+        if ($this->isSimpleTypeable($type)) {
+            $baseType = $type->simpleContent->getBaseType();
+            $rootType = $this->resolveRootType($baseType);
+            $phpTypes = $this->getPhpTypes($rootType);
+        }
+
+        $phpTypes[] = $this->getClassName($type);
+
+        return $phpTypes;
     }
 
     public function createJMSArrayTypeAttribute(XsdComplexType|XsdSimpleType $type, array &$uses): Attribute
@@ -372,7 +382,7 @@ final readonly class ClassBuilder
         $properties = [];
 
         if (!is_null($type->simpleContent)) {
-            if ($this->isExtend($type->simpleContent)) {
+            if ($this->isExtend($type)) {
                 $baseType = $this->resolveBaseType($type->simpleContent);
                 $baseClassName = $this->getClassName($baseType);
                 $uses[$baseClassName] = 'Base';
@@ -382,7 +392,7 @@ final readonly class ClassBuilder
                 $properties[] = $this->createValueProperty($rootType, $uses);
             }
 
-            foreach($this->generateAttributes($type->simpleContent) as $attribute) {
+            foreach($this->generateAttributes($type) as $attribute) {
                 $properties[] = $this->createAttributeProperty($attribute, $uses);
             }
         }
@@ -664,8 +674,14 @@ final readonly class ClassBuilder
         return false;
     }
 
-    private function isExtend(XsdSimpleContent $simpleContent): bool
+    private function isExtend(XsdComplexType $type): bool
     {
+        if (is_null($type->simpleContent)) {
+            return false;
+        }
+
+        $simpleContent = $type->simpleContent;
+
         $baseType = $simpleContent->getBaseType();
 
         return (
@@ -675,17 +691,24 @@ final readonly class ClassBuilder
         );
     }
 
-    private function generateAttributes(XsdSimpleContent $simpleContent): Generator
+    /**
+     * @param XsdComplexType $type
+     * @return Generator<string,XsdAttribute>
+     */
+    private function generateAttributes(XsdComplexType $type): Generator
     {
-        if ($this->isExtend($simpleContent)) {
-            yield from $simpleContent->extension->ownAttributes;
+        if (is_null($type->simpleContent)) {
+            return;
         }
 
+        if ($this->isExtend($type)) {
+            yield from $type->simpleContent->extension->ownAttributes;
+        }
 
-        if (isset($simpleContent->extension)) {
-            yield from $simpleContent->extension->attributes;
+        if (isset($type->simpleContent->extension)) {
+            yield from $type->simpleContent->extension->attributes;
         } else {
-            yield from $simpleContent->restriction->attributes;
+            yield from $type->simpleContent->restriction->attributes;
         }
     }
 
@@ -706,5 +729,20 @@ final readonly class ClassBuilder
         }
 
         return str_contains($rootElement->documentation->textContent ?? '', 'root element');
+    }
+
+    public function isSimpleTypeable(XsdComplexType $type): bool
+    {
+        if (!isset($type->simpleContent)) {
+            return false;
+        }
+
+        foreach($this->generateAttributes($type) as $attribute) {
+            if ($attribute->use != 'optional') {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
