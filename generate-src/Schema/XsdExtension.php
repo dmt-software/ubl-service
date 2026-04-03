@@ -33,6 +33,9 @@ final class XsdExtension
         $instance->ownAttributes = iterator_to_array(XsdExtension::generateOwnAttributes($schema, $xml));
         $instance->attributes = iterator_to_array(XsdExtension::generateAttributes($schema, $xml));
 
+        // required first
+        uasort($instance->attributes, fn($a, $b) => ($a->use == 'optional') <=> ($b->use == 'optional'));
+
         return $instance;
     }
 

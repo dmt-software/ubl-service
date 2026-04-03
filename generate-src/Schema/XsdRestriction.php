@@ -28,7 +28,12 @@ final class XsdRestriction
         $instance->since = $schema->version;
         $instance->until = $schema->version;
         $instance->attributes = iterator_to_array(XsdRestriction::generateAttributes($schema, $xml));
+        // required first
+        uasort($instance->attributes, fn($a, $b) => ($a->use == 'optional') <=> ($b->use == 'optional'));
+
         $instance->ownAttributes = iterator_to_array(XsdRestriction::generateOwnAttributes($schema, $xml));
+        // required first
+        uasort($instance->ownAttributes, fn($a, $b) => ($a->use == 'optional') <=> ($b->use == 'optional'));
 
         return $instance;
     }

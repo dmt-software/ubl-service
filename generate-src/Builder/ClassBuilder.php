@@ -21,6 +21,7 @@ use JMS\Serializer\Annotation\XmlList;
 use JMS\Serializer\Annotation\XmlNamespace;
 use JMS\Serializer\Annotation\XmlRoot;
 use JMS\Serializer\Annotation\XmlValue;
+use PhpParser\Builder\Param;
 use PhpParser\Builder\Property;
 use PhpParser\BuilderFactory;
 use PhpParser\Node;
@@ -266,11 +267,10 @@ final readonly class ClassBuilder
         }
 
         $documentation = $element->documentation;
-        if (!is_null($documentation)) {
+        if ($this->config->addDocumentation && !is_null($documentation)) {
             $comment = "/**\n";
 
-
-            foreach(XsdDocumentation::FIELDS as $field => $property) {
+            foreach (XsdDocumentation::FIELDS as $field => $property) {
                 if (!is_null($documentation->{$property})) {
                     $comment .= sprintf(" * %s: %s\n", $field, $documentation->{$property});
                 }
@@ -303,8 +303,8 @@ final readonly class ClassBuilder
         $comment = "/**\n";
 
         $documentation = $element->documentation;
-        if (!is_null($documentation)) {
-            foreach(XsdDocumentation::FIELDS as $field => $property) {
+        if ($this->config->addDocumentation && !is_null($documentation)) {
+            foreach (XsdDocumentation::FIELDS as $field => $property) {
                 if (!is_null($documentation->{$property})) {
                     $comment .= sprintf(" * %s: %s\n", $field, $documentation->{$property});
                 }
@@ -330,8 +330,11 @@ final readonly class ClassBuilder
         return $prop;
     }
 
-    public function createJMSXmlListAttribute(string $entry, XsdComplexType|XsdSimpleType $type, array &$uses): Attribute
-    {
+    public function createJMSXmlListAttribute(
+        string $entry,
+        XsdComplexType|XsdSimpleType $type,
+        array &$uses
+    ): Attribute {
         $uses[XmlList::class] = true;
 
         return $this->factory->attribute(
@@ -344,8 +347,11 @@ final readonly class ClassBuilder
         );
     }
 
-    public function createArrayPropertyDocComment(string $propertyName, XsdComplexType|XsdSimpleType $type, array &$uses): string
-    {
+    public function createArrayPropertyDocComment(
+        string $propertyName,
+        XsdComplexType|XsdSimpleType $type,
+        array &$uses
+    ): string {
         $phpTypes = $this->getPhpTypes($type);
         $phpType = end($phpTypes);
 
@@ -369,7 +375,10 @@ final readonly class ClassBuilder
         $classNamespace = $this->classNamespace($className);
 
         $class = $this->factory->class($classBaseName);
-        $class->setDocComment($this->getClassDocComment($type));
+
+        if ($this->config->addDocumentation) {
+            $class->setDocComment($this->getClassDocComment($type));
+        }
 
         if ($this->isRoot($type)) {
             $class->addAttribute($this->createJMSXmlRootAttribute($type, $uses));
@@ -380,6 +389,7 @@ final readonly class ClassBuilder
         }
 
         $properties = [];
+        $constructor = null;
 
         if (!is_null($type->simpleContent)) {
             if ($this->isExtend($type)) {
@@ -387,13 +397,20 @@ final readonly class ClassBuilder
                 $baseClassName = $this->getClassName($baseType);
                 $uses[$baseClassName] = 'Base';
                 $class->extend(new Name('Base'));
+                foreach ($this->generateAttributes($type) as $attribute) {
+                    $properties[] = $this->createAttributeProperty($attribute, $uses);
+                }
             } else {
                 $rootType = $this->resolveRootType($type->simpleContent->getBaseType());
-                $properties[] = $this->createValueProperty($rootType, $uses);
-            }
 
-            foreach($this->generateAttributes($type) as $attribute) {
-                $properties[] = $this->createAttributeProperty($attribute, $uses);
+                $constructor = $this->factory->method('__construct')->makePublic();
+                $constructor->addParam($this->createValueParam($rootType, $uses));
+
+                // $properties[] = $this->createValueProperty($rootType, $uses);
+
+                foreach ($this->generateAttributes($type) as $attribute) {
+                    $constructor->addParam($this->createAttributeParam($attribute, $uses));
+                }
             }
         }
 
@@ -424,6 +441,10 @@ final readonly class ClassBuilder
 
         $classNode = $class->getNode();
 
+        if (!is_null($constructor)) {
+            $classNode->stmts[] = $constructor->getNode();
+        }
+
         foreach ($properties as $property) {
             $classNode->stmts[] = $property->getNode();
             $classNode->stmts[] = new Nop();
@@ -447,7 +468,7 @@ final readonly class ClassBuilder
 
         $documentation = $type->documentation;
         if (!is_null($documentation)) {
-            foreach(XsdDocumentation::FIELDS as $field => $property) {
+            foreach (XsdDocumentation::FIELDS as $field => $property) {
                 if (!is_null($documentation->{$property})) {
                     $comment .= sprintf(" * %s: %s\n", $field, $documentation->{$property});
                 }
@@ -459,7 +480,8 @@ final readonly class ClassBuilder
         return $comment;
     }
 
-    private function createValueProperty(XsdComplexType|XsdSimpleType $type, array &$uses): Property {
+    private function createValueProperty(XsdComplexType|XsdSimpleType $type, array &$uses): Property
+    {
         $prop = $this->factory
             ->property('value')
             ->makePublic()
@@ -469,6 +491,19 @@ final readonly class ClassBuilder
         $prop->addAttribute($this->createJMSXmlValueAttribute($uses));
 
         return $prop;
+    }
+
+    private function createValueParam(XsdComplexType|XsdSimpleType $type, array &$uses): Param
+    {
+        $param = $this->factory
+            ->param('value')
+            ->makePublic()
+            ->setType($this->getUnionType($type, false, $uses));
+
+        $param->addAttribute($this->createJMSSingleTypeAttribute($type, $uses));
+        $param->addAttribute($this->createJMSXmlValueAttribute($uses));
+
+        return $param;
     }
 
     private function createAttributeProperty(XsdAttribute $attribute, array &$uses): Property
@@ -489,9 +524,9 @@ final readonly class ClassBuilder
         }
 
         $documentation = $attribute->documentation;
-        if (!is_null($documentation)) {
+        if ($this->config->addDocumentation && !is_null($documentation)) {
             $comment = "/**\n";
-            foreach(XsdDocumentation::FIELDS as $field => $property) {
+            foreach (XsdDocumentation::FIELDS as $field => $property) {
                 if (!is_null($documentation->{$property})) {
                     $comment .= sprintf(" * %s: %s\n", $field, $documentation->{$property});
                 }
@@ -506,6 +541,31 @@ final readonly class ClassBuilder
         $prop->addAttribute($this->createJMSSingleTypeAttribute($baseType, $uses));
 
         return $prop;
+    }
+
+    private function createAttributeParam(XsdAttribute $attribute, array &$uses): Param
+    {
+        $type = $attribute->getType();
+        $baseType = $this->resolveBaseType($type);
+
+        $nullable = $this->getAttributeNullable($attribute);
+        $propertyName = $this->getAttributePropertyName($attribute);
+
+        $param = $this->factory
+            ->param($propertyName)
+            ->makePublic()
+            ->setType($this->getUnionType($baseType, $nullable, $uses));
+
+        if ($nullable) {
+            $param->setDefault(null);
+        }
+
+        // documentation adding is not supported in params in nikic/php-parser
+
+        $param->addAttribute($this->createJMSXmlAttributeAttribute($uses));
+        $param->addAttribute($this->createJMSSingleTypeAttribute($baseType, $uses));
+
+        return $param;
     }
 
     public function getAttributeNullable(XsdAttribute $attribute): bool
@@ -657,7 +717,9 @@ final readonly class ClassBuilder
             return true;
         }
 
-        if (count($type->simpleContent->extension->ownAttributes ?? $type->simpleContent->restriction->ownAttributes ?? []) > 0) {
+        if (count(
+                $type->simpleContent->extension->ownAttributes ?? $type->simpleContent->restriction->ownAttributes ?? []
+            ) > 0) {
             return true;
         }
 
@@ -737,7 +799,7 @@ final readonly class ClassBuilder
             return false;
         }
 
-        foreach($this->generateAttributes($type) as $attribute) {
+        foreach ($this->generateAttributes($type) as $attribute) {
             if ($attribute->use != 'optional') {
                 return false;
             }

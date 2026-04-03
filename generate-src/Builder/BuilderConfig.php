@@ -102,10 +102,7 @@ final class BuilderConfig
             'urn:un:unece:uncefact:documentation:2',
             'urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2',
         ],
-        public array $versionlessNamespaces = [
-            'urn:oasis:names:specification:bdndr:schema:xsd:UnqualifiedDataTypes-1',
-            'urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2',
-        ],
+        public bool $addDocumentation = false,
     ) {
     }
 }
