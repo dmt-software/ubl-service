@@ -11,10 +11,10 @@ use RecursiveIteratorIterator;
 final class XsdSchemaCollection
 {
     /** @var array<string, XsdSchema> */
-    public array $paths = [];
+    public array $schemaPaths = [];
 
     /** @var array<string, XsdSchema> */
-    public array $merged = [];
+    public array $namespaces = [];
 
     public function __construct()
     {
@@ -24,7 +24,7 @@ final class XsdSchemaCollection
     {
         if (is_null($path)) {
             trigger_error("null path for $namespace");
-            foreach ($this->paths as $path => $schema) {
+            foreach ($this->schemaPaths as $path => $schema) {
                 if ($schema->namespace == $namespace) {
                     trigger_error("but found at $path");
                     return $schema;
@@ -35,19 +35,19 @@ final class XsdSchemaCollection
 
         $path = realpath($path);
 
-        if (!isset($this->paths[$path])) {
+        if (!isset($this->schemaPaths[$path])) {
             $xml = simplexml_load_file($path);
             $schema = XsdSchema::fromXml($this, $path, $xml);
 
-            $existing = $this->merged[$schema->namespace] ?? null;
+            $existing = $this->namespaces[$schema->namespace] ?? null;
             if (is_null($existing)) {
-                $this->merged[$schema->namespace] = $schema->clone();
+                $this->namespaces[$schema->namespace] = $schema->clone();
             } else {
-                $this->merged[$schema->namespace] = $existing->merge($schema);
+                $this->namespaces[$schema->namespace] = $existing->merge($schema);
             }
         }
 
-        return $this->paths[$path];
+        return $this->schemaPaths[$path];
     }
 
     public function loadSchemaDir(string $dir): void
@@ -79,57 +79,5 @@ final class XsdSchemaCollection
 
             yield $file->getPathname();
         }
-    }
-
-    /**
-     * @return array<string>
-     */
-    public function getNamespaces(): array
-    {
-        $namespaces = [];
-
-        foreach ($this->paths as $schema) {
-            $namespaces[$schema->namespace] = true;
-        }
-
-        ksort($namespaces);
-
-        return array_keys($namespaces);
-    }
-
-    /**
-     * @return array<string>
-     */
-    public function getTypeNames(string $namespace): array
-    {
-        $types = [];
-
-        foreach ($this->paths as $schema) {
-            if ($schema->namespace != $namespace) {
-                continue;
-            }
-
-            foreach($schema->types as $type) {
-                $types[$type->name] = true;
-            }
-        }
-
-        ksort($types);
-
-        return array_keys($types);
-    }
-
-    /**
-     * @param string $namespace
-     * @return array<XsdSchema>
-     */
-    public function getSchemas(string $namespace): array
-    {
-        return array_values(
-            array_filter(
-                $this->paths,
-                fn(XsdSchema $schema) => $schema->namespace === $namespace
-            )
-        );
     }
 }

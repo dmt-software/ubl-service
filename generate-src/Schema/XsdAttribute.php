@@ -6,12 +6,13 @@ use SimpleXMLElement;
 
 final class XsdAttribute
 {
-    public string $name;
-    public string $type;
-    public string $use;
     public ?string $version;
     public ?string $since;
     public ?string $until;
+    public string $name;
+    public string $type;
+    public string $use;
+    public ?string $default = null;
     public ?XsdDocumentation $documentation;
 
     private function __construct(public XsdSchema $schema)

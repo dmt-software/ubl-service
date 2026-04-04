@@ -36,7 +36,7 @@ final class XsdSchema
     ): XsdSchema {
         $instance = new XsdSchema($schemaCollection, $path);
         if ($path) {
-            $schemaCollection->paths[realpath($path)] = $instance;
+            $schemaCollection->schemaPaths[realpath($path)] = $instance;
         }
 
         $xml->registerXPathNamespace('xsd', 'http://www.w3.org/2001/XMLSchema');
@@ -223,7 +223,7 @@ final class XsdSchema
         $imports = [];
 
         foreach ($this->imports as $import) {
-            $imports[$import->namespace] = $clone->schemaCollection->merged[$import->namespace];
+            $imports[$import->namespace] = $clone->schemaCollection->namespaces[$import->namespace];
         }
 
         $clone->imports = array_values($imports);
@@ -259,11 +259,11 @@ final class XsdSchema
 
         $imports = [];
         foreach ($clone->imports as $import) {
-            $imports[$import->namespace] = $clone->schemaCollection->merged[$import->namespace];
+            $imports[$import->namespace] = $clone->schemaCollection->namespaces[$import->namespace];
         }
 
         foreach ($other->imports as $import) {
-            $imports[$import->namespace] = $clone->schemaCollection->merged[$import->namespace];
+            $imports[$import->namespace] = $clone->schemaCollection->namespaces[$import->namespace];
         }
 
         $clone->imports = array_values($imports);

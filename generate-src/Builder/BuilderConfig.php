@@ -56,12 +56,6 @@ final class BuilderConfig
                 'DateTimeType' => [DateTime::class],
                 'TimeType' => [DateTime::class],
             ],
-            'urn:oasis:names:specification:bdndr:schema:xsd:UnqualifiedDataTypes-1' => [
-                'IndicatorType' => ['bool'],
-                'DateType' => [DateTime::class],
-                'DateTimeType' => [DateTime::class],
-                'TimeType' => [DateTime::class],
-            ],
             'urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2' => [
                 'ExtensionContentType' => [DOMElement::class],
             ],

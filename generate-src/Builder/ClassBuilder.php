@@ -406,8 +406,6 @@ final readonly class ClassBuilder
                 $constructor = $this->factory->method('__construct')->makePublic();
                 $constructor->addParam($this->createValueParam($rootType, $uses));
 
-                // $properties[] = $this->createValueProperty($rootType, $uses);
-
                 foreach ($this->generateAttributes($type) as $attribute) {
                     $constructor->addParam($this->createAttributeParam($attribute, $uses));
                 }
@@ -537,6 +535,7 @@ final readonly class ClassBuilder
             $prop->setDocComment($comment);
         }
 
+        $prop->addAttribute($this->createJMSSerializedNameAttribute($attribute->name, $uses));
         $prop->addAttribute($this->createJMSXmlAttributeAttribute($uses));
         $prop->addAttribute($this->createJMSSingleTypeAttribute($baseType, $uses));
 
@@ -562,6 +561,7 @@ final readonly class ClassBuilder
 
         // documentation adding is not supported in params in nikic/php-parser
 
+        $param->addAttribute($this->createJMSSerializedNameAttribute($attribute->name, $uses));
         $param->addAttribute($this->createJMSXmlAttributeAttribute($uses));
         $param->addAttribute($this->createJMSSingleTypeAttribute($baseType, $uses));
 
