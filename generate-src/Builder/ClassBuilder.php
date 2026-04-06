@@ -398,6 +398,10 @@ final readonly class ClassBuilder
                 $uses[$baseClassName] = 'Base';
                 $class->extend(new Name('Base'));
                 foreach ($this->generateAttributes($type) as $attribute) {
+                    if ($this->isAttributeBlacklisted($attribute)) {
+                        continue;
+                    }
+
                     $properties[] = $this->createAttributeProperty($attribute, $uses);
                 }
             } else {
@@ -407,12 +411,20 @@ final readonly class ClassBuilder
                 $constructor->addParam($this->createValueParam($rootType, $uses));
 
                 foreach ($this->generateAttributes($type) as $attribute) {
+                    if ($this->isAttributeBlacklisted($attribute)) {
+                        continue;
+                    }
+
                     $constructor->addParam($this->createAttributeParam($attribute, $uses));
                 }
             }
         }
 
         foreach ($type->elements as $element) {
+            if ($this->isElementBlacklisted($element)) {
+                continue;
+            }
+
             $properties[] = $this->createElementProperty($element, $uses);
         }
 
@@ -659,6 +671,24 @@ final readonly class ClassBuilder
         return in_array($namespace, $this->config->namespaceBlacklist);
     }
 
+    public function isTypeBlacklisted(XsdComplexType $type): bool
+    {
+        return (
+            $this->isNamespaceBlacklisted($type->namespace) ||
+            in_array($type->name, $this->config->typeBlacklist[$type->namespace] ?? [])
+        );
+    }
+
+    public function isElementBlacklisted(XsdElement $element): bool
+    {
+        return $this->isTypeBlacklisted($element->getType());
+    }
+
+    public function isAttributeBlacklisted(XsdAttribute $attribute): bool
+    {
+        return in_array($attribute->name, $this->config->attributeBlacklist);
+    }
+
     public function resolveBaseType(XsdComplexType|XsdSimpleType|XsdSimpleContent $type): XsdComplexType|XsdSimpleType
     {
         if ($type instanceof XsdSimpleContent) {
@@ -709,7 +739,7 @@ final readonly class ClassBuilder
             return false;
         }
 
-        if (in_array($type->namespace, $this->config->namespaceBlacklist)) {
+        if ($this->isTypeBlacklisted($type)) {
             return false;
         }
 

@@ -96,7 +96,47 @@ final class BuilderConfig
             'urn:un:unece:uncefact:documentation:2',
             'urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2',
         ],
-        public bool $addDocumentation = false,
+        public bool $addDocumentation = true,
+        public array $elementBlacklist = [
+
+        ],
+        public array $typeBlacklist = [
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2' => [
+                'UBLExtensionType', // UBL-CR-001
+                'UBLExtensionsType', // UBL-CR-001
+            ],
+            'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2' => [
+                'ProfileExecutionIDType', // UBL-CR-003
+                'CopyIndicatorType', // UBL-CR-004
+                'UUIDType', // UBL-CR-005
+                'IssueTimeType', // UBL-CR-006
+                'PricingCurrencyCodeType', // UBL-CR-007
+                'PaymentCurrencyCodeType', // UBL-CR-008
+                'PaymentAlternativeCurrencyCodeType', // UBL-CR-009
+                'AccountingCostCodeType', // UBL-CR-010
+                'LineCountNumericType', // UBL-CR-011
+            ]
+        ],
+        public array $attributeBlacklist = [
+            'schemeName', // UBL-DT-08
+            'schemeAgencyName', // UBL-DT-09
+            'schemeDataURI', // UBL-DT-10
+            'schemeURI', // UBL-DT-11
+            'format', // UBL-DT-12
+            'unitCodeListIdentifier', // UBL-DT-13
+            'unitCodeListAgencyIdentifier', // UBL-DT-14
+            'unitCodeListAgencyName', // UBL-DT-15
+            'listAgencyName', // UBL-DT-16
+            'listName', // UBL-DT-17
+            'languageID', // UBL-DT-19
+            'listURI', // UBL-DT-20
+            'listSchemeURI', // UBL-DT-21
+            'languageLocaleID', // UBL-DT-22
+            'uri', // UBL-DT-23
+            'currencyCodeListVersionID', // UBL-DT-24
+            'characterSetCode', // UBL-DT-25
+            'encodingCode', // UBL-DT-26
+        ]
     ) {
     }
 }
