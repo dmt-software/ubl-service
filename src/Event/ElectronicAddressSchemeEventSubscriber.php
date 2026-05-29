@@ -49,7 +49,7 @@ final readonly class ElectronicAddressSchemeEventSubscriber implements EventSubs
         if ($event->getContext()->hasAttribute('version')) {
             $version = $event->getContext()->getAttribute('version');
         }
-
+        /** @var ElectronicAddressScheme $object->schemeId */
         $object->schemeAgencyId = $object->schemeId->getSchemeAgencyId($version);
         $object->schemeId = $object->schemeId->getSchemeId($version);
     }
