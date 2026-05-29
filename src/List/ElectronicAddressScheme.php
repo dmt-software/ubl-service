@@ -38,7 +38,7 @@ enum ElectronicAddressScheme: string
     case DeprecatedDKVatNumber = '9904';
     case DeprecatedNLOrganizationNumber = '9954';
 
-    public static function lookup(null|string $schemeId, string $version = null): null|self
+    public static function lookup(?string $schemeId, ?string $version = null): ?self
     {
         $testVersions = $version ? [$version] : [Versions::VERSION_1_1, Versions::VERSION_2_0];
         foreach (self::cases() as $case) {

@@ -49,12 +49,12 @@ class InvoiceToSimpleObjectTransformer implements DocumentToObjectTransformer
         $invoice->paymentTerm = $document?->paymentTerms?->note;
         $invoice->total = $document?->legalMonetaryTotal?->payableAmount->amount;
 
-        if ($document->accountingSupplierParty) {
-            $invoice->seller = $this->renderParty($document->accountingSupplierParty);
+        if ($document->accountingSupplierParty && $document->accountingSupplierParty->party) {
+            $invoice->seller = $this->renderParty($document->accountingSupplierParty->party);
         }
 
-        if ($document->accountingCustomerParty) {
-            $invoice->buyer = $this->renderParty($document->accountingCustomerParty);
+        if ($document->accountingCustomerParty && $document->accountingCustomerParty->party) {
+            $invoice->buyer = $this->renderParty($document->accountingCustomerParty->party);
         }
 
         if ($document?->delivery?->deliveryLocation?->address) {
